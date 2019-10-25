@@ -1,6 +1,7 @@
-import app from 'firebase/app';
+import app from 'firebase';
 import 'firebase/database';
 import 'firebase/auth';
+import 'firebase/firestore';
 
 // CREATE ./config.js file to export your firebase configuration here.
 const config = {
@@ -14,11 +15,10 @@ const config = {
 
 class Firebase {
     constructor() {
-        console.log(config.apiKey);
-        console.log(process.env.REACT_APP_API_KEY);
         app.initializeApp(config);
 
         this.db = app.database();
+        this.fstore = app.firestore();
         this.auth = app.auth();
     }
 
@@ -63,6 +63,34 @@ class Firebase {
     user = uid => this.db.ref(`/users/${uid}`);
     
     users = () => this.db.ref(`users`);
+
+    // FIRESTORE
+    listTables = async () => {
+        try {
+            const list = await this.fstore.collection("tables").get();
+            return list.docs.map(doc => ({ ...doc.data(), id: doc.id }));
+        } catch(error) {
+            console.log('listTables', error);
+        }
+    }
+
+    addTable = async payload => {
+        try {
+            const tableRef = await this.fstore.collection("tables").add(payload);
+            return tableRef.id;
+        } catch(error) {
+            console.error('Error in addTable: ', error);
+        }
+    }
+
+    updateTable = async (payload, id) => {
+        try {
+            const ref = this.fstore.collection("tables").doc(id);
+            await ref.update(payload);
+        } catch(error) {
+            console.error(error);
+        }
+    }
 }
 
 export default Firebase;

@@ -10,6 +10,7 @@ import Home from './Home'
 import Account from './Account'
 import Admin from './Admin'
 import * as ROUTES from '../constants/routes'
+import Tables from '../pages/Tables'
 
 function App() {
     return (
@@ -19,7 +20,7 @@ function App() {
 
                 <hr />
 
-                <Route exact path={ROUTES.LANDING} component={Landing} />
+                <Route exact path={ROUTES.LANDING} component={Tables} />
                 <Route path={ROUTES.SIGN_UP} component={SignUpPage} />
                 <Route path={ROUTES.SIGN_IN} component={SignInPage} />
                 <Route
