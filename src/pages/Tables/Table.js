@@ -6,6 +6,7 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
 import { useAuthUser } from '../../components/Session';
 import { FirebaseContext } from '../../firebase';
 import Typography from '@material-ui/core/Typography';
+import { useHistory } from 'react-router-dom';
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -13,7 +14,7 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-function Table({ data, onJoinTable }) {
+function Table({ data, onJoinTable, onDeleteTable }) {
     const {
         id,
         name,
@@ -22,10 +23,12 @@ function Table({ data, onJoinTable }) {
         player1,
         player1Name,
         player2,
-        player2Name,} = data;
+        player2Name,
+        gameId,} = data;
     const classes = useStyles();
     const authUser = useAuthUser();
     const firebase = useContext(FirebaseContext);
+    const history = useHistory();
     // const [tables, setTables] = useState(null);
 
     useEffect(() => {
@@ -46,8 +49,26 @@ function Table({ data, onJoinTable }) {
         };
 
         await firebase.updateTable(player2Info, id);
+    }
 
-        onJoinTable(({...data, ...player2Info}))();
+    const handleStart = async () => {
+        const newGameId = await firebase.addGame({
+            stage: 'INITIATIVE_ROLL',
+        });
+
+        await firebase.updateTable({
+            gameId: newGameId
+        }, id);
+
+        history.push(`/v1/game/${newGameId}`);
+    }
+
+    const handleResume = () => {
+        history.push(`/v1/game/${gameId}`);
+    }
+
+    const handleDelete = async () => {
+        await firebase.deleteTable(id, gameId);
     }
 
     return (
@@ -69,13 +90,23 @@ function Table({ data, onJoinTable }) {
             </Grid>
             <Grid item xs={12}>
                 {
-                    player1 && player2 && (
-                        <Button variant="outlined">Start</Button>
+                    player1 && player2 && !gameId && (
+                        <Button variant="outlined" onClick={handleStart}>Start</Button>
+                    )
+                }
+                {
+                    player1 && player2 && gameId && (
+                        <Button variant="outlined" onClick={handleResume}>Resume</Button>
                     )
                 }
                 {
                     authUser && authUser.uid !== player1 && !player2 && (
                         <Button variant="outlined" onClick={handleJoin}>Join</Button>
+                    )
+                }
+                {
+                    authUser && authUser.uid === player1 && (
+                        <Button variant="outlined" onClick={handleDelete} style={{ color: 'red' }}>Delete</Button>
                     )
                 }
             </Grid>

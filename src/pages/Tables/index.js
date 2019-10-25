@@ -22,34 +22,38 @@ function Tables() {
 
     useEffect(() => {
         console.log(authUser)
-        const getTablesAsync = async () => {
-            const fetchedTables = await firebase.listTables();
-            console.log(fetchedTables);
-            setTables(fetchedTables);
-        }
+        const unsubscribe = firebase.setTablesListener(qSnap => {
+            const tables = [];
+            qSnap.forEach(doc => {
+                tables.push({...doc.data(), id: doc.id});
+            })
 
-        getTablesAsync();
+            setTables(tables);
+        });
+
+        // const getTablesAsync = async () => {
+        //     const fetchedTables = await firebase.listTables();
+        //     console.log(fetchedTables);
+        //     setTables(fetchedTables);
+        // }
+
+        // getTablesAsync();
+        return () => unsubscribe();
     }, []);
 
     const handleCreateNewTable = async () => {
         const tableData = {
             name: "New Table",
-            status: "active",
+            status: "empty",
             created: Date(),
             player1: authUser && authUser.uid,
             player1Name: authUser && authUser.username,
             player2: null,
             player2Name: null,
+            gameId: null,
         };
         
         const tableId = await firebase.addTable(tableData);
-        setTables(prev => [...prev, {...tableData, id: tableId }]);
-    }
-
-    const handleJoinTable = table => () => {
-        console.log(table);
-        const otherTables = tables.filter(t => t.id !== table.id);
-        setTables([...otherTables, table]);
     }
 
     return (
@@ -64,8 +68,8 @@ function Tables() {
                     {
                         tables && (
                             tables.map(table => (
-                                <Grid key={table.id} item>
-                                    <Table data={table} onJoinTable={handleJoinTable} />
+                                <Grid key={table.id} item xs={12}>
+                                    <Table data={table} />
                                 </Grid>
                             ))
                         )

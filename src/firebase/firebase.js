@@ -91,6 +91,26 @@ class Firebase {
             console.error(error);
         }
     }
+
+    deleteTable = async (id, gameId) => {
+        try {
+            await this.fstore.collection("tables").doc(id).delete();
+            await this.fstore.collection("games").doc(gameId).delete();
+        } catch(error) {
+            console.error('deleteTable', error);
+        }
+    }
+
+    setTablesListener = onSnaphot => this.fstore.collection('tables').onSnapshot(onSnaphot);
+
+    addGame = async payload => {
+        try {
+            const gameRef = await this.fstore.collection("games").add(payload);
+            return gameRef.id;
+        } catch(error) {
+            console.error('Error in addGame: ', error);
+        }
+    }
 }
 
 export default Firebase;
