@@ -3,10 +3,19 @@ import 'firebase/database';
 import 'firebase/auth';
 
 // CREATE ./config.js file to export your firebase configuration here.
-import config from './config';
+const config = {
+    apiKey: process.env.REACT_APP_API_KEY,
+    authDomain: process.env.REACT_APP_AUTH_DOMAIN,
+    databaseURL: process.env.REACT_APP_DATABASE_URL,
+    projectId: process.env.REACT_APP_PROJECT_ID,
+    storageBucket: process.env.REACT_APP_STORAGE_BUCKET,
+    messagingSenderId: process.env.REACT_APP_MESSAGING_SENDER_ID,
+}
 
 class Firebase {
     constructor() {
+        console.log(config.apiKey);
+        console.log(process.env.REACT_APP_API_KEY);
         app.initializeApp(config);
 
         this.db = app.database();
