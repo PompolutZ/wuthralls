@@ -21,48 +21,47 @@ function Tables() {
     const [tables, setTables] = useState(null);
 
     useEffect(() => {
-        console.log(authUser)
-        const unsubscribe = firebase.setTablesListener(qSnap => {
-            const tables = [];
-            qSnap.forEach(doc => {
-                tables.push({...doc.data(), id: doc.id});
-            })
-
-            setTables(tables);
+        const unsubscribe = firebase.setTablesListener(snapshot => {
+            console.log('OnTablesUpdatedSnapshot');
+            setTables(snapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            })));
         });
 
-        // const getTablesAsync = async () => {
-        //     const fetchedTables = await firebase.listTables();
-        //     console.log(fetchedTables);
-        //     setTables(fetchedTables);
-        // }
-
-        // getTablesAsync();
         return () => unsubscribe();
     }, []);
 
     const handleCreateNewTable = async () => {
+        if(!authUser) return;
+        
         const tableData = {
             name: "New Table",
-            status: "empty",
+            step: {
+                type: 'IDLE',
+            },
             created: Date(),
-            player1: authUser && authUser.uid,
-            player1Name: authUser && authUser.username,
-            player2: null,
-            player2Name: null,
-            gameId: null,
+            players: [authUser.uid],
+            [authUser.uid] : {
+                name: authUser.username,
+                state: 'SETUP'
+            },
         };
         
-        const tableId = await firebase.addTable(tableData);
+        await firebase.addTable(tableData);
     }
 
     return (
         <Grid container className={classes.root} spacing={3}>
-            <Grid item xs={12}>
-                <Button variant="contained" onClick={handleCreateNewTable}>
-                    Create Table
-                </Button>
-            </Grid>
+            {
+                authUser && (
+                    <Grid item xs={12}>
+                        <Button variant="contained" onClick={handleCreateNewTable}>
+                            Create Table
+                        </Button>
+                    </Grid>
+                )
+            }
             <Grid item xs={12}>
                 <Grid container>
                     {

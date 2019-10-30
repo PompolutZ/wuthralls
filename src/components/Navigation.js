@@ -7,27 +7,30 @@ import { useAuthUser } from './Session'
 
 function NavigationAuth({ authUser }) {
     return (
-        <ul>
-            <li>
-                <Link to={ROUTES.LANDING}>Landing</Link>
-            </li>
-            <li>
-                <Link to={ROUTES.HOME}>Home</Link>
-            </li>
-            <li>
-                <Link to={ROUTES.ACCOUNT}>Account</Link>
-            </li>
-            {
-                !!authUser.roles[ROLES.ADMIN] && (
-                    <li>
-                        <Link to={ROUTES.ADMIN}>Admin</Link>
-                    </li>
-                )
-            }
-            <li>
-                <SignOut />
-            </li>
-        </ul>
+        <div>
+            <ul>
+                <li>
+                    <Link to={ROUTES.LANDING}>Lobby</Link>
+                </li>
+                <li>
+                    <Link to={ROUTES.HOME}>Home</Link>
+                </li>
+                <li>
+                    <Link to={ROUTES.ACCOUNT}>Account</Link>
+                </li>
+                {
+                    !!authUser.roles[ROLES.ADMIN] && (
+                        <li>
+                            <Link to={ROUTES.ADMIN}>Admin</Link>
+                        </li>
+                    )
+                }
+                <li>
+                    <SignOut />
+                </li>
+            </ul>
+            <div>{authUser.uid}</div>    
+        </div>
     )
 }
 
