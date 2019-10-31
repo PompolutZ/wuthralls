@@ -21,7 +21,9 @@ class Firebase {
         this.fstore = app.firestore();
         this.auth = app.auth();
         this.firestoreArrayUnion = value =>
-            app.firestore.FieldValue.arrayUnion(value)
+            app.firestore.FieldValue.arrayUnion(value);
+        this.firestoreArrayRemove = value => 
+            app.firestore.FieldValue.arrayRemove(value);
     }
 
     // *** Auth API ***
@@ -95,6 +97,29 @@ class Firebase {
         }
     }
 
+    updateStep = async (tableId, uid, payload) => {
+        try {
+            const ref = this.fstore.collection("tables").doc(tableId);
+            await ref.update({
+                [`step.${uid}`]: payload
+            })
+        } catch(error) {
+            console.error(error);
+        }
+    }
+
+    updateInitiativeRoll = async (tableId, playerId, payload) => {
+        try {
+            const ref = this.fstore.collection("tables").doc(tableId);
+            await ref.update({
+                'step.waitingFor': this.firestoreArrayRemove(playerId),
+                [`step.${playerId}`]: payload
+            })
+        } catch(error) {
+            console.error(error);
+        }
+    }
+
     addPlayerToTable = async (tableId, playerId, playerInfo) => {
         try {
             const ref = this.fstore.collection("tables").doc(tableId);
@@ -115,6 +140,28 @@ class Firebase {
             const ref = this.fstore.collection("tables").doc(tableId);
             await ref.update({
                 [playerId]: playerInfo
+            })
+        } catch(error) {
+            console.error(error);
+        }
+    }
+
+    addFirstBoard = async (tableId, boardId) => {
+        try {
+            const ref = this.fstore.collection("tables").doc(tableId);
+            await ref.update({
+                firstBoard: boardId
+            })
+        } catch(error) {
+            console.error(error);
+        }
+    }
+
+    addSecondBoard = async (tableId, boardId) => {
+        try {
+            const ref = this.fstore.collection("tables").doc(tableId);
+            await ref.update({
+                secondBoard: boardId
             })
         } catch(error) {
             console.error(error);

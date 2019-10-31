@@ -44,24 +44,25 @@ function Table({ data, onJoinTable, onDeleteTable }) {
 
     const handleStart = async () => {
         console.log('Start');
-        // const activeStep = {
-        //     type: 'INITIATIVE_ROLL',
-        // };
+        const activeStep = {
+            type: 'INITIATIVE_ROLL_FOR_BOARDS_SETUP',
+            waitingFor: players,
+        };
 
-        // await firebase.updateTable({
-        //     step: activeStep
-        // }, id);
+        await firebase.updateTable({
+            step: activeStep
+        }, id);
 
-        // history.push(`/v1/game/${id}`, {
-        //     ...data,
-        //     step: activeStep,
-        // });
+        history.push(`/v1/game/${id}`, {
+            ...data,
+            step: activeStep,
+        });
     }
 
     const handleResume = async () => {
         console.log('RESUME', data);
         // read from history
-        // history.push(`/v1/game/${id}`, data);
+        history.push(`/v1/game/${id}`, data);
     }
 
     const handleDelete = async () => {
@@ -75,8 +76,8 @@ function Table({ data, onJoinTable, onDeleteTable }) {
     const getReadyPlayers = players.map(uid => data[uid] && data[uid].state).filter(state => state === 'READY');
     console.log('Table', id, 'has', getReadyPlayers);
 
-    const canStart = getReadyPlayers.length === players.length && players.length >= 2; // authUser && players.length >= 2 && step && step.type === 'IDLE';
-    const canResume = false; // authUser && players.length >= 2 && step && step.type !== 'IDLE';
+    const canStart = getReadyPlayers.length === players.length && players.length >= 2 && step.type === 'IDLE'; // authUser && players.length >= 2 && step && step.type === 'IDLE';
+    const canResume = getReadyPlayers.length === players.length && players.length >= 2 && step.type !== 'IDLE'; // authUser && players.length >= 2 && step && step.type !== 'IDLE';
     const canJoin = authUser && !players.includes(authUser.uid);
     const canPrepare = authUser && players.includes(authUser.uid) && step.type === 'IDLE';
     const canDelete = authUser && players.length > 0 && players[0] === authUser.uid;

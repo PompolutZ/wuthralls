@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Button from '@material-ui/core/Button';
 import Die from './Die';
 
@@ -8,12 +8,13 @@ function getRandomIntInclusive(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min; //The maximum is inclusive and the minimum is inclusive 
 }
 
-function DiceTray({ defaultAmount }) {
-    const [values, setValues] = useState(defaultAmount ? new Array(defaultAmount).fill(1) : []);
+function DiceTray({ defaultAmount, onRollBeingMade, canReduce, canIncrease, rollResult, canRoll }) {
+    const [values, setValues] = useState(rollResult ? new Array(rollResult) : defaultAmount ? new Array(defaultAmount).fill(1) : []);
 
     const handleRollClick = () => {
         const updated = values.map(_ => getRandomIntInclusive(1, 6));
         setValues(updated);
+        onRollBeingMade(updated);
     }
 
     const handleAddMore = () => {
@@ -23,6 +24,17 @@ function DiceTray({ defaultAmount }) {
     const handleMakeLess = () => {
         setValues(prev => prev.slice(1))
     }
+
+    useEffect(() => {
+        console.log('Dice Tray Updated', rollResult);
+        if(rollResult) {
+            setValues(rollResult.split(','));
+        }
+    }, [rollResult])
+
+    useEffect(() => {
+        console.log('Dice Tray Values Updated', values);
+    }, [values])
 
     return (
         <div style={{ display: 'flex', flexFlow: 'column nowrap' }}>
@@ -36,17 +48,25 @@ function DiceTray({ defaultAmount }) {
                 }
             </div>
             <div style={{ display: 'flex' }}>
-                <Button variant="contained" color="primary" onClick={handleMakeLess}>
-                    Less
-                </Button>
+                {
+                    canReduce && (
+                        <Button variant="contained" color="primary" onClick={handleMakeLess}>
+                            Less
+                        </Button>
+                    )
+                }
 
-                <Button onClick={handleRollClick}>
+                <Button onClick={handleRollClick} disabled={!canRoll}>
                     Roll
                 </Button>
 
-                <Button variant="contained" color="primary" onClick={handleAddMore}>
-                    More
-                </Button>
+                {
+                    canIncrease && (
+                        <Button variant="contained" color="primary" onClick={handleAddMore}>
+                            More
+                        </Button>
+                    )
+                }
             </div>
         </div>
     )

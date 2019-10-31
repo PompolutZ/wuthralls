@@ -31,3 +31,12 @@ export const factions = {
     // "skaeths-wild-hunt": "Skaeth’s Wild Hunt",
     // "the-grymwatch": "The Grymwatch",
 }
+
+export const boards = {
+    1: {
+        name: 'Mirror Well'
+    },
+    2: {
+        name: `Katophrane's Reliquary`
+    },
+}

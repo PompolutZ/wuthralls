@@ -12,6 +12,7 @@ import Admin from './Admin'
 import * as ROUTES from '../constants/routes'
 import Tables from '../pages/Tables'
 import Prepare from '../pages/Prepare'
+import Game from '../pages/Game'
 
 function App() {
     return (
@@ -31,8 +32,8 @@ function App() {
                 <Route path={ROUTES.HOME} component={Home} />
                 <Route path={ROUTES.ACCOUNT} component={Account} />
                 <Route path={ROUTES.ADMIN} component={Admin} />
-                <Route path="/:version/table/:tableId" component={Prepare} />
-                {/* <Route path="/:version/game/:gameId" component={Game} /> */}
+                <Route path="/:version/table/:tableId/prepare" component={Prepare} />
+                <Route path="/:version/game/:tableId" component={Game} />
             </div>
         </Router>
     )
