@@ -54,10 +54,11 @@ function BoardSelectionOrderChooser({ data, tableId }) {
     }
 
     const handlePickBoardSecond = async () => {
+        console.log(data.opponents);
         const nextActiveStep = {
             type: 'PICK_FIRST_BOARD',
             waitingFor: data.opponents[0],
-            pickingNext: myself.uid
+            pickingNext: [myself.uid]
         };
 
         await firebase.updateTable({
@@ -146,10 +147,12 @@ function SecondBoardPicker({ data, tableId }) {
     const myself = useAuthUser();
     const firebase = useContext(FirebaseContext);
     const [boardIds, setBoardIds] = useState([data.firstBoardId]);
+    const [bottomBoardLeftOffset, setBottomBoardLeftOffset] = useState(0);
     
-    const baseBoardWidth = 250;
-    const baseBoardHeight = 163;
-    const shiftHorizontal = 18 * 2 - 4;
+    const baseBoardWidth = 757;
+    const baseBoardHeight = 495;
+    const size = 55;
+    const scaleDownBy = 2;
     
     useEffect(() => {
         console.log('SecondBoardPicker.OnData', data);
@@ -158,6 +161,14 @@ function SecondBoardPicker({ data, tableId }) {
     const handleSelectBoard = boardId => async () => {
         setBoardIds(prev => [...prev, boardId]);
         await firebase.addSecondBoard(tableId, boardId);
+    }
+
+    const handleShiftBottomBoardLeft = () => {
+
+    }
+
+    const handleShiftBottomBoardRight = () => {
+        
     }
 
     if(data.waitingFor !== myself.uid) {
@@ -179,7 +190,7 @@ function SecondBoardPicker({ data, tableId }) {
                     <Typography>
                         {boards[data.firstBoardId].name}
                     </Typography>
-                    <img src={`/assets/boards/${data.firstBoardId}.jpg`} />
+                    <img src={`/assets/boards/${data.firstBoardId}.jpg`} width={baseBoardWidth / 3} />
                 </div>
                 <Typography>Choose the board:</Typography>
                 <br />
@@ -190,7 +201,7 @@ function SecondBoardPicker({ data, tableId }) {
                                 <Typography>
                                     {boards[boardId].name}
                                 </Typography>
-                                <img src={`/assets/boards/${boardId}.jpg`} />
+                                <img src={`/assets/boards/${boardId}.jpg`} width={baseBoardWidth / 3} />
                             </div>
                         ))
                     }
@@ -200,15 +211,26 @@ function SecondBoardPicker({ data, tableId }) {
     }
 
     return (
-        <div style={{ position: 'relative' }}>
-            <img src={`/assets/boards/${boardIds[0]}.jpg`} alt="board" style={{ width: baseBoardWidth, height: baseBoardHeight, position: 'absolute', zIndex: '1' }} />
-            <img src={`/assets/boards/${boardIds[1]}.jpg`} alt="board2" style={{ 
-                width: baseBoardWidth, 
-                height: baseBoardHeight, 
-                position: 'absolute', 
-                zIndex: '1',
-                top: baseBoardHeight -1,
-                left: shiftHorizontal * 4}} />
+        <div style={{ display: 'flex' }}>
+            <div>
+                <Button variant="contained" onClick={handleShiftBottomBoardLeft}>{`<-`}</Button>
+            </div>
+            <div style={{ position: 'relative',
+                            width: baseBoardWidth / scaleDownBy, 
+                            height: baseBoardHeight / scaleDownBy, 
+                         }}>
+                <img src={`/assets/boards/${boardIds[0]}.jpg`} alt="board" style={{ width: baseBoardWidth / scaleDownBy, height: baseBoardHeight / scaleDownBy, position: 'absolute', zIndex: '1' }} />
+                <img src={`/assets/boards/${boardIds[1]}.jpg`} alt="board2" style={{ 
+                    width: baseBoardWidth / scaleDownBy, 
+                    height: baseBoardHeight / scaleDownBy, 
+                    position: 'absolute', 
+                    zIndex: '1',
+                    top: baseBoardHeight / scaleDownBy,
+                    left: bottomBoardLeftOffset }} />
+            </div>
+            <div>
+                <Button variant="contained" onClick={handleShiftBottomBoardRight}>{`->`}</Button>
+            </div>
         </div>
     )
 }
