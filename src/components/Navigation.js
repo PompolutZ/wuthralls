@@ -29,7 +29,8 @@ function NavigationAuth({ authUser }) {
                     <SignOut />
                 </li>
             </ul>
-            <div>{authUser.uid}</div>    
+            <div>{authUser.uid}</div>   
+            <div>ver 1</div> 
         </div>
     )
 }
