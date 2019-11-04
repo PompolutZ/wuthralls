@@ -90,7 +90,19 @@ function Table({ data, onJoinTable, onDeleteTable }) {
             <Grid item xs={12} md={6} lg={4}>
                 {
                     players.length === 1 && (
-                        <Typography>{`${data[players[0]].name} waiting for opponent...`}</Typography>
+                        <Grid container alignItems="center">
+                            <Grid item>
+                                {
+                                    data[players[0]] && data[players[0]].faction && (
+                                        <img src={`/assets/factions/${data[players[0]].faction}-icon.png`} width="32" height="32" />
+                                    )
+                                }                                
+                            </Grid>
+                            <Grid>
+                                <Typography>{`${data[players[0]].name} waiting for opponent...`}</Typography>
+                            </Grid>
+                        </Grid>
+                        
                     )
                 }
                 {

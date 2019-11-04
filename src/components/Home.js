@@ -6,7 +6,7 @@ function Home() {
     return (
         <div>
             Home
-            <DiceTray defaultAmount={4} />
+            {/* <DiceTray defaultAmount={4} /> */}
         </div>
     )
 }

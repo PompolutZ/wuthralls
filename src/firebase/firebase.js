@@ -168,6 +168,28 @@ class Firebase {
         }
     }
 
+    addFullBoard = async (tableId, payload) => {
+        try {
+            const ref = this.fstore.collection("tables").doc(tableId);
+            await ref.update({
+                fullBoard: payload
+            })
+        } catch(error) {
+            console.error(error);
+        }
+    }
+
+    addHex = async (tableId, index, payload) => {
+        try {
+            const ref = this.fstore.collection("tables").doc(tableId);
+            await ref.update({
+                [`hexes.${index}`]: payload
+            })
+        } catch(error) {
+            console.error(error);
+        }
+    }
+
     deleteTable = async (id) => {
         try {
             await this.fstore.collection("tables").doc(id).delete();

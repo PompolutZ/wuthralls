@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { useAuthUser } from '../../components/Session';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useHistory } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import ButtonBase from '@material-ui/core/ButtonBase';
@@ -24,6 +24,7 @@ function Prepare() {
     const classes = useStyles();
     const myself = useAuthUser();
     const firebase = useContext(FirebaseContext);
+    const history = useHistory();
     const { state } = useLocation();
     const [myData, setMyData] = useState(state && myself && state[myself.uid]);
     const [selectedFaction, setSelectedFaction] = useState((myData && myData.faction) || null);
@@ -53,6 +54,7 @@ function Prepare() {
         }
 
         await firebase.updatePlayerInfo(state.id, myself.uid, myUpdatedData);
+        history.push('/');
     }
 
     return (
