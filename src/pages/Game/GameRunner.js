@@ -22,7 +22,7 @@ function shuffle(a) {
     return a;
 }
 
-function LethalHexPlacer({ data, tableId, boardIds }) {
+function GameRunner({ data }) {
     const baseBoardWidth = 757;
     const baseBoardHeight = 495;
     const baseSize = 55;
@@ -36,7 +36,6 @@ function LethalHexPlacer({ data, tableId, boardIds }) {
     const [svg, setSvg] = React.useState(null);
     const [grid, setGrid] = React.useState(null);
     const [parsedBoard, setParsedBoard] = React.useState(JSON.parse(data.fullBoard));
-    const [currentFeatureToken, setCurrentFeatureToken] = React.useState({ ...data.step.featuresToPlace[data.step.featureIndex], top: 0, left: 0, });
     const [message, setMessage] = React.useState('');
     const [featureHexes, setFeatureHexes] = React.useState(data.featureHexes || null);
     const [lethalHexes, setLethalHexes] = React.useState(data.lethalHexes || null);
@@ -84,12 +83,14 @@ function LethalHexPlacer({ data, tableId, boardIds }) {
     const Grid = defineGrid(Hex);
 
     useEffect(() => {
-        if (data.step.waitingFor === myself.uid) {
-            setMessage('Select hex to place feature token. Click Save when you are done.');
+        if (data.step.waitingFor.includes(myself.uid)) {
+            setMessage('Decide on your starting hand and roll initiative for fighters placement');
         } else {
-            setMessage('Your opponent is placing feature token...');
+            setMessage('Your opponent is thinking...');
         }
-        console.log('ObjectivePlacer.onData', data, parsedBoard );
+
+        console.log('GameRunner.Loaded', data);
+
         const svg = SVG(rootRef.current);
         setSvg(svg);
         const initGrid = Grid(parsedBoard.hexes);
@@ -101,57 +102,53 @@ function LethalHexPlacer({ data, tableId, boardIds }) {
     }, [])
 
     useEffect(() => {
-        
-    }, [data.hexes])
-
-    useEffect(() => {
-        if (data.step.waitingFor === myself.uid) {
-            setMessage('Select hex to place lethal hex token. Click Save when you are done.');
+        if (data.step.waitingFor.includes(myself.uid)) {
+            setMessage('Decide on your starting hand and roll initiative for fighters placement');
         } else {
-            setMessage('Your opponent is placing lethal hex token...');
+            setMessage('Your opponent is thinking...');
         }
         
         setFeatureHexes(data.featureHexes || null);
         setLethalHexes(data.lethalHexes || null);
         
-        setCurrentFeatureToken(
-            { ...data.step.featuresToPlace[data.step.featureIndex], top: 0, left: 0, }
-        )
+        // setCurrentFeatureToken(
+        //     { ...data.step.featuresToPlace[data.step.featureIndex], top: 0, left: 0, }
+        // )
     }, [data.step])
 
     const handleSave = async () => {
-        const featuresToPlace = data.step.featuresToPlace;
-        delete featuresToPlace[data.step.featureIndex];
-        console.log('SAVE', currentFeatureToken, featuresToPlace);
+        console.log('GameRunner.Save');
+        // const featuresToPlace = data.step.featuresToPlace;
+        // delete featuresToPlace[data.step.featureIndex];
+        // console.log('SAVE', currentFeatureToken, featuresToPlace);
 
-        if(Object.keys(featuresToPlace).length > 0) {
-            console.log('DATA:SAVE', data);
-            await firebase.addLethalHex(data.id, data.step.featureIndex, currentFeatureToken);
+        // if(Object.keys(featuresToPlace).length > 0) {
+        //     console.log('DATA:SAVE', data);
+        //     await firebase.addLethalHex(data.id, data.step.featureIndex, currentFeatureToken);
 
-            console.log(data.step);
-            const nextActiveStep = {
-                type: 'PLACE_LETHAL',
-                waitingFor: data.step.nextPlayer,
-                nextPlayer: data.step.waitingFor,
-                featureIndex: data.step.featureIndex + 1,
-                featuresToPlace: featuresToPlace,
-            };
+        //     console.log(data.step);
+        //     const nextActiveStep = {
+        //         type: 'PLACE_LETHAL',
+        //         waitingFor: data.step.nextPlayer,
+        //         nextPlayer: data.step.waitingFor,
+        //         featureIndex: data.step.featureIndex + 1,
+        //         featuresToPlace: featuresToPlace,
+        //     };
     
-            await firebase.updateTable({
-                step: nextActiveStep
-            }, data.id);
-        } else {
-            await firebase.addLethalHex(data.id, data.step.featureIndex, currentFeatureToken);
-            console.log('No more lethals to place');
-            const nextActiveStep = {
-                type: 'INITIATIVE_ROLL_FOR_FIGHTERS_PLACEMENT',
-                waitingFor: [data.step.nextPlayer, data.step.waitingFor],
-            };
+        //     await firebase.updateTable({
+        //         step: nextActiveStep
+        //     }, data.id);
+        // } else {
+        //     console.log('No more lethals to place');
+        //     const nextActiveStep = {
+        //         type: 'INITIATIVE_ROLL_FOR_FIGHTERS_PLACEMENT',
+        //         waitingFor: [data.step.nextPlayer, data.step.waitingFor],
+        //     };
     
-            await firebase.updateTable({
-                step: nextActiveStep
-            }, data.id);
-        }
+        //     await firebase.updateTable({
+        //         step: nextActiveStep
+        //     }, data.id);
+        // }
     }
 
     const handleClick = e => {
@@ -167,21 +164,11 @@ function LethalHexPlacer({ data, tableId, boardIds }) {
             hex.highlight(svg);
             const {x, y} = hex.toPoint();
             console.log(offsetX, offsetY, hex.toPoint(), hexCoordinates)
-            setCurrentFeatureToken({
-                ...currentFeatureToken,
-                top: y,
-                left: x,
-                hexX: hexCoordinates.x,
-                hexY: hexCoordinates.y,
-            });
         }
     }
 
     return (
         <div>
-            {/* <div>
-                <Button variant="contained" onClick={handleShiftBottomBoardLeft}>{`<-`}</Button>
-            </div> */}
             <Typography>{message}</Typography>   
             <div style={{ display: 'flex' }}>
                 <div style={{ position: 'relative',
@@ -205,18 +192,6 @@ function LethalHexPlacer({ data, tableId, boardIds }) {
                             }}
                     ref={rootRef}
                     onClick={handleClick} />
-                    {
-                        currentFeatureToken && (
-                            <img src={`/assets/tokens/lethal.png`} 
-                                style={{
-                                    position: 'absolute',
-                                    zIndex: 500,
-                                    width: pointyTokenBaseWidth * scaleFactor,
-                                    top: currentFeatureToken.top + baseSize * scaleFactor / 2,
-                                    left: currentFeatureToken.left
-                                }} />
-                        )
-                    }
                     {
                         featureHexes && (
                             Object.values(featureHexes).map((hex, index, arr) => (
@@ -248,13 +223,12 @@ function LethalHexPlacer({ data, tableId, boardIds }) {
                         )
                     }
                 </div>
-            
             </div>     
-            <Button onClick={handleSave} disabled={data.step.waitingFor !== myself.uid} color="primary" variant="contained">
+            {/* <Button onClick={handleSave} disabled={data.step.waitingFor !== myself.uid} color="primary" variant="contained">
                 Save
-            </Button>
+            </Button> */}
         </div>
     )
 }
 
-export default LethalHexPlacer;
+export default GameRunner;

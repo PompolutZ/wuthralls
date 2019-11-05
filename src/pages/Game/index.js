@@ -10,6 +10,7 @@ import FirstBoardPicker from './FirstBoardPicker';
 import SecondBoardPicker from './SecondBoardPicker';
 import ObjectivePlacer from './ObjectivePlacer';
 import LethalHexPlacer from './LethalHexPlacer';
+import GameRunner from './GameRunner';
 
 function shuffle(a) {
     var j, x, i;
@@ -114,6 +115,8 @@ function Game() {
             return <ObjectivePlacer data={gameData} tableId={gameData.id} boardIds={{ first: gameData.firstBoard, second: gameData.secondBoard }} fullBoard={gameData.fullBoard} />                    
         case 'PLACE_LETHAL':
             return <LethalHexPlacer data={{...gameData, id: tableId }} />
+        case 'INITIATIVE_ROLL_FOR_FIGHTERS_PLACEMENT':
+            return <GameRunner data={{...gameData, id: tableId }} />
         default: 
             return (
                 <div>

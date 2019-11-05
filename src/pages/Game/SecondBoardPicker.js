@@ -178,16 +178,6 @@ function SecondBoardPicker({ data, tableId }) {
                 },
             ]);
 
-            // const customLethalHexes = shuffle([
-            //     {
-            //         type: 'LETHAL',
-            //         number: 1,
-            //     },
-            //     {
-            //         type: 'LETHAL',
-            //         number: 2,
-            //     },
-            // ]);
 
             const nextActiveStep = {
                 type: 'PLACE_FEATURE',

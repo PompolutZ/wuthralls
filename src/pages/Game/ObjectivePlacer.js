@@ -126,7 +126,7 @@ function ObjectivePlacer({ data, tableId, boardIds }) {
         if(Object.keys(featuresToPlace).length === 0) {
             console.log('No more objectives to place');
             await firebase.addFeatureHex(data.id, data.step.featureIndex, currentFeatureToken);
-            
+
             const customLethalHexes = shuffle([
                 {
                     type: 'LETHAL',
@@ -196,71 +196,74 @@ function ObjectivePlacer({ data, tableId, boardIds }) {
             {/* <div>
                 <Button variant="contained" onClick={handleShiftBottomBoardLeft}>{`<-`}</Button>
             </div> */}
-            <Typography>{message}</Typography>        
-            <div style={{ position: 'relative',
-                            width: baseBoardWidth / scaleDownBy, 
-                            height: (baseBoardHeight / scaleDownBy) * 2, 
-                            margin: '1rem',
-                         }}>
-                <img src={`/assets/boards/${data.firstBoard}.jpg`} alt="board" style={{ width: baseBoardWidth / scaleDownBy, height: baseBoardHeight / scaleDownBy, position: 'absolute', zIndex: '1' }} />
-                <img src={`/assets/boards/${data.secondBoard}.jpg`} alt="board2" style={{ 
-                    width: baseBoardWidth / scaleDownBy, 
-                    height: baseBoardHeight / scaleDownBy, 
-                    position: 'absolute', 
-                    zIndex: '1',
-                    top: baseBoardHeight / scaleDownBy,
-                    left: 0 }} />
-                <div style={{ position: 'absolute',
-                            width: baseBoardWidth / scaleDownBy, 
-                            height: (baseBoardHeight / scaleDownBy) * 2, 
-                            zIndex: 1000,
-                         }}
-                ref={rootRef}
-                onClick={handleClick} />
-                {
-                    currentFeatureToken && (
-                        <img src={`/assets/tokens/feature_back.png`} 
-                            style={{
-                                position: 'absolute',
-                                zIndex: 500,
-                                width: pointyTokenBaseWidth * scaleFactor,
-                                top: currentFeatureToken.top + baseSize * scaleFactor / 2,
-                                left: currentFeatureToken.left
-                            }} />
-                    )
-                }
-                {
-                    featureHexes && (
-                        Object.values(featureHexes).map((hex, index, arr) => (
-                            <img key={index} 
-                                src={arr.length < 5 ? `/assets/tokens/feature_back.png` : `/assets/tokens/feature_front_${hex.number}.png`} 
+            <Typography>{message}</Typography>   
+            <div style={{ display: 'flex' }}>
+                <div style={{ position: 'relative',
+                                width: baseBoardWidth / scaleDownBy, 
+                                height: (baseBoardHeight / scaleDownBy) * 2, 
+                                margin: '2rem',
+                                overflow: 'scroll',
+                            }}>
+                    <img src={`/assets/boards/${data.firstBoard}.jpg`} alt="board" style={{ width: baseBoardWidth / scaleDownBy, height: baseBoardHeight / scaleDownBy, position: 'absolute', zIndex: '1' }} />
+                    <img src={`/assets/boards/${data.secondBoard}.jpg`} alt="board2" style={{ 
+                        width: baseBoardWidth / scaleDownBy, 
+                        height: baseBoardHeight / scaleDownBy, 
+                        position: 'absolute', 
+                        zIndex: '1',
+                        top: baseBoardHeight / scaleDownBy,
+                        left: 0 }} />
+                    <div style={{ position: 'absolute',
+                                width: baseBoardWidth / scaleDownBy, 
+                                height: (baseBoardHeight / scaleDownBy) * 2, 
+                                zIndex: 1000,
+                            }}
+                    ref={rootRef}
+                    onClick={handleClick} />
+                    {
+                        currentFeatureToken && (
+                            <img src={`/assets/tokens/feature_back.png`} 
                                 style={{
                                     position: 'absolute',
                                     zIndex: 500,
                                     width: pointyTokenBaseWidth * scaleFactor,
-                                    top: hex.top + baseSize * scaleFactor / 2,
-                                    left: hex.left
+                                    top: currentFeatureToken.top + baseSize * scaleFactor / 2,
+                                    left: currentFeatureToken.left
                                 }} />
-                        ))
-                    )
-                }
-                {
-                    lethalHexes && (
-                        Object.values(lethalHexes).map((hex, index) => (
-                            <img key={index} 
-                                src={`/assets/tokens/lethal.png`} 
-                                style={{
-                                    position: 'absolute',
-                                    zIndex: 500,
-                                    width: pointyTokenBaseWidth * scaleFactor,
-                                    top: hex.top + baseSize * scaleFactor / 2,
-                                    left: hex.left
-                                }} />
-                        ))
-                    )
-                }
-                
-            </div>
+                        )
+                    }
+                    {
+                        featureHexes && (
+                            Object.values(featureHexes).map((hex, index, arr) => (
+                                <img key={index} 
+                                    src={arr.length < 5 ? `/assets/tokens/feature_back.png` : `/assets/tokens/feature_front_${hex.number}.png`} 
+                                    style={{
+                                        position: 'absolute',
+                                        zIndex: 500,
+                                        width: pointyTokenBaseWidth * scaleFactor,
+                                        top: hex.top + baseSize * scaleFactor / 2,
+                                        left: hex.left
+                                    }} />
+                            ))
+                        )
+                    }
+                    {
+                        lethalHexes && (
+                            Object.values(lethalHexes).map((hex, index) => (
+                                <img key={index} 
+                                    src={`/assets/tokens/lethal.png`} 
+                                    style={{
+                                        position: 'absolute',
+                                        zIndex: 500,
+                                        width: pointyTokenBaseWidth * scaleFactor,
+                                        top: hex.top + baseSize * scaleFactor / 2,
+                                        left: hex.left
+                                    }} />
+                            ))
+                        )
+                    }
+                    
+                </div>
+            </div>     
             <Button onClick={handleSave} disabled={data.step.waitingFor !== myself.uid} color="primary" variant="contained">
                 Save
             </Button>

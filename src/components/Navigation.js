@@ -30,7 +30,7 @@ function NavigationAuth({ authUser }) {
                 </li>
             </ul>
             <div>{authUser.uid}</div>   
-            <div>ver 1</div> 
+            <div>ver 1.1</div> 
         </div>
     )
 }
