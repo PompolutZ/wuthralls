@@ -178,23 +178,23 @@ function SecondBoardPicker({ data, tableId }) {
                 },
             ]);
 
-            const customLethalHexes = shuffle([
-                {
-                    type: 'LETHAL',
-                    number: 1,
-                },
-                {
-                    type: 'LETHAL',
-                    number: 2,
-                },
-            ]);
+            // const customLethalHexes = shuffle([
+            //     {
+            //         type: 'LETHAL',
+            //         number: 1,
+            //     },
+            //     {
+            //         type: 'LETHAL',
+            //         number: 2,
+            //     },
+            // ]);
 
             const nextActiveStep = {
                 type: 'PLACE_FEATURE',
                 waitingFor: data.playerPickedFirst,
                 nextPlayer: data.waitingFor,
                 featureIndex: 0,
-                featuresToPlace: [...objectiveHexes, ...customLethalHexes].reduce((result, hex, index) => ({...result, [index]: hex }), {}),
+                featuresToPlace: objectiveHexes.reduce((result, hex, index) => ({...result, [index]: hex }), {}),
             };
     
             await firebase.updateTable({

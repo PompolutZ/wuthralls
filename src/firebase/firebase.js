@@ -179,11 +179,22 @@ class Firebase {
         }
     }
 
-    addHex = async (tableId, index, payload) => {
+    addFeatureHex = async (tableId, index, payload) => {
         try {
             const ref = this.fstore.collection("tables").doc(tableId);
             await ref.update({
-                [`hexes.${index}`]: payload
+                [`featureHexes.${index}`]: payload
+            })
+        } catch(error) {
+            console.error(error);
+        }
+    }
+
+    addLethalHex = async (tableId, index, payload) => {
+        try {
+            const ref = this.fstore.collection("tables").doc(tableId);
+            await ref.update({
+                [`lethalHexes.${index}`]: payload
             })
         } catch(error) {
             console.error(error);

@@ -6,6 +6,7 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
 import { useAuthUser } from '../../components/Session';
 import { FirebaseContext } from '../../firebase';
 import Typography from '@material-ui/core/Typography';
+import { useHistory } from 'react-router-dom';
 import Table from './Table';
 
 const useStyles = makeStyles(theme => ({
@@ -19,6 +20,7 @@ function Tables() {
     const authUser = useAuthUser();
     const firebase = useContext(FirebaseContext);
     const [tables, setTables] = useState(null);
+    const history = useHistory();
 
     useEffect(() => {
         const unsubscribe = firebase.setTablesListener(snapshot => {
@@ -48,7 +50,8 @@ function Tables() {
             },
         };
         
-        await firebase.addTable(tableData);
+        const tableId = await firebase.addTable(tableData);
+        history.push(`v1/table/${tableId}/prepare`, {...tableData, id: tableId});
     }
 
     return (

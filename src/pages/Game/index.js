@@ -5,11 +5,11 @@ import { FirebaseContext } from '../../firebase';
 import { Typography, Button } from '@material-ui/core';
 
 import InitiativeRollMaker from './InitiativeRollMaker';
-
-const BoardSelectionOrderChooser = lazy(() => import('./BoardSelectionOrderChooser'))
-const FirstBoardPicker = lazy(() => import('./FirstBoardPicker'))
-const SecondBoardPicker = lazy(() => import('./SecondBoardPicker'))
-const ObjectivePlacer = lazy(() => import('./ObjectivePlacer'))
+import BoardSelectionOrderChooser from './BoardSelectionOrderChooser';
+import FirstBoardPicker from './FirstBoardPicker';
+import SecondBoardPicker from './SecondBoardPicker';
+import ObjectivePlacer from './ObjectivePlacer';
+import LethalHexPlacer from './LethalHexPlacer';
 
 function shuffle(a) {
     var j, x, i;
@@ -105,29 +105,15 @@ function Game() {
         case 'INITIATIVE_ROLL_FOR_BOARDS_SETUP':
             return <InitiativeRollMaker data={gameData.step} tableId={gameData.id} />
         case 'CHOOSE_BOARD_SELECTION_ORDER': 
-            return (
-                <React.Suspense fallback={() => (<div>Loading...</div>)}>
-                    <BoardSelectionOrderChooser data={gameData.step} tableId={gameData.id} />
-                </React.Suspense>
-            )
+            return <BoardSelectionOrderChooser data={gameData.step} tableId={gameData.id} />
         case 'PICK_FIRST_BOARD':
-            return (
-                <React.Suspense fallback={() => (<div>Loading...</div>)}>
-                    <FirstBoardPicker data={gameData.step} tableId={gameData.id} />                    
-                </React.Suspense>
-            )
+            return <FirstBoardPicker data={gameData.step} tableId={gameData.id} />
         case 'PICK_SECOND_BOARD':
-            return (
-                <React.Suspense fallback={() => (<div>Loading...</div>)}>
-                    <SecondBoardPicker data={gameData.step} tableId={gameData.id} />                    
-                </React.Suspense>
-            )
+            return <SecondBoardPicker data={gameData.step} tableId={gameData.id} />
         case 'PLACE_FEATURE':
-            return (
-                <React.Suspense fallback={() => (<div>Loading...</div>)}>
-                    <ObjectivePlacer data={{...gameData}} tableId={gameData.id} boardIds={{ first: gameData.firstBoard, second: gameData.secondBoard }} fullBoard={gameData.fullBoard} />                    
-                </React.Suspense>
-            )
+            return <ObjectivePlacer data={gameData} tableId={gameData.id} boardIds={{ first: gameData.firstBoard, second: gameData.secondBoard }} fullBoard={gameData.fullBoard} />                    
+        case 'PLACE_LETHAL':
+            return <LethalHexPlacer data={{...gameData, id: tableId }} />
         default: 
             return (
                 <div>

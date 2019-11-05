@@ -22,7 +22,7 @@ function shuffle(a) {
     return a;
 }
 
-function ObjectivePlacer({ data, tableId, boardIds }) {
+function LethalHexPlacer({ data, tableId, boardIds }) {
     const baseBoardWidth = 757;
     const baseBoardHeight = 495;
     const baseSize = 55;
@@ -95,6 +95,7 @@ function ObjectivePlacer({ data, tableId, boardIds }) {
         const initGrid = Grid(parsedBoard.hexes);
         initGrid.forEach(hex => hex.render(svg, 'white'));
         setGrid(initGrid);
+
         setFeatureHexes(data.featureHexes || null);
         setLethalHexes(data.lethalHexes || null);
     }, [])
@@ -105,14 +106,14 @@ function ObjectivePlacer({ data, tableId, boardIds }) {
 
     useEffect(() => {
         if (data.step.waitingFor === myself.uid) {
-            setMessage('Select hex to place feature token. Click Save when you are done.');
+            setMessage('Select hex to place lethal hex token. Click Save when you are done.');
         } else {
-            setMessage('Your opponent is placing feature token...');
+            setMessage('Your opponent is placing lethal hex token...');
         }
         
         setFeatureHexes(data.featureHexes || null);
         setLethalHexes(data.lethalHexes || null);
-
+        
         setCurrentFeatureToken(
             { ...data.step.featuresToPlace[data.step.featureIndex], top: 0, left: 0, }
         )
@@ -123,39 +124,13 @@ function ObjectivePlacer({ data, tableId, boardIds }) {
         delete featuresToPlace[data.step.featureIndex];
         console.log('SAVE', currentFeatureToken, featuresToPlace);
 
-        if(Object.keys(featuresToPlace).length === 0) {
-            console.log('No more objectives to place');
-            await firebase.addFeatureHex(data.id, data.step.featureIndex, currentFeatureToken);
-            
-            const customLethalHexes = shuffle([
-                {
-                    type: 'LETHAL',
-                    number: 1,
-                },
-                {
-                    type: 'LETHAL',
-                    number: 2,
-                },
-            ]);
-
-            const nextActiveStep = {
-                type: 'PLACE_LETHAL',
-                waitingFor: data.step.waitingFor,
-                nextPlayer: data.step.nextPlayer,
-                featureIndex: 0,
-                featuresToPlace: customLethalHexes.reduce((result, hex, index) => ({...result, [index]: hex }), {}),
-            };
-    
-            await firebase.updateTable({
-                step: nextActiveStep
-            }, tableId);
-
-        } else {
-            await firebase.addFeatureHex(data.id, data.step.featureIndex, currentFeatureToken);
+        if(Object.keys(featuresToPlace).length > 0) {
+            console.log('DATA:SAVE', data);
+            await firebase.addLethalHex(data.id, data.step.featureIndex, currentFeatureToken);
 
             console.log(data.step);
             const nextActiveStep = {
-                type: 'PLACE_FEATURE',
+                type: 'PLACE_LETHAL',
                 waitingFor: data.step.nextPlayer,
                 nextPlayer: data.step.waitingFor,
                 featureIndex: data.step.featureIndex + 1,
@@ -164,7 +139,9 @@ function ObjectivePlacer({ data, tableId, boardIds }) {
     
             await firebase.updateTable({
                 step: nextActiveStep
-            }, tableId);
+            }, data.id);
+        } else {
+            console.log('No more lethals to place');
         }
     }
 
@@ -219,7 +196,7 @@ function ObjectivePlacer({ data, tableId, boardIds }) {
                 onClick={handleClick} />
                 {
                     currentFeatureToken && (
-                        <img src={`/assets/tokens/feature_back.png`} 
+                        <img src={`/assets/tokens/lethal.png`} 
                             style={{
                                 position: 'absolute',
                                 zIndex: 500,
@@ -259,16 +236,12 @@ function ObjectivePlacer({ data, tableId, boardIds }) {
                         ))
                     )
                 }
-                
             </div>
             <Button onClick={handleSave} disabled={data.step.waitingFor !== myself.uid} color="primary" variant="contained">
                 Save
             </Button>
-            {/* <div>
-                <Button variant="contained" onClick={handleShiftBottomBoardRight}>{`->`}</Button>
-            </div> */}
         </div>
     )
 }
 
-export default ObjectivePlacer;
+export default LethalHexPlacer;
