@@ -1,3 +1,5 @@
+import { dreadfaneDb } from "./dreadfane_db"
+
 export const factions = {
     // "universal" : "Universal",
     // "garreks-reavers" : "Garrek's Reavers",
@@ -39,4 +41,8 @@ export const boards = {
     2: {
         name: `Katophrane's Reliquary`
     },
+}
+
+export const cardsDb = {
+    ...dreadfaneDb
 }

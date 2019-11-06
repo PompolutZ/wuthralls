@@ -47,10 +47,21 @@ function Prepare() {
     }
 
     const handleReadyClick = async () => {
+        console.log(selectedFaction);
+        const objectiveDeck = selectedFaction === 'ironsouls-condemners' 
+            ? new Array(12).fill(1).map((x, i) => `0${x + i + 5000}`)
+            : new Array(12).fill(33).map((x, i) => `0${x + i + 5000}`);
+
+        const powerDeck = selectedFaction === 'ironsouls-condemners' 
+            ? new Array(20).fill(13).map((x, i) => `0${x + i + 5000}`)
+            : new Array(20).fill(33 + 12).map((x, i) => `0${x + i + 5000}`)
+            
         const myUpdatedData = {
             ...myData,
             state: 'READY',
-            faction: selectedFaction
+            faction: selectedFaction,
+            objectiveDeck: objectiveDeck,
+            powerDeck: powerDeck,
         }
 
         await firebase.updatePlayerInfo(state.id, myself.uid, myUpdatedData);

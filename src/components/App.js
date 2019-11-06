@@ -13,6 +13,9 @@ import * as ROUTES from '../constants/routes'
 import Tables from '../pages/Tables'
 import Prepare from '../pages/Prepare'
 import Game from '../pages/Game'
+import InteractiveBoard from '../pages/InteractiveBoard'
+import Rooms from '../pages/Rooms'
+import Room from '../pages/Room'
 
 function App() {
     return (
@@ -22,18 +25,21 @@ function App() {
 
                 <hr />
 
-                <Route exact path={ROUTES.LANDING} component={Tables} />
+                <Route exact path={ROUTES.LANDING} component={Rooms} />
                 <Route path={ROUTES.SIGN_UP} component={SignUpPage} />
                 <Route path={ROUTES.SIGN_IN} component={SignInPage} />
                 <Route
                     path={ROUTES.PASSWORD_FORGET}
                     component={PasswordForget}
                 />
-                <Route path={ROUTES.HOME} component={Home} />
+                {/* <Route path={ROUTES.HOME} component={Home} /> */}
                 <Route path={ROUTES.ACCOUNT} component={Account} />
                 <Route path={ROUTES.ADMIN} component={Admin} />
                 <Route path="/:version/table/:tableId/prepare" component={Prepare} />
                 <Route path="/:version/game/:tableId" component={Game} />
+                <Route path="/playground" component={InteractiveBoard} />
+                <Route path="/:version/room/:roomId" component={Room} />
+                
             </div>
         </Router>
     )

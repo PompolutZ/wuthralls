@@ -4,10 +4,17 @@ import './index.css';
 import App from './components/App';
 // import * as serviceWorker from './serviceWorker';
 import Firebase, { FirebaseContext } from './firebase';
+import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
+
+const theme = createMuiTheme({
+
+})
 
 ReactDOM.render(
     <FirebaseContext.Provider value={new Firebase()}>
-        <App />
+        <ThemeProvider theme={theme}>
+            <App />
+        </ThemeProvider>
     </FirebaseContext.Provider>, 
     document.getElementById('root'));
 

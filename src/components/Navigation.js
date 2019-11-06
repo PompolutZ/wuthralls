@@ -10,14 +10,17 @@ function NavigationAuth({ authUser }) {
         <div>
             <ul>
                 <li>
-                    <Link to={ROUTES.LANDING}>Lobby</Link>
+                    <Link to={ROUTES.LANDING}>Rooms</Link>
                 </li>
-                <li>
+                {/* <li>
                     <Link to={ROUTES.HOME}>Home</Link>
                 </li>
                 <li>
                     <Link to={ROUTES.ACCOUNT}>Account</Link>
                 </li>
+                <li>
+                    <Link to="/playground">Playground</Link>
+                </li> */}
                 {
                     !!authUser.roles[ROLES.ADMIN] && (
                         <li>
@@ -37,9 +40,9 @@ function NavigationAuth({ authUser }) {
 
 const NavigationNonAuth = () => (
     <ul>
-        <li>
+        {/* <li>
             <Link to={ROUTES.LANDING}>Landing</Link>
-        </li>
+        </li> */}
         <li>
             <Link to={ROUTES.SIGN_IN}>Sign In</Link>
         </li>

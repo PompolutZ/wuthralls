@@ -68,6 +68,95 @@ class Firebase {
     
     users = () => this.db.ref(`users`);
 
+    // -------------------
+    // PLAYGROUND
+    // -------------------
+    addRoom = async payload => {
+        try {
+            console.log(payload);
+            const roomRef = await this.fstore.collection("rooms").add(payload);
+
+            const now = new Date();
+            await this.fstore.collection("messages").doc(roomRef.id).set({
+                [now.getTime()]: {
+                    author: 'Katophrane',
+                    type: 'INFO',
+                    created: now,
+                    value: `${payload.name} room was created by ${payload[payload.createdBy].name}`
+                }
+            });
+
+            return roomRef.id;
+        } catch(error) {
+            console.error('Error in addRoom: ', error);
+        }
+    }
+
+    listRooms = async () => {
+        try {
+            const list = await this.fstore.collection("rooms").get();
+            return list.docs.map(doc => ({ ...doc.data(), id: doc.id }));
+        } catch(error) {
+            console.log('listRooms', error);
+        }
+    }
+
+    setRoomsListener = onSnapshot => this.fstore.collection('rooms').onSnapshot(onSnapshot);
+    setMessagesListener = (roomId, handler) => this.fstore.collection('messages').doc(roomId).onSnapshot(handler);
+
+    addPlayerToRoom = async (roomId, playerId, playerInfo) => {
+        try {
+            const roomRef = this.fstore.collection("rooms").doc(roomId);
+
+            await roomRef.update({
+                players: this.firestoreArrayUnion(playerId),
+            });
+            await roomRef.update({
+                [playerId]: playerInfo
+            })
+
+            const now = new Date();
+            await this.fstore.collection("messages").doc(roomRef.id).update({
+                [now.getTime()]: {
+                    author: 'Katophrane',
+                    type: 'INFO',
+                    created: now,
+                    value: `${playerInfo.name} joined the room.`
+                }
+            });
+        } catch(error) {
+            console.error(error);
+        }
+    }
+
+    deleteRoom = async (id) => {
+        try {
+            await this.fstore.collection("rooms").doc(id).delete();
+            await this.fstore.collection("messages").doc(id).delete();
+        } catch(error) {
+            console.error('deleteTable', error);
+        }
+    }
+
+    addMessage = async (roomId, payload) => {
+        try {
+            console.log(payload);
+            const messagesRef = await this.fstore.collection("messages").doc(roomId);
+
+            const now = new Date();
+            await messagesRef.update({
+                [now.getTime()]: {
+                    author: payload.uid,
+                    type: 'CHAT',
+                    created: now,
+                    value: payload.value,
+                }
+            });
+        } catch(error) {
+            console.error('Error in addRoom: ', error);
+        }
+    }
+
     // FIRESTORE
     listTables = async () => {
         try {
