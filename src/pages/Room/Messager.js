@@ -70,7 +70,10 @@ function Messenger({ roomId, state }) {
             }
         });
 
-        return () => unsubscribe();
+        return () => {
+            unsubscribe();
+            console.log('UNLOADED');
+        };
     }, []);
 
     return (
@@ -78,10 +81,12 @@ function Messenger({ roomId, state }) {
             <Grid ref={containerRef} container spacing={0} className={classes.root}>
                 {
                     messages.length > 0 && messages.map((m, i, arr) => {
-                        if(m.type === 'CHAT') {
+                        if(m.type === 'CHAT' || m.type === 'INFO') {
                             return (
                                 <Grid id={arr.length - 1 === i ? 'lastMessage' : 'message'} item xs={12} key={m.created} className={classes.item} style={{ backgroundColor: m.author === 'Katophrane' ? 'rgba(0, 128, 128, .2)' : m.author === myself.uid ? 'rgba(255, 140, 0, .2)' : 'rgba(138, 43, 226, .2)' }}>
-                                    <Typography variant="body2">{`${m.author === 'Katophrane' ? m.author : Boolean(state[m.author]) ? state[m.author].name : m.author}:`}</Typography>
+                                    <div>
+                                        <Typography variant="body2">{`${m.author === 'Katophrane' ? m.author : Boolean(state[m.author]) ? state[m.author].name : m.author}:`}</Typography>
+                                    </div>
                                     <Typography>{m.value}</Typography>
                                 </Grid>                            
                             )

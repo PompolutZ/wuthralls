@@ -6,6 +6,8 @@ import AddCircleIcon from '@material-ui/icons/AddCircle';
 import SendMessageAction from './SendMessageAction';
 import DiceTray from '../../components/DiceTray';
 import RollDiceAction from './RollDiceAction';
+import LethalHexesPile from './LethalHexesPile';
+import ObjectiveHexesPile from './ObjectiveHexesPile';
 
 const actions = [
     {
@@ -15,10 +17,18 @@ const actions = [
     {
         type: 'ROLL_DICE',
         value: 'Roll dice',
-    }
+    },
+    {
+        type: 'PLACE_LETHAL_HEX',
+        value: 'Place Lethal Hex'
+    },
+    {
+        type: 'PLACE_FEATURE_HEX',
+        value: 'Place Feature Hex'
+    },
 ]
 
-export default function ActionsPalette({ roomId, }) {
+export default function ActionsPalette({ data, onSelectedElementChange }) {
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [selectedAction, setSelectedAction] = useState(actions[0].type);
 
@@ -45,6 +55,7 @@ export default function ActionsPalette({ roomId, }) {
                 right: 0,
                 width: '100%',
                 minHeight: '4rem',
+                zIndex: 10000,
                 backgroundColor: 'lightgray',
             }}
         >
@@ -77,12 +88,22 @@ export default function ActionsPalette({ roomId, }) {
             </Menu>
             {
                 selectedAction === 'SEND_MESSAGE' && (
-                    <SendMessageAction roomId={roomId} />
+                    <SendMessageAction roomId={data.id} />
                 )
             }
             {
                 selectedAction === 'ROLL_DICE' && (
-                    <RollDiceAction roomId={roomId} defaultAmount={4} />
+                    <RollDiceAction roomId={data.id} defaultAmount={4} />
+                )
+            }
+            {
+                selectedAction === 'PLACE_LETHAL_HEX' && (
+                    <LethalHexesPile onSelectedTokenChange={onSelectedElementChange} tokens={Object.entries(data.board.tokens).map(([id, value]) => ({...value, id: id})).filter(token => token.id.startsWith('Lethal'))} />
+                )
+            }
+            {
+                selectedAction === 'PLACE_FEATURE_HEX' && (
+                    <ObjectiveHexesPile onSelectedTokenChange={onSelectedElementChange} tokens={Object.entries(data.board.tokens).map(([id, value]) => ({...value, id: id})).filter(token => token.id.startsWith('Feature'))} />
                 )
             }
         </div>

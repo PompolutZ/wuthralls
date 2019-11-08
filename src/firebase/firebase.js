@@ -102,6 +102,7 @@ class Firebase {
     }
 
     setRoomsListener = onSnapshot => this.fstore.collection('rooms').onSnapshot(onSnapshot);
+    setRoomListener = (roomId, onSnapshot) => this.fstore.collection('rooms').doc(roomId).onSnapshot(onSnapshot);
     setMessagesListener = (roomId, handler) => this.fstore.collection('messages').doc(roomId).onSnapshot(handler);
 
     addPlayerToRoom = async (roomId, playerId, playerInfo) => {

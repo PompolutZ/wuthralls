@@ -45,12 +45,87 @@ function Rooms() {
     }  
 
     const handleAddNewRoom = async () => {
+    //     const objectiveDeck = selectedFaction === 'ironsouls-condemners' 
+    //     ? new Array(12).fill(1).map((x, i) => `0${x + i + 5000}`)
+    //     : new Array(12).fill(33).map((x, i) => `0${x + i + 5000}`);
+
+    // const powerDeck = selectedFaction === 'ironsouls-condemners' 
+    //     ? new Array(20).fill(13).map((x, i) => `0${x + i + 5000}`)
+    //     : new Array(20).fill(33 + 12).map((x, i) => `0${x + i + 5000}`)
+
         const payload = {
             name: roomName,
             createdBy: myself.uid,
+            board: {
+                topId: 1,
+                bottomId: 2,
+                orientation: 'pointy',
+                tokens: {
+                    'Lethal_1': {
+                        type: 'LETHAL_HEX',
+                        isOnBoard: false,
+                        from: {x: -1, y: -1},
+                        onBoard: {x: -1, y: -1}
+                    },
+                    'Lethal_2': {
+                        type: 'LETHAL_HEX',
+                        isOnBoard: false,
+                        from: {x: -1, y: -1},
+                        onBoard: {x: -1, y: -1}
+                    },
+                    'Feature_1': {
+                        type: 'FEATURE_HEX',
+                        number: 1,
+                        isRevealed: false,
+                        isLethal: true,
+                        isOnBoard: false,
+                        from: {x: -1, y: -1},
+                        onBoard: {x: -1, y: -1}
+                    },
+                    'Feature_2': {
+                        type: 'FEATURE_HEX',
+                        number: 2,
+                        isLethal: true,
+                        isRevealed: false,
+                        isOnBoard: false,
+                        from: {x: -1, y: -1},
+                        onBoard: {x: -1, y: -1}
+                    },
+                    'Feature_3': {
+                        type: 'FEATURE_HEX',
+                        number: 3,
+                        isLethal: true,
+                        isRevealed: false,
+                        isOnBoard: false,
+                        from: {x: -1, y: -1},
+                        onBoard: {x: -1, y: -1}
+                    },
+                    'Feature_4': {
+                        type: 'FEATURE_HEX',
+                        number: 4,
+                        isLethal: true,
+                        isRevealed: false,
+                        isOnBoard: false,
+                        from: {x: -1, y: -1},
+                        onBoard: {x: -1, y: -1}
+                    },
+                    'Feature_5': {
+                        type: 'FEATURE_HEX',
+                        number: 5,
+                        isLethal: true,
+                        isRevealed: false,
+                        isOnBoard: false,
+                        from: {x: -1, y: -1},
+                        onBoard: {x: -1, y: -1}
+                    },
+                }
+            },
             players: [myself.uid],
             [myself.uid]: {
-                name: myself.username
+                name: myself.username,
+                faction: 'ironsouls-condemners',
+                oDeck: new Array(12).fill(1).map((x, i) => `0${x + i + 5000}`),
+                pDeck: new Array(20).fill(13).map((x, i) => `0${x + i + 5000}`)
             }
         };
 
@@ -69,6 +144,9 @@ function Rooms() {
     const handleJoinRoom = room => async () => {
         const playerInfo = {
             name: myself.username,
+            faction: 'ironsouls-condemners',
+            oDeck: new Array(12).fill(1).map((x, i) => `0${x + i + 5000}`),
+            pDeck: new Array(20).fill(13).map((x, i) => `0${x + i + 5000}`)
         };
 
         await firebase.addPlayerToRoom(room.id, myself.uid, playerInfo);

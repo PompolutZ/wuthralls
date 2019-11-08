@@ -13,6 +13,7 @@ import Fade from '@material-ui/core/Fade';
 import Messenger from './Messager';
 import RoomActionMaker from './RoomActionMaker';
 import ActionsPalette from './ActionsPalette';
+import Board from './Board';
 
 const useStyles = makeStyles(theme => ({
     tabs: {
@@ -27,7 +28,24 @@ function Room() {
     const theme = useTheme();
     const isMd = useMediaQuery(theme.breakpoints.up('md'));
     const [tabIndex, setTabIndex] = React.useState(0);
-    
+    const [selectedElement, setSelectedElement] = useState(null);
+    const [data, setData] = useState(state);
+
+    useEffect(() => {
+        const unsubscribe = firebase.setRoomListener(state.id, snapshot => {
+            if(snapshot.exists) {
+                console.log('Room.OnServerUpdated', snapshot.data());
+                setData({...snapshot.data(), id: snapshot.id})
+            }
+        });
+
+        return () => unsubscribe();
+    }, []);
+
+    useEffect(() => {
+        console.log('Room.onSelectedElementChange', selectedElement);
+    }, [selectedElement]);
+
     const handleTabChange = (event, newValue) => {
         setTabIndex(newValue);
     }
@@ -41,6 +59,7 @@ function Room() {
                 showLabels>
                 {/* <BottomNavigationAction label="Actions" icon={<RestoreIcon />} /> */}
                 <BottomNavigationAction label="Messages" icon={<QuestionAnswerIcon />} />
+                <BottomNavigationAction label="Board" />
             </BottomNavigation>
             <Divider />                    
             {
@@ -48,7 +67,12 @@ function Room() {
                     <Messenger roomId={state.id} state={state} />
                 )
             }
-            <ActionsPalette roomId={state.id} />
+            {
+                tabIndex === 1 && (
+                    <Board roomId={state.id} state={state} selectedElement={selectedElement} />
+                )
+            }
+            <ActionsPalette data={data} onSelectedElementChange={setSelectedElement} />
             {/* <RoomActionMaker roomId={state.id} /> */}
         </div>
     )
