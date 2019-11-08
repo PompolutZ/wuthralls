@@ -157,6 +157,25 @@ class Firebase {
         }
     }
 
+    addDiceRoll = async (roomId, payload) => {
+        try {
+            console.log(payload);
+            const messagesRef = await this.fstore.collection("messages").doc(roomId);
+
+            const now = new Date();
+            await messagesRef.update({
+                [now.getTime()]: {
+                    author: payload.uid,
+                    type: 'DICE_ROLL',
+                    subtype: payload.type,
+                    created: now,
+                    value: payload.value,
+                }
+            });
+        } catch(error) {
+            console.error('Error in addRoom: ', error);
+        }
+    }
     // FIRESTORE
     listTables = async () => {
         try {

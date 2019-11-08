@@ -56,7 +56,7 @@ function DiceTray({ defaultAmount, onRollBeingMade, canReduce, canIncrease, roll
                     )
                 }
 
-                <Button onClick={handleRollClick} disabled={!canRoll}>
+                <Button onClick={handleRollClick} disabled={!canRoll}>  
                     Roll
                 </Button>
 

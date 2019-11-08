@@ -10,7 +10,9 @@ import RestoreIcon from '@material-ui/icons/Restore';
 import { makeStyles } from '@material-ui/core/styles';
 import { FirebaseContext } from '../../firebase';
 import Fade from '@material-ui/core/Fade';
-import Messager from './Messager';
+import Messenger from './Messager';
+import RoomActionMaker from './RoomActionMaker';
+import ActionsPalette from './ActionsPalette';
 
 const useStyles = makeStyles(theme => ({
     tabs: {
@@ -43,9 +45,11 @@ function Room() {
             <Divider />                    
             {
                 tabIndex === 0 && (
-                    <Messager roomId={state.id} players={state.players} />
+                    <Messenger roomId={state.id} state={state} />
                 )
             }
+            <ActionsPalette roomId={state.id} />
+            {/* <RoomActionMaker roomId={state.id} /> */}
         </div>
     )
 }
