@@ -31,6 +31,10 @@ function Rooms() {
 
     useEffect(() => {
         if(!rooms) return;
+        if(!myself) {
+            history.push('/signin');
+            return;
+        }
         console.log(rooms)
         setMyRooms(rooms.filter(r => r.players.includes(myself.uid)));
         setOtherRooms(rooms.filter(r => !r.players.includes(myself.uid)));
