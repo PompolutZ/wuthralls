@@ -1,6 +1,7 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useContext } from 'react';
 import { defineGrid, extendHex } from 'honeycomb-grid';
 import * as SVG from 'svg.js';
+import { FirebaseContext } from '../../firebase';
 
 export default function Board({ roomId, state, onBoardChange, selectedElement }) {
     const baseBoardWidth = 757;
@@ -10,12 +11,16 @@ export default function Board({ roomId, state, onBoardChange, selectedElement })
     const scaleDownBy = 2;
     const scaleFactor = .5;
 
+    const firebase = useContext(FirebaseContext);
     const rootRef = useRef(null);
     const [selectedBoardElement, setSelectedBoardElement] = useState(selectedElement);
     const [svg, setSvg] = React.useState(null);
     const [grid, setGrid] = React.useState(null);
-    const [featureHexes, setFeatureHexes] = useState(null);
-    const [lethalHexes, setLethalHexes] = useState(null);
+    const [tokenHexes, setTokenHexes] = useState(state.board.tokens);
+    // const [featureHexes, setFeatureHexes] = useState(tokens.filter(t => t.id.startsWith('Feature')));
+    // const [lethalHexes, setLethalHexes] = useState(tokens.filter(t => t.id.startsWith('Lethal')));
+    const [selectedToken, setSelectedToken] = useState(null);
+    const [selectedTokenId, setSelectedTokenId] = useState(null);
     const [hexPrototype, setHexPrototype] = React.useState(
         {
             baseSize: baseSize,
@@ -87,8 +92,42 @@ export default function Board({ roomId, state, onBoardChange, selectedElement })
     useEffect(() => {
         if(!selectedElement) return;
 
-        console.log('Board.OnSelectedElementChange', selectedElement);
+        console.log('Board.OnSelectedElementChange', selectedElement.id);
+        // setSelectedToken(selectedElement);
+        setSelectedTokenId(selectedElement.id);
     }, [selectedElement]);
+
+    useEffect(() => {
+        // if(!featureHexes || !selectedToken) return;
+        if(!tokenHexes || !selectedToken) return;
+        setTokenHexes({
+            ...tokenHexes,
+            [selectedToken.id]: {
+                ...tokenHexes[selectedToken.id],
+                ...selectedToken,
+            }
+        })
+
+        // const fHexes = featureHexes.filter(h => h.id !== selectedToken.id);
+        // setFeatureHexes([...fHexes, selectedToken]);
+    }, [selectedToken])
+
+    useEffect(() => {
+        const featureTokens = Object.entries(tokenHexes).filter(([k, v]) => {
+            return k.startsWith('Feature') && v.isOnBoard && !v.isRevealed;
+        });
+
+        if(featureTokens.length < 5) return;
+
+        const update = {
+            ...tokenHexes,
+            ...featureTokens.reduce((r, [k, v]) => ({...r, [k]: {...v, isRevealed: true }}), {})
+        };
+        setTokenHexes(update);
+
+        console.log('TOKEN HEXES', tokenHexes);
+        firebase.updateBoardProperty(state.id, 'board.tokens', update);
+    }, [tokenHexes]);
 
     const handleClick = e => {
         const { offsetX, offsetY } = e.nativeEvent;
@@ -98,6 +137,19 @@ export default function Board({ roomId, state, onBoardChange, selectedElement })
             hex.highlight(svg);
             const {x, y} = hex.toPoint();
             console.log(offsetX, offsetY, hex.toPoint(), hexCoordinates)
+            if(selectedTokenId) {
+                console.log('Hello!')
+                setTokenHexes({
+                    ...tokenHexes,
+                    [selectedTokenId]: {
+                        ...tokenHexes[selectedTokenId],
+                        isOnBoard: true,
+                        onBoard: { x: hexCoordinates.x, y: hexCoordinates.y },
+                        top: y,
+                        left: x,                
+                    }
+                })
+        }
             // setCurrentFeatureToken({
             //     ...currentFeatureToken,
             //     top: y,
@@ -165,38 +217,85 @@ export default function Board({ roomId, state, onBoardChange, selectedElement })
                         }}
                     />
                 )} */}
-                {featureHexes &&
-                    Object.values(featureHexes).map((hex, index, arr) => (
-                        <img
-                            key={index}
-                            src={
-                                arr.length < 5
-                                    ? `/assets/tokens/feature_back.png`
-                                    : `/assets/tokens/feature_front_${hex.number}.png`
-                            }
-                            style={{
-                                position: 'absolute',
-                                zIndex: 500,
-                                width: pointyTokenBaseWidth * scaleFactor,
-                                top: hex.top + (baseSize * scaleFactor) / 2,
-                                left: hex.left,
-                            }}
-                        />
-                    ))}
+                {
+                    tokenHexes && Object.entries(tokenHexes).map(([k, hex], index) => {
+                        if(k.startsWith('Lethal') && hex.isOnBoard) {
+                            return (
+                                <img
+                                    key={k}
+                                    src={`/assets/tokens/lethal.png`}
+                                    style={{
+                                        position: 'absolute',
+                                        zIndex: 500,
+                                        width: pointyTokenBaseWidth * scaleFactor,
+                                        top: hex.top + (baseSize * scaleFactor) / 2,
+                                        left: hex.left,
+                                    }}
+                                />
+                            );
+                        }
+
+                        if(k.startsWith('Feature') && hex.isOnBoard) {
+                            return (
+                                <img
+                                    key={k}
+                                    src={
+                                        !hex.isRevealed
+                                            ? `/assets/tokens/feature_back.png`
+                                            : `/assets/tokens/feature_front_${hex.number}.png`
+                                    }
+                                    style={{
+                                        position: 'absolute',
+                                        zIndex: 500,
+                                        width: pointyTokenBaseWidth * scaleFactor,
+                                        top: hex.top + (baseSize * scaleFactor) / 2,
+                                        left: hex.left,
+                                    }}
+                                />
+                            )
+                        }
+                    })
+                }
+                {/* {featureHexes &&
+                    featureHexes.map((hex, index, arr) => {
+                        if (hex.isOnBoard) {
+                            return (
+                                <img
+                                    key={index}
+                                    src={
+                                        !hex.isRevealed
+                                            ? `/assets/tokens/feature_back.png`
+                                            : `/assets/tokens/feature_front_${hex.number}.png`
+                                    }
+                                    style={{
+                                        position: 'absolute',
+                                        zIndex: 500,
+                                        width: pointyTokenBaseWidth * scaleFactor,
+                                        top: hex.top + (baseSize * scaleFactor) / 2,
+                                        left: hex.left,
+                                    }}
+                                />
+                            )
+                        }
+                    })}
                 {lethalHexes &&
-                    Object.values(lethalHexes).map((hex, index) => (
-                        <img
-                            key={index}
-                            src={`/assets/tokens/lethal.png`}
-                            style={{
-                                position: 'absolute',
-                                zIndex: 500,
-                                width: pointyTokenBaseWidth * scaleFactor,
-                                top: hex.top + (baseSize * scaleFactor) / 2,
-                                left: hex.left,
-                            }}
-                        />
-                    ))}
+                    lethalHexes.map((hex, index) => {
+                        if(hex.isOnBoard) {
+                            return (
+                                <img
+                                    key={index}
+                                    src={`/assets/tokens/lethal.png`}
+                                    style={{
+                                        position: 'absolute',
+                                        zIndex: 500,
+                                        width: pointyTokenBaseWidth * scaleFactor,
+                                        top: hex.top + (baseSize * scaleFactor) / 2,
+                                        left: hex.left,
+                                    }}
+                                />
+                            );
+                        }
+                    })} */}
             </div>
         </div>
     );

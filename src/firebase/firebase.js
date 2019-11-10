@@ -101,6 +101,17 @@ class Firebase {
         }
     }
 
+    updateBoardProperty = async (roomId, path, payload) => {
+        try {
+            const roomRef = await this.fstore.collection("rooms").doc(roomId);
+            await roomRef.update({
+                [path]: payload
+            });
+        } catch(error) {
+            console.log('updateBoardProperty', error);
+        }
+    }
+
     setRoomsListener = onSnapshot => this.fstore.collection('rooms').onSnapshot(onSnapshot);
     setRoomListener = (roomId, onSnapshot) => this.fstore.collection('rooms').doc(roomId).onSnapshot(onSnapshot);
     setMessagesListener = (roomId, handler) => this.fstore.collection('messages').doc(roomId).onSnapshot(handler);
