@@ -1,4 +1,4 @@
-import React, { useEffect, useContext, useState } from 'react';
+import React, { useEffect, useContext, useState, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import BottomNavigation from '@material-ui/core/BottomNavigation';
 import BottomNavigationAction from '@material-ui/core/BottomNavigationAction';
@@ -30,6 +30,8 @@ function Room() {
     const [tabIndex, setTabIndex] = React.useState(0);
     const [selectedElement, setSelectedElement] = useState(null);
     const [data, setData] = useState(state);
+    const navigationRef = useRef(null);
+    const [stickHeader, setStickHeader] = useState(false);
 
     useEffect(() => {
         const unsubscribe = firebase.setRoomListener(state.id, snapshot => {
@@ -38,6 +40,15 @@ function Room() {
                 setData({...snapshot.data(), id: snapshot.id})
             }
         });
+
+        window.onscroll = () => {
+            console.log('scrolling', navigationRef.current.offsetTop);
+            if(window.pageYOffset > navigationRef.current.offsetTop) {
+                setStickHeader(true);
+            } else {
+                setStickHeader(false);
+            }
+        }
 
         return () => unsubscribe();
     }, []);
@@ -53,10 +64,18 @@ function Room() {
     return (
         <div>
             <BottomNavigation
+                ref={navigationRef}
                 className={classes.tabs}
                 value={tabIndex}
                 onChange={handleTabChange}
-                showLabels>
+                showLabels
+                style={
+                    stickHeader ? {
+                        position: 'fixed',
+                        top: 0,
+                        width: '100%'
+                    } : {}
+                }>
                 {/* <BottomNavigationAction label="Actions" icon={<RestoreIcon />} /> */}
                 <BottomNavigationAction label="Messages" icon={<QuestionAnswerIcon />} />
                 <BottomNavigationAction label="Board" />
