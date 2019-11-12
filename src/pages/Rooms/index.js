@@ -60,6 +60,32 @@ function Rooms() {
                 topId: 1,
                 bottomId: 2,
                 orientation: 'pointy',
+                fighters: {
+                    [`${myself.uid}_F1`]: {
+                        type: 'FIGHTER',
+                        icon: 'ironsouls-condemners-f1',
+                        from: {x: -1, y: -1},
+                        onBoard: {x: -1, y: -1},
+                        isOnBoard: false,
+                        isInspired: false,
+                    },
+                    [`${myself.uid}_F2`]: {
+                        type: 'FIGHTER',
+                        icon: 'ironsouls-condemners-f2',
+                        from: {x: -1, y: -1},
+                        onBoard: {x: -1, y: -1},
+                        isOnBoard: false,
+                        isInspired: false,
+                    },
+                    [`${myself.uid}_F3`]: {
+                        type: 'FIGHTER',
+                        icon: 'ironsouls-condemners-f3',
+                        from: {x: -1, y: -1},
+                        onBoard: {x: -1, y: -1},
+                        isOnBoard: false,
+                        isInspired: false,
+                    },
+                },
                 tokens: {
                     'Lethal_1': {
                         type: 'LETHAL_HEX',
@@ -149,7 +175,33 @@ function Rooms() {
             pDeck: new Array(20).fill(13).map((x, i) => `0${x + i + 5000}`)
         };
 
-        await firebase.addPlayerToRoom(room.id, myself.uid, playerInfo);
+        const warband = [
+            {
+                type: 'FIGHTER',
+                icon: 'ironsouls-condemners-f1',
+                from: {x: -1, y: -1},
+                onBoard: {x: -1, y: -1},
+                isOnBoard: false,
+                isInspired: false,
+            }, {
+                type: 'FIGHTER',
+                icon: 'ironsouls-condemners-f2',
+                from: {x: -1, y: -1},
+                onBoard: {x: -1, y: -1},
+                isOnBoard: false,
+                isInspired: false,
+            },
+            {
+                type: 'FIGHTER',
+                icon: 'ironsouls-condemners-f3',
+                from: {x: -1, y: -1},
+                onBoard: {x: -1, y: -1},
+                isOnBoard: false,
+                isInspired: false,
+            },            
+        ]
+
+        await firebase.addPlayerToRoom(room.id, myself.uid, playerInfo, {...room.board.fighters, ...warband.reduce((r, f, i) => ({...r, [`${myself.uid}_F${i + 1}`]: f}), {})});
     }
 
     return (
@@ -207,7 +259,7 @@ function Rooms() {
                                             <Typography>{r.name}</Typography>
                                         </Grid>
                                         <Grid item xs={12}>
-                                            <Button onClick={handleJoinRoom(r)}>Join</Button>
+                                            <Button onClick={handleJoinRoom(r)} disabled={!(r.players.length < 2)}>Join</Button>
                                         </Grid>
                                     </Grid>
                                 ))

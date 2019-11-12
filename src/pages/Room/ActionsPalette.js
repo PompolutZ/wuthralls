@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import ButtonBase from '@material-ui/core/ButtonBase';
@@ -8,6 +8,8 @@ import DiceTray from '../../components/DiceTray';
 import RollDiceAction from './RollDiceAction';
 import LethalHexesPile from './LethalHexesPile';
 import ObjectiveHexesPile from './ObjectiveHexesPile';
+import Warband from './Warband';
+import { useAuthUser } from '../../components/Session';
 
 const actions = [
     {
@@ -26,11 +28,17 @@ const actions = [
         type: 'PLACE_FEATURE_HEX',
         value: 'Place Feature Hex'
     },
+    {
+        type: 'WARBAND',
+        value: 'Warband',
+    }
 ]
 
-export default function ActionsPalette({ data, onSelectedElementChange }) {
+export default function ActionsPalette({ data, onSelectedElementChange, onActionTypeChange }) {
+    const myself = useAuthUser();
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [selectedAction, setSelectedAction] = useState(actions[0].type);
+    const actionsRootRef = useRef(null);
 
     const handleClick = event => {
         setAnchorEl(event.currentTarget);
@@ -39,6 +47,8 @@ export default function ActionsPalette({ data, onSelectedElementChange }) {
     const handleItemSelect = type => () => {
         setSelectedAction(type);
         setAnchorEl(null);
+        console.log('HERE', actionsRootRef.current.offsetHeight);
+        onActionTypeChange(actionsRootRef.current.offsetHeight);
     }
 
     const handleClose = () => {
@@ -46,7 +56,7 @@ export default function ActionsPalette({ data, onSelectedElementChange }) {
     };
 
     return (
-        <div
+        <div ref={actionsRootRef}
             style={{
                 position: 'fixed',
                 display: 'flex',
@@ -54,7 +64,7 @@ export default function ActionsPalette({ data, onSelectedElementChange }) {
                 bottom: 0,
                 right: 0,
                 width: '100%',
-                minHeight: '4rem',
+                minHeight: 95 * 1.2,
                 zIndex: 10000,
                 backgroundColor: 'lightgray',
             }}
@@ -104,6 +114,11 @@ export default function ActionsPalette({ data, onSelectedElementChange }) {
             {
                 selectedAction === 'PLACE_FEATURE_HEX' && (
                     <ObjectiveHexesPile onSelectedTokenChange={onSelectedElementChange} tokens={Object.entries(data.board.tokens).map(([id, value]) => ({...value, id: id})).filter(token => token.id.startsWith('Feature'))} />
+                )
+            }
+            {
+                selectedAction === 'WARBAND' && (
+                    <Warband onSelectedFighterChange={onSelectedElementChange} fighters={Object.entries(data.board.fighters).map(([id, value]) => ({...value, id: id})).filter(token => token.id.startsWith(myself.uid)) } />
                 )
             }
         </div>

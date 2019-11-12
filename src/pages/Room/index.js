@@ -32,6 +32,8 @@ function Room() {
     const [data, setData] = useState(state);
     const navigationRef = useRef(null);
     const [stickHeader, setStickHeader] = useState(false);
+    const [actionsPanelOffsetHeight, setActionsPanelOffsetHeight] = useState(4 * 16);
+
 
     useEffect(() => {
         const unsubscribe = firebase.setRoomListener(state.id, snapshot => {
@@ -42,11 +44,13 @@ function Room() {
         });
 
         window.onscroll = () => {
-            console.log('scrolling', navigationRef.current.offsetTop);
-            if(window.pageYOffset > navigationRef.current.offsetTop) {
-                setStickHeader(true);
-            } else {
-                setStickHeader(false);
+            if(navigationRef.current) {
+                console.log('scrolling', navigationRef.current.offsetTop);
+                if(window.pageYOffset > navigationRef.current.offsetTop) {
+                    setStickHeader(true);
+                } else {
+                    setStickHeader(false);
+                }
             }
         }
 
@@ -59,6 +63,10 @@ function Room() {
 
     const handleTabChange = (event, newValue) => {
         setTabIndex(newValue);
+    }
+
+    const handleActionTypeChange = offsetHeight  => {
+        setActionsPanelOffsetHeight(offsetHeight);
     }
 
     return (
@@ -81,17 +89,19 @@ function Room() {
                 <BottomNavigationAction label="Board" />
             </BottomNavigation>
             <Divider />                    
+            <div style={{ marginBottom: 95 * 1.3}}>
             {
                 tabIndex === 0 && (
-                    <Messenger roomId={state.id} state={state} />
+                    <Messenger roomId={state.id} state={data} />
                 )
             }
             {
                 tabIndex === 1 && (
-                    <Board roomId={state.id} state={state} selectedElement={selectedElement} />
+                    <Board roomId={state.id} state={data} selectedElement={selectedElement} />
                 )
             }
-            <ActionsPalette data={data} onSelectedElementChange={setSelectedElement} />
+            </div>
+            <ActionsPalette onActionTypeChange={handleActionTypeChange} data={data} onSelectedElementChange={setSelectedElement} />
             {/* <RoomActionMaker roomId={state.id} /> */}
         </div>
     )

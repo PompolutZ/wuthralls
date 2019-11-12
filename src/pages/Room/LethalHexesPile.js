@@ -20,11 +20,12 @@ export default function LethalHexesPile({ tokens, onSelectedTokenChange }) {
                 display: 'flex',
                 alignItems: 'flex-end',
                 margin: '.5rem',
+                overlow: 'scroll',
             }}
         >{
             tokens.map(token => (
                 <div key={token.id} style={{ marginRight: '1rem' }} onClick={handleTokenClick(token)}>
-                    <img src={`/assets/tokens/lethal.png`} style={{ width: selectedToken && selectedToken.id === token.id ? pointyTokenBaseWidth * .5 : pointyTokenBaseWidth * .4 }} />
+                    <img src={`/assets/tokens/lethal.png`} style={{ width: selectedToken && selectedToken.id === token.id ? pointyTokenBaseWidth * .8 : pointyTokenBaseWidth * .7 }} />
                 </div>
             ))
         }</div>

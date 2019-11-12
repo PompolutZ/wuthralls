@@ -5,8 +5,13 @@ export default function ObjectiveHexesPile({ tokens, onSelectedTokenChange }) {
     const [selectedToken, setSelectedToken] = useState(null);
 
     const handleTokenClick = token => () => {
-        setSelectedToken(token);
-        onSelectedTokenChange(token);
+        if(!selectedToken || selectedToken.id !== token.id) {
+            setSelectedToken(token);
+            onSelectedTokenChange(token);
+        } else  {
+            setSelectedToken(null);
+            onSelectedTokenChange(null);
+        }
     }
 
     useEffect(() => {
@@ -20,11 +25,12 @@ export default function ObjectiveHexesPile({ tokens, onSelectedTokenChange }) {
                 display: 'flex',
                 alignItems: 'flex-end',
                 margin: '.5rem',
+                overflow: 'scroll',
             }}
         >{
             tokens.map(token => (
                 <div key={token.id} style={{ marginRight: '1rem' }} onClick={handleTokenClick(token)}>
-                    <img src={token.isRevealed ? `/assets/tokens/feature_front_${token.number}.png` : `/assets/tokens/feature_back.png`} style={{ width: selectedToken && selectedToken.id === token.id ? pointyTokenBaseWidth * .5 : pointyTokenBaseWidth * .4 }} />
+                    <img src={token.isRevealed ? `/assets/tokens/feature_front_${token.number}.png` : `/assets/tokens/feature_back.png`} style={{ width: selectedToken && selectedToken.id === token.id ? pointyTokenBaseWidth * .8 : pointyTokenBaseWidth * .7 }} />
                 </div>
             ))
         }</div>

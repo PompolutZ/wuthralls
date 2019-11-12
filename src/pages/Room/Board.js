@@ -17,6 +17,7 @@ export default function Board({ roomId, state, onBoardChange, selectedElement })
     const [svg, setSvg] = React.useState(null);
     const [grid, setGrid] = React.useState(null);
     const [tokenHexes, setTokenHexes] = useState(state.board.tokens);
+    const [fighters, setFighters] = useState(state.board.fighters);
     // const [featureHexes, setFeatureHexes] = useState(tokens.filter(t => t.id.startsWith('Feature')));
     // const [lethalHexes, setLethalHexes] = useState(tokens.filter(t => t.id.startsWith('Lethal')));
     const [selectedToken, setSelectedToken] = useState(null);
@@ -90,27 +91,34 @@ export default function Board({ roomId, state, onBoardChange, selectedElement })
     }, []);
 
     useEffect(() => {
-        if(!selectedElement) return;
+        console.log('Board.OnSelectedElementChange', selectedElement);
 
-        console.log('Board.OnSelectedElementChange', selectedElement.id);
-        // setSelectedToken(selectedElement);
-        setSelectedTokenId(selectedElement.id);
+        if(!selectedElement){
+            setSelectedTokenId(null);
+        } else {
+            setSelectedTokenId(selectedElement.id);
+        }
     }, [selectedElement]);
 
     useEffect(() => {
-        // if(!featureHexes || !selectedToken) return;
-        if(!tokenHexes || !selectedToken) return;
-        setTokenHexes({
-            ...tokenHexes,
-            [selectedToken.id]: {
-                ...tokenHexes[selectedToken.id],
-                ...selectedToken,
-            }
-        })
+        setTokenHexes(state.board.tokens);
+        setFighters(state.board.fighters);
+    }, [state]);
 
-        // const fHexes = featureHexes.filter(h => h.id !== selectedToken.id);
-        // setFeatureHexes([...fHexes, selectedToken]);
-    }, [selectedToken])
+    // useEffect(() => {
+    //     // if(!featureHexes || !selectedToken) return;
+    //     if(!tokenHexes || !selectedToken) return;
+    //     setTokenHexes({
+    //         ...tokenHexes,
+    //         [selectedToken.id]: {
+    //             ...tokenHexes[selectedToken.id],
+    //             ...selectedToken,
+    //         }
+    //     })
+
+    //     // const fHexes = featureHexes.filter(h => h.id !== selectedToken.id);
+    //     // setFeatureHexes([...fHexes, selectedToken]);
+    // }, [selectedToken])
 
     useEffect(() => {
         const featureTokens = Object.entries(tokenHexes).filter(([k, v]) => {
@@ -138,17 +146,39 @@ export default function Board({ roomId, state, onBoardChange, selectedElement })
             const {x, y} = hex.toPoint();
             console.log(offsetX, offsetY, hex.toPoint(), hexCoordinates)
             if(selectedTokenId) {
-                console.log('Hello!')
-                setTokenHexes({
-                    ...tokenHexes,
-                    [selectedTokenId]: {
-                        ...tokenHexes[selectedTokenId],
+                if(selectedElement.type === 'FIGHTER') {
+                    const updatedFighter = {
+                        ...fighters[selectedTokenId],
+                        from: fighters[selectedTokenId].isOnBoard ? fighters[selectedTokenId].onBoard : {x: -1, y: -1 },
                         isOnBoard: true,
                         onBoard: { x: hexCoordinates.x, y: hexCoordinates.y },
                         top: y,
                         left: x,                
                     }
-                })
+                    
+                    setFighters({
+                        ...fighters,
+                        [selectedTokenId]: updatedFighter,
+                    });
+
+                    firebase.updateBoardProperty(state.id, `board.fighters.${selectedTokenId}`, updatedFighter);
+
+                } else {
+                    const updatedToken = {
+                        ...tokenHexes[selectedTokenId],
+                        from: tokenHexes[selectedTokenId].isOnBoard ? tokenHexes[selectedTokenId].onBoard : {x: -1, y: -1 },
+                        isOnBoard: true,
+                        onBoard: { x: hexCoordinates.x, y: hexCoordinates.y },
+                        top: y,
+                        left: x,                
+                    };
+                    firebase.updateBoardProperty(state.id, `board.tokens.${selectedTokenId}`, updatedToken);
+    
+                    setTokenHexes({
+                        ...tokenHexes,
+                        [selectedTokenId]: updatedToken 
+                    })
+                }
         }
             // setCurrentFeatureToken({
             //     ...currentFeatureToken,
@@ -252,6 +282,26 @@ export default function Board({ roomId, state, onBoardChange, selectedElement })
                                         left: hex.left,
                                     }}
                                 />
+                            )
+                        }
+                    })
+                }
+                {
+                    fighters && Object.entries(fighters).map(([k, fighter]) => {
+                        if(fighter.isOnBoard) {
+                            return (
+                                <img
+                                    key={k}
+                                    src={`/assets/fighters/${fighter.icon}.png`}
+                                    style={{
+                                        position: 'absolute',
+                                        zIndex: 600,
+                                        width: 80 * scaleFactor,
+                                        top: fighter.top + ((95 - 80) * scaleFactor) * 2.75,
+                                        left: fighter.left + ((95 - 80) * scaleFactor) / 2,
+                                    }}
+                                />
+    
                             )
                         }
                     })

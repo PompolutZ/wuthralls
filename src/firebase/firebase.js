@@ -116,12 +116,13 @@ class Firebase {
     setRoomListener = (roomId, onSnapshot) => this.fstore.collection('rooms').doc(roomId).onSnapshot(onSnapshot);
     setMessagesListener = (roomId, handler) => this.fstore.collection('messages').doc(roomId).onSnapshot(handler);
 
-    addPlayerToRoom = async (roomId, playerId, playerInfo) => {
+    addPlayerToRoom = async (roomId, playerId, playerInfo, warband) => {
         try {
             const roomRef = this.fstore.collection("rooms").doc(roomId);
 
             await roomRef.update({
                 players: this.firestoreArrayUnion(playerId),
+                'board.fighters': warband
             });
             await roomRef.update({
                 [playerId]: playerInfo
