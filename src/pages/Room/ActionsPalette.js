@@ -29,8 +29,8 @@ const actions = [
         value: 'Place Feature Hex'
     },
     {
-        type: 'WARBAND',
-        value: 'Warband',
+        type: 'FIGHTERS',
+        value: 'Fighters',
     }
 ]
 
@@ -117,8 +117,10 @@ export default function ActionsPalette({ data, onSelectedElementChange, onAction
                 )
             }
             {
-                selectedAction === 'WARBAND' && (
-                    <Warband onSelectedFighterChange={onSelectedElementChange} fighters={Object.entries(data.board.fighters).map(([id, value]) => ({...value, id: id})).filter(token => token.id.startsWith(myself.uid)) } />
+                selectedAction === 'FIGHTERS' && (
+                    <Warband onSelectedFighterChange={onSelectedElementChange} 
+                        myfighters={Object.entries(data.board.fighters).map(([id, value]) => ({...value, id: id})).filter(token => token.id.startsWith(myself.uid)) }
+                        enemyFighters={Object.entries(data.board.fighters).map(([id, value]) => ({...value, id: id})).filter(token => !token.id.startsWith(myself.uid)) } />
                 )
             }
         </div>

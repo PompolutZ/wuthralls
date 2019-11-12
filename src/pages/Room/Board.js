@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef, useContext } from 'react';
 import { defineGrid, extendHex } from 'honeycomb-grid';
 import * as SVG from 'svg.js';
 import { FirebaseContext } from '../../firebase';
+import { useAuthUser } from '../../components/Session';
 
 export default function Board({ roomId, state, onBoardChange, selectedElement }) {
     const baseBoardWidth = 757;
@@ -11,6 +12,7 @@ export default function Board({ roomId, state, onBoardChange, selectedElement })
     const scaleDownBy = 2;
     const scaleFactor = .5;
 
+    const myself = useAuthUser();
     const firebase = useContext(FirebaseContext);
     const rootRef = useRef(null);
     const [selectedBoardElement, setSelectedBoardElement] = useState(selectedElement);
@@ -297,8 +299,10 @@ export default function Board({ roomId, state, onBoardChange, selectedElement })
                                         position: 'absolute',
                                         zIndex: 600,
                                         width: 80 * scaleFactor,
-                                        top: fighter.top + ((95 - 80) * scaleFactor) * 2.75,
-                                        left: fighter.left + ((95 - 80) * scaleFactor) / 2,
+                                        top: k === selectedTokenId ? fighter.top + ((95 - 80) * scaleFactor) * 2.75 - 2 : fighter.top + ((95 - 80) * scaleFactor) * 2.75,
+                                        left: k === selectedTokenId ? fighter.left + ((95 - 80) * scaleFactor) / 2 - 2 : fighter.left + ((95 - 80) * scaleFactor) / 2,
+                                        border: k === selectedTokenId ? `3px dashed ${k.startsWith(myself.uid) ? 'limegreen' : 'red' }` : '',
+                                        borderRadius: k === selectedTokenId ? 80 * scaleFactor : 0,
                                     }}
                                 />
     
