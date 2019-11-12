@@ -24,19 +24,19 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-function DiceRollMessage({ id, author, value }) {
+function DiceRollMessage({ id, author, value, type }) {
     const classes = useStyles();
 
     return (
             <Grid id={id} item xs={12} className={classes.item} style={{ backgroundColor: 'rgba(30,144,255,.2)' }}>
-            <Typography variant="body2">{author}</Typography>
+            <Typography variant="body2">{`${author} rolls ${type}:`}</Typography>
             <div>
                 {
                     value.split(',').map((x, i) => (
                         <Die
                             key={i}
                             side={x}
-                            type="ATTACK"
+                            type={type}
                             style={{
                                 width: '2rem',
                                 height: '2rem',
@@ -85,7 +85,7 @@ function Messenger({ roomId, state }) {
                             return (
                                 <Grid id={arr.length - 1 === i ? 'lastMessage' : 'message'} item xs={12} key={m.created} className={classes.item} style={{ backgroundColor: m.author === 'Katophrane' ? 'rgba(0, 128, 128, .2)' : m.author === myself.uid ? 'rgba(255, 140, 0, .2)' : 'rgba(138, 43, 226, .2)' }}>
                                     <div>
-                                        <Typography variant="body2">{`${m.author === 'Katophrane' ? m.author : Boolean(state[m.author]) ? state[m.author].name : m.author}:`}</Typography>
+                                        <Typography variant="body2">{`${m.author === 'Katophrane' ? m.author : Boolean(state[m.author]) ? state[m.author].name : m.author}`}</Typography>
                                     </div>
                                     <Typography>{m.value}</Typography>
                                 </Grid>                            
@@ -97,7 +97,8 @@ function Messenger({ roomId, state }) {
                                 key={m.created}
                                 id={arr.length - 1 === i ? 'lastMessage' : 'message'}
                                 author={`${m.author === 'Katophrane' ? m.author : Boolean(state[m.author]) ? state[m.author].name : m.author}:`} 
-                                value={m.value} />
+                                value={m.value}
+                                type={m.subtype} />
                         }
                     })
                 }

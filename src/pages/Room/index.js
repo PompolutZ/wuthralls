@@ -89,7 +89,7 @@ function Room() {
                 <BottomNavigationAction label="Board" />
             </BottomNavigation>
             <Divider />                    
-            <div style={{ marginBottom: 95 * 1.3}}>
+            <div style={{ marginBottom: 140}}>
             {
                 tabIndex === 0 && (
                     <Messenger roomId={state.id} state={data} />

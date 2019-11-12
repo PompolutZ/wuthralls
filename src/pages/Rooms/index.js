@@ -68,6 +68,7 @@ function Rooms() {
                         onBoard: {x: -1, y: -1},
                         isOnBoard: false,
                         isInspired: false,
+                        wounds: 0,
                     },
                     [`${myself.uid}_F2`]: {
                         type: 'FIGHTER',
@@ -76,6 +77,7 @@ function Rooms() {
                         onBoard: {x: -1, y: -1},
                         isOnBoard: false,
                         isInspired: false,
+                        wounds: 0,
                     },
                     [`${myself.uid}_F3`]: {
                         type: 'FIGHTER',
@@ -84,6 +86,7 @@ function Rooms() {
                         onBoard: {x: -1, y: -1},
                         isOnBoard: false,
                         isInspired: false,
+                        wounds: 0,
                     },
                 },
                 tokens: {
@@ -183,6 +186,7 @@ function Rooms() {
                 onBoard: {x: -1, y: -1},
                 isOnBoard: false,
                 isInspired: false,
+                wounds: 0,
             }, {
                 type: 'FIGHTER',
                 icon: 'ironsouls-condemners-f2',
@@ -190,6 +194,7 @@ function Rooms() {
                 onBoard: {x: -1, y: -1},
                 isOnBoard: false,
                 isInspired: false,
+                wounds: 0,
             },
             {
                 type: 'FIGHTER',
@@ -198,6 +203,7 @@ function Rooms() {
                 onBoard: {x: -1, y: -1},
                 isOnBoard: false,
                 isInspired: false,
+                wounds: 0,
             },            
         ]
 
