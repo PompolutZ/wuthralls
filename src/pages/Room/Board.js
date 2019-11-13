@@ -137,6 +137,11 @@ export default function Board({ roomId, state, onBoardChange, selectedElement })
 
         console.log('TOKEN HEXES', tokenHexes);
         firebase.updateBoardProperty(state.id, 'board.tokens', update);
+        firebase.addGenericMessage(state.id, {
+            author: 'Katophrane',
+            type: 'INFO',
+            value: `All feature hexes has been reveled.`,
+        })
     }, [tokenHexes]);
 
     const handleClick = e => {
@@ -164,7 +169,12 @@ export default function Board({ roomId, state, onBoardChange, selectedElement })
                     });
 
                     firebase.updateBoardProperty(state.id, `board.fighters.${selectedTokenId}`, updatedFighter);
-
+                    firebase.addGenericMessage(state.id, {
+                        author: 'Katophrane',
+                        type: 'INFO',
+                        subtype: 'PLACEMENT',
+                        value: `${myself.username} placed ${selectedTokenId.startsWith(myself.uid) ? 'HIS' : 'ENEMIES'} ${fighters[selectedTokenId].name} to (${hexCoordinates.x},${hexCoordinates.y}).`,
+                    })
                 } else {
                     const updatedToken = {
                         ...tokenHexes[selectedTokenId],
@@ -175,7 +185,12 @@ export default function Board({ roomId, state, onBoardChange, selectedElement })
                         left: x,                
                     };
                     firebase.updateBoardProperty(state.id, `board.tokens.${selectedTokenId}`, updatedToken);
-    
+                    firebase.addGenericMessage(state.id, {
+                        author: 'Katophrane',
+                        type: 'INFO',
+                        subtype: 'PLACEMENT',
+                        value: `${myself.username} placed ${selectedTokenId} to (${hexCoordinates.x},${hexCoordinates.y}).`,
+                    })
                     setTokenHexes({
                         ...tokenHexes,
                         [selectedTokenId]: updatedToken 

@@ -64,6 +64,7 @@ function Rooms() {
                     [`${myself.uid}_F1`]: {
                         type: 'FIGHTER',
                         icon: 'ironsouls-condemners-f1',
+                        name: 'Ironsoul',
                         from: {x: -1, y: -1},
                         onBoard: {x: -1, y: -1},
                         isOnBoard: false,
@@ -73,6 +74,7 @@ function Rooms() {
                     [`${myself.uid}_F2`]: {
                         type: 'FIGHTER',
                         icon: 'ironsouls-condemners-f2',
+                        name: 'Blightbane',
                         from: {x: -1, y: -1},
                         onBoard: {x: -1, y: -1},
                         isOnBoard: false,
@@ -82,6 +84,7 @@ function Rooms() {
                     [`${myself.uid}_F3`]: {
                         type: 'FIGHTER',
                         icon: 'ironsouls-condemners-f3',
+                        name: 'Tavian',
                         from: {x: -1, y: -1},
                         onBoard: {x: -1, y: -1},
                         isOnBoard: false,
@@ -182,6 +185,7 @@ function Rooms() {
             {
                 type: 'FIGHTER',
                 icon: 'ironsouls-condemners-f1',
+                name: 'Ironsoul',
                 from: {x: -1, y: -1},
                 onBoard: {x: -1, y: -1},
                 isOnBoard: false,
@@ -190,6 +194,7 @@ function Rooms() {
             }, {
                 type: 'FIGHTER',
                 icon: 'ironsouls-condemners-f2',
+                name: 'Blightbane',
                 from: {x: -1, y: -1},
                 onBoard: {x: -1, y: -1},
                 isOnBoard: false,
@@ -199,6 +204,7 @@ function Rooms() {
             {
                 type: 'FIGHTER',
                 icon: 'ironsouls-condemners-f3',
+                name: 'Tavian',
                 from: {x: -1, y: -1},
                 onBoard: {x: -1, y: -1},
                 isOnBoard: false,

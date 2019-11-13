@@ -170,6 +170,25 @@ class Firebase {
         }
     }
 
+    addGenericMessage = async (roomId, payload) => {
+        try {
+            console.log(payload);
+            const messagesRef = await this.fstore.collection("messages").doc(roomId);
+
+            const now = new Date();
+            const withTimestamp = {
+                ...payload,
+                created: now
+            }
+
+            await messagesRef.update({
+                [now.getTime()]: withTimestamp
+            });
+        } catch(error) {
+            console.error('Error in addGenericMessage: ', error);
+        }
+    }
+
     addDiceRoll = async (roomId, payload) => {
         try {
             console.log(payload);
