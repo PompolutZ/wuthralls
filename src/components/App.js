@@ -16,6 +16,7 @@ import Game from '../pages/Game'
 import InteractiveBoard from '../pages/InteractiveBoard'
 import Rooms from '../pages/Rooms'
 import Room from '../pages/Room'
+import Playground from '../pages/Playground'
 
 function App() {
     return (
@@ -37,7 +38,7 @@ function App() {
                 <Route path={ROUTES.ADMIN} component={Admin} />
                 <Route path="/:version/table/:tableId/prepare" component={Prepare} />
                 <Route path="/:version/game/:tableId" component={Game} />
-                <Route path="/playground" component={InteractiveBoard} />
+                <Route path="/playground" component={Playground} />
                 <Route path="/:version/room/:roomId" component={Room} />
                 
             </div>

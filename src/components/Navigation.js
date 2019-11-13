@@ -28,6 +28,13 @@ function NavigationAuth({ authUser }) {
                         </li>
                     )
                 }
+                {
+                    !!authUser.roles[ROLES.ADMIN] && (
+                        <li>
+                            <Link to="/playground">Playground</Link>
+                        </li>
+                    )
+                }
                 <li>
                     <SignOut />
                 </li>
