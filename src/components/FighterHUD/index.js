@@ -6,6 +6,8 @@ import Divider from '@material-ui/core/Divider';
 import Paper from '@material-ui/core/Paper';
 import AddIcon from '@material-ui/icons/Add';
 import RemoveIcon from '@material-ui/icons/Remove';
+import InspireIcon from '@material-ui/icons/TrendingUp';
+import UninspireIcon from '@material-ui/icons/TrendingDown';
 import DoneIcon from '@material-ui/icons/Done';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 
@@ -37,16 +39,16 @@ function WoundsCounter({ wounds, onWoundsCounterChange }) {
     }
 
     return (
-        <div style={{ display: 'flex', position: 'absolute', top: '5rem', left: '-.65rem', alignItems: 'flex-end' }}>
-            <ButtonBase onClick={handleChangeValue(-1)} style={{ backgroundColor: 'green', width: '2rem', height: '2rem', borderRadius: '1.5rem', border: '1px solid white', color: 'white' }}>
+        <div style={{ display: 'flex', position: 'absolute', top: '.3rem', left: '-2.5rem', alignItems: 'flex-end' }}>
+            <ButtonBase onClick={handleChangeValue(-1)} style={{ backgroundColor: 'green', width: '3rem', height: '3rem', borderRadius: '1.5rem', border: '3px solid white', color: 'white', boxSizing: 'border-box' }}>
                 <RemoveIcon />
             </ButtonBase>
-            <div style={{ display: 'flex', backgroundImage: 'url(/assets/other/woundToken.png)', backgroundPosition: 'center, center', backgroundSize: '3rem 3rem', width: '3rem', height: '3rem', borderRadius: '1.5rem', border: '2px solid white', }}>
+            <div style={{ display: 'flex', backgroundImage: 'url(/assets/other/woundToken.png)', backgroundPosition: 'center, center', backgroundSize: 'cover', width: '4rem', height: '4rem', borderRadius: '2rem', border: '2px solid white', }}>
                 <div style={{ margin: 'auto', color: 'white', fontSize: '1.5rem' }}>
                     { value }
                 </div>
             </div>
-            <ButtonBase onClick={handleChangeValue(1)} style={{ backgroundColor: 'red', width: '2rem', height: '2rem', borderRadius: '1.5rem', border: '1px solid white', color: 'white' }}>
+            <ButtonBase onClick={handleChangeValue(1)} style={{ backgroundColor: 'red', width: '3rem', height: '3rem', borderRadius: '1.5rem', border: '3px solid white', color: 'white', boxSizing: 'border-box' }}>
                 <AddIcon />
             </ButtonBase>
         </div>
@@ -170,19 +172,45 @@ export default function FighterHUD({ data, unspentGlory, availableUpgrades, onUp
         });
     }
 
+    const changeInspire = () => {
+        onUpdateFighter('CHANGE_INSPIRE', {
+            property: 'isInspired',
+            value: !data.isInspired
+        });
+    }
+
     return (
         <>
             <Grid container spacing={3} direction="column" style={{ filter: selectedCardId || upgradePickerOpen ? 'blur(3px)' : ''}}>
-                <Grid item xs={12}>
+                {/* <Grid item xs={12}>
                     <Grid container justify="center">
                         <Typography>{data.name}</Typography>
                     </Grid>
-                </Grid>
+                </Grid> */}
                 <Grid item xs={12}>
                     <Grid container justify="center">
                         <div style={{ position: 'relative' }}>
-                            <img src={`/assets/fighters/${data.icon}.png`} style={{ width: '6rem', height: '6rem' }} />
+                            <img src={`/assets/fighters/${data.icon}-card${data.isInspired ? '-ins' : ''}.png`} style={{ width: cardImageWidth, height: cardImageHeight }} />
                             <WoundsCounter wounds={data.wounds} onWoundsCounterChange={handleUpdateWounds} />
+                            <ButtonBase style={{ 
+                                position: 'absolute', 
+                                top: '50%', 
+                                marginTop: '-3rem', 
+                                left: '-1.5rem', 
+                                marginRight: '1.5rem', 
+                                backgroundColor: 'teal', 
+                                color: 'white', 
+                                width: '3rem', 
+                                height: '3rem', 
+                                borderRadius: '1.5rem', 
+                                border: '3px solid white', 
+                                boxSizing: 'border-box' 
+                            }}
+                                onClick={changeInspire}>
+                                {
+                                    data.isInspired ? <UninspireIcon style={{ width: '2rem', height: '2rem' }} /> : <InspireIcon style={{ width: '2rem', height: '2rem' }} />
+                                }
+                            </ButtonBase>
                         </div>
                     </Grid>
                 </Grid>
@@ -194,8 +222,8 @@ export default function FighterHUD({ data, unspentGlory, availableUpgrades, onUp
                             upgrades.length > 0 && upgrades.map(u => (
                                 <Paper id={u} key={u} style={{ 
                                     flexShrink: 0,
-                                    width: cardImageWidth * 0.5, 
-                                    height: cardImageHeight * .5, 
+                                    width: cardImageWidth * 0.3, 
+                                    height: cardImageHeight * .3, 
                                     marginRight: '.5rem',
                                     borderRadius: '.5rem',
                                     backgroundPosition: 'center center',

@@ -22,7 +22,7 @@ export default function Playground() {
         from: {x: -1, y: -1},
         onBoard: {x: -1, y: -1},
         isOnBoard: false,
-        isInspired: false,
+        isInspired: true,
         wounds: 0,
         guardTokens: 0,
         moveTokens: 0,
@@ -37,19 +37,15 @@ export default function Playground() {
     const [availableUpgrades, setAvailableUpgrades] = useState(['05025', '05028']);
 
     const handleFighterUpdate = (type, payload) => {
-        if(type === 'APPLY_UPGRADE') {
-            setData({
-                ...data,
-                [payload.property]: payload.value,
-            });
+        setData({
+            ...data,
+            [payload.property]: payload.value,
+        })
 
+        if(type === 'APPLY_UPGRADE') {
             setUnspentGlory(prev => prev - 1);
             setAvailableUpgrades(prev => prev.filter(upgrade => upgrade !== payload.appliedUpgrade));
         } else if(type === 'CHANGE_WOUNDS') {
-            setData({
-                ...data,
-                [payload.property]: payload.value,
-            })
         }
     }
 
