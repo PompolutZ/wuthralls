@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import ButtonBase from '@material-ui/core/ButtonBase';
@@ -6,6 +6,7 @@ import Divider from '@material-ui/core/Divider';
 import Paper from '@material-ui/core/Paper';
 import AddIcon from '@material-ui/icons/Add';
 import RemoveIcon from '@material-ui/icons/Remove';
+import DoneIcon from '@material-ui/icons/Done';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 
 // [`${myself.uid}_F3`]: {
@@ -21,8 +22,12 @@ import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 const cardImageWidth = 300;
 const cardImageHeight = 420;
 
-function WoundsCounter({ wounds }) {
+function WoundsCounter({ wounds, onWoundsCounterChange }) {
     const [value, setValue] = useState(wounds);
+
+    useEffect(() => {
+        onWoundsCounterChange(value);
+    }, [value]);
 
     const handleChangeValue = changeBy => () => {
         setValue(prev => {
@@ -30,6 +35,7 @@ function WoundsCounter({ wounds }) {
             return nextValue >= 0 ? nextValue : 0;
         })
     }
+
     return (
         <div style={{ display: 'flex', position: 'absolute', top: '5rem', left: '-.65rem', alignItems: 'flex-end' }}>
             <ButtonBase onClick={handleChangeValue(-1)} style={{ backgroundColor: 'green', width: '2rem', height: '2rem', borderRadius: '1.5rem', border: '1px solid white', color: 'white' }}>
@@ -47,58 +53,79 @@ function WoundsCounter({ wounds }) {
     )
 }
 
-function UpgradePicker({ availableUpgrades }) {
-    const [open, setOpen] = useState(false);
+function UpgradePicker({ availableUpgrades, onUpgradePickerOpen, isOpen, onUpgradeSelected }) {
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const [canMoveRight, setCanMoveRight] = useState(currentIndex < availableUpgrades.length);
+    const [canMoveLeft, setCanMoveLeft] = useState(currentIndex > 0);
 
     const handleClickAway = () => {
-        setOpen(false);
+        onUpgradePickerOpen(false);
     }
 
     const handleClickAdd = () => {
         console.log('HEre')
-        setOpen(prev => !prev);
     }
+
+    const handleMoverSelectionToRight = () => {
+        console.log(availableUpgrades);
+        if(currentIndex < availableUpgrades.length -1) {
+            setCurrentIndex(prev => prev + 1);
+        }
+    }
+
+    const handleMoveSelectionToLeft = () => {
+        if(currentIndex > 0) {
+            setCurrentIndex(prev => prev - 1);
+        }
+    }
+
+    const selectUpgrade = cardId => () => {
+        onUpgradeSelected(cardId);
+        onUpgradePickerOpen(false);
+    }
+
     return (
         <ClickAwayListener onClickAway={handleClickAway}>
-            <div style={{ position: 'relative' }}>
-                <div style={{ flexShrink: 0, width: cardImageWidth *.25, height: cardImageHeight *.25, border: '3px dashed black', boxSizing: 'border-box', borderRadius: '.5rem', display: 'flex'}}
-                    onClick={handleClickAdd}>
-                    <AddIcon style={{ margin: 'auto' }} />
-                </div>
+            <div style={{  }}>
                 {
-                    open ? (
-                        <div style={{ position: 'absolute',
-                        top: -cardImageHeight / 2,
-                        right: 0,
-                        left: cardImageWidth *.25 / 2,
-                        zIndex: 1000,
-                        width: `calc(${cardImageWidth * 2}px + 2rem)`,
-                        height: cardImageHeight,
-                        border: '1px solid',
-                        backgroundColor: 'magenta',
-                        display: 'flex',
-                        overflowX: 'scroll',
-                        alignItems: 'center', }}>
-                            <span style={{ marginLeft: '1rem' }}></span>
-                            {
-                                availableUpgrades.length > 0 && availableUpgrades.map(u => (
-                                    <Paper key={u} style={{ 
-                                        flexShrink: 0,
-                                        width: cardImageWidth * 0.75, 
-                                        height: cardImageHeight * .75, 
-                                        // border: '3px dashed black', 
-                                        // boxSizing: 'border-box', 
-                                        borderRadius: '1rem',
-                                        backgroundPosition: 'center center',
-                                        backgroundSize: 'cover',
-                                        backgroundRepeat: 'no-repeat',
-                                        backgroundImage: `url(/assets/cards/${u}.png)`
-                                    }} 
-                                    elevation={5} />
-                                ))
-                            }
-                            <span style={{ marginRight: '1rem' }}></span>
-                        </div>
+                    isOpen ? (
+                            <div style={{
+                                position: 'fixed',
+                                width: cardImageWidth * 1.2,
+                                height: cardImageHeight * 1.2,
+                                top: '50%',
+                                left: '50%',
+                                marginTop: -cardImageHeight * 1.2 / 2,
+                                marginLeft: -cardImageWidth * 1.2 / 2,
+                                display: 'flex',
+                                zIndex: 10000
+                            }}>
+                                <Paper style={{ 
+                                    flexShrink: 0,
+                                    width: cardImageWidth * .8, 
+                                    height: cardImageHeight * .8, 
+                                    margin: 'auto',
+                                    borderRadius: '1rem',
+                                    // border: '3px dashed black', 
+                                    // boxSizing: 'border-box', 
+                                    backgroundPosition: 'center center',
+                                    backgroundSize: 'cover',
+                                    backgroundRepeat: 'no-repeat',
+                                    backgroundImage: `url(/assets/cards/${availableUpgrades[currentIndex]}.png)`
+                                }} elevation={10} />
+                                <ButtonBase style={{ position: 'absolute', top: '50%', right: 0, marginRight: '1.5rem', backgroundColor: 'teal', color: 'white', width: '3rem', height: '3rem', borderRadius: '1.5rem' }}
+                                    onClick={handleMoverSelectionToRight}>
+                                    <AddIcon style={{ width: '2rem', height: '2rem' }} />
+                                </ButtonBase>
+                                <ButtonBase style={{ position: 'absolute', top: '50%', left: 0, marginLeft: '1.5rem', backgroundColor: 'teal', color: 'white', width: '3rem', height: '3rem', borderRadius: '1.5rem' }}
+                                    onClick={handleMoveSelectionToLeft}>
+                                    <RemoveIcon style={{ width: '2rem', height: '2rem' }} />
+                                </ButtonBase>
+                                <ButtonBase style={{ position: 'absolute', bottom: 0, left: '50%', marginLeft: '-2.5rem', backgroundColor: 'green', color: 'white', width: '5rem', height: '5rem', borderRadius: '2.5rem' }}
+                                    onClick={selectUpgrade(availableUpgrades[currentIndex])}>
+                                    <DoneIcon style={{ width: '4rem', height: '4rem' }} />
+                                </ButtonBase>
+                            </div>
                     ) : null
                 }
             </div>
@@ -106,53 +133,127 @@ function UpgradePicker({ availableUpgrades }) {
     )
 }
 
-export default function FighterHUD({ data, unspentGlory, availableUpgrades }) {
+export default function FighterHUD({ data, unspentGlory, availableUpgrades, onUpdateFighter }) {
     const [upgrades, setUpgrades] = useState(Object.keys(data.upgrades));
-    const [usedGlory, setUsedGlory] = useState(0);
+    const [selectedCardId, setSelectedCardId] = useState(null);
+    const [upgradePickerOpen, setUpgradePickerOpen] = useState(false);
+
+    useEffect(() => {
+        setUpgrades(Object.keys(data.upgrades));
+    }, [data])
+
+    const handleBringToFront = id => () => {
+        setSelectedCardId(id);
+    }
+
+    const handleCloseSelection = () => {
+        setSelectedCardId(null);
+    }
+
+    const openUpgradePicker = () => {
+        setUpgradePickerOpen(true);
+    }
+
+    const handleUpgradeFighter = cardId => {
+        console.log(cardId)
+        onUpdateFighter('APPLY_UPGRADE', {
+            property: 'upgrades',
+            value: [...upgrades, cardId].reduce((r, x) => ({...r, [x]: true}), {}),
+            appliedUpgrade: cardId,
+        });
+    }
+
+    const handleUpdateWounds = value => {
+        onUpdateFighter('CHANGE_WOUNDS', {
+            property: 'wounds',
+            value: value
+        });
+    }
 
     return (
-        <Grid container spacing={3} direction="column">
-            <Grid item xs={12}>
-                <Grid container justify="center">
-                    <Typography>{data.name}</Typography>
+        <>
+            <Grid container spacing={3} direction="column" style={{ filter: selectedCardId || upgradePickerOpen ? 'blur(3px)' : ''}}>
+                <Grid item xs={12}>
+                    <Grid container justify="center">
+                        <Typography>{data.name}</Typography>
+                    </Grid>
                 </Grid>
-            </Grid>
-            <Grid item xs={12}>
-                <Grid container justify="center">
-                    <div style={{ position: 'relative' }}>
-                        <img src={`/assets/fighters/${data.icon}.png`} style={{ width: '6rem', height: '6rem' }} />
-                        <WoundsCounter wounds={data.wounds} />
+                <Grid item xs={12}>
+                    <Grid container justify="center">
+                        <div style={{ position: 'relative' }}>
+                            <img src={`/assets/fighters/${data.icon}.png`} style={{ width: '6rem', height: '6rem' }} />
+                            <WoundsCounter wounds={data.wounds} onWoundsCounterChange={handleUpdateWounds} />
+                        </div>
+                    </Grid>
+                </Grid>
+                <Grid item xs={12} style={{ margin: '0rem 1rem', }}>
+                    <Typography>Upgrades</Typography>
+                    <Divider />
+                    <div style={{ display: 'flex', justifyContent: 'space-between', overflowX: 'scroll', alignItems: 'center', margin: '1rem' }}>
+                        {
+                            upgrades.length > 0 && upgrades.map(u => (
+                                <Paper id={u} key={u} style={{ 
+                                    flexShrink: 0,
+                                    width: cardImageWidth * 0.5, 
+                                    height: cardImageHeight * .5, 
+                                    marginRight: '.5rem',
+                                    borderRadius: '.5rem',
+                                    backgroundPosition: 'center center',
+                                    backgroundSize: 'cover',
+                                    backgroundRepeat: 'no-repeat',
+                                    backgroundImage: `url(/assets/cards/${u}.png)`
+                                }} 
+                                elevation={2}
+                                onClick={handleBringToFront(u)} />
+                            ))
+                        }
+                        {
+                            unspentGlory > 0 && (
+                                <div style={{ flexShrink: 0, width: cardImageWidth *.25, height: cardImageHeight *.25, border: '3px dashed black', boxSizing: 'border-box', borderRadius: '.5rem', display: 'flex'}}
+                                    onClick={openUpgradePicker}>
+                                    <AddIcon style={{ margin: 'auto' }} />
+                                </div>
+                            )
+                        }
                     </div>
                 </Grid>
             </Grid>
-            <Grid item xs={12} style={{ margin: '0rem 1rem', }}>
-                <Typography>Upgrades</Typography>
-                <Divider />
-                <div style={{ display: 'flex', justifyContent: 'space-between', overflowX: 'scroll', alignItems: 'center', height: cardImageHeight}}>
-                    {
-                        usedGlory < unspentGlory && (
-                            <UpgradePicker availableUpgrades={availableUpgrades} />
-                        )
-                    }
-                    {
-                        upgrades.length > 0 && upgrades.map(u => (
-                            <Paper key={u} style={{ 
-                                flexShrink: 0,
-                                width: cardImageWidth * 0.75, 
-                                height: cardImageHeight * .75, 
-                                // border: '3px dashed black', 
-                                // boxSizing: 'border-box', 
-                                borderRadius: '1rem',
-                                backgroundPosition: 'center center',
-                                backgroundSize: 'cover',
-                                backgroundRepeat: 'no-repeat',
-                                backgroundImage: `url(/assets/cards/${u}.png)`
-                            }} 
-                            elevation={5} />
-                        ))
-                    }
-                </div>
-            </Grid>
-        </Grid>
+            {
+                    selectedCardId && (
+                        <ClickAwayListener onClickAway={handleCloseSelection}>
+                            <div style={{
+                                position: 'fixed',
+                                width: cardImageWidth * 1.2,
+                                height: cardImageHeight * 1.2,
+                                top: '50%',
+                                left: '50%',
+                                marginTop: -cardImageHeight * 1.2 / 2,
+                                marginLeft: -cardImageWidth * 1.2 / 2,
+                                display: 'flex',
+                                zIndex: 10000
+                            }}>
+                                <Paper style={{ 
+                                    flexShrink: 0,
+                                    width: cardImageWidth * .8, 
+                                    height: cardImageHeight * .8, 
+                                    margin: 'auto',
+                                    borderRadius: '1rem',
+                                    // border: '3px dashed black', 
+                                    // boxSizing: 'border-box', 
+                                    backgroundPosition: 'center center',
+                                    backgroundSize: 'cover',
+                                    backgroundRepeat: 'no-repeat',
+                                    backgroundImage: `url(/assets/cards/${selectedCardId}.png)`
+                                }} elevation={10} onClick={handleCloseSelection} />
+                            </div>
+                        </ClickAwayListener>
+                    )
+            }
+            {
+                upgradePickerOpen && (
+                    <UpgradePicker isOpen={upgradePickerOpen} availableUpgrades={availableUpgrades} onUpgradePickerOpen={setUpgradePickerOpen} onUpgradeSelected={handleUpgradeFighter} />
+                )
+            }
+        </>
     )
 }
