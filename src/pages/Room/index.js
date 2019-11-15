@@ -19,6 +19,10 @@ import Paper from '@material-ui/core/Paper';
 import ButtonBase from '@material-ui/core/ButtonBase';
 import DrawCardsIcon from '@material-ui/icons/GetApp';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
+import { useAuthUser } from '../../components/Session';
+import { Typography } from '@material-ui/core';
+import { cardsDb } from '../../data/index';
+import CardsHUD from './CardsHUD';
 
 const cardDefaultWidth = 300;
 const cardDefaultHeight = 420;
@@ -31,6 +35,7 @@ const useStyles = makeStyles(theme => ({
 
 function Room() {
     const classes = useStyles();
+    const myself = useAuthUser();
     const firebase = useContext(FirebaseContext);
     const { state } = useLocation();
     const theme = useTheme();
@@ -42,11 +47,13 @@ function Room() {
     const [stickHeader, setStickHeader] = useState(false);
     const [actionsPanelOffsetHeight, setActionsPanelOffsetHeight] = useState(4 * 16);
     const [isHUDOpen, setIsHUDOpen] = useState(false);
+    const [hand, setHand] = useState(data[myself.uid].hand && data[myself.uid].hand.split(',').map(cardId => ({ ...cardsDb[cardId], id: cardId })));
+    const [objectiveDrawPile, setObjectiveDrawPile] = useState(data[myself.uid].oDeck.split(',').map(cardId => ({ ...cardsDb[cardId], id: cardId })));
+    const [powersDrawPile, setPowersDrawPile] = useState(data[myself.uid].pDeck.split(',').map(cardId => ({ ...cardsDb[cardId], id: cardId })));
 
     useEffect(() => {
         const unsubscribe = firebase.setRoomListener(state.id, snapshot => {
             if(snapshot.exists) {
-                console.log('Room.OnServerUpdated', snapshot.data());
                 setData({...snapshot.data(), id: snapshot.id})
             }
         });
@@ -66,6 +73,15 @@ function Room() {
     }, []);
 
     useEffect(() => {
+        console.log('Room.OnDataUpdated', data);
+        const serverHand = data[myself.uid].hand;
+        console.log('My Current Hand', serverHand, objectiveDrawPile, powersDrawPile);
+        setHand(data[myself.uid].hand && data[myself.uid].hand.split(',').map(cardId => ({ ...cardsDb[cardId], id: cardId })));
+        setObjectiveDrawPile(data[myself.uid].oDeck.split(',').map(cardId => ({ ...cardsDb[cardId], id: cardId })));
+        setPowersDrawPile(data[myself.uid].pDeck.split(',').map(cardId => ({ ...cardsDb[cardId], id: cardId })));
+    }, [data]);
+
+    useEffect(() => {
         console.log('Room.onSelectedElementChange', selectedElement);
     }, [selectedElement]);
 
@@ -79,14 +95,6 @@ function Room() {
 
     const changeOpenDeckHUD = () => {
         setIsHUDOpen(true);
-    }
-
-    const drawObjectiveCard = () => {
-        setIsHUDOpen(false);
-    }
-
-    const drawPowerCard = () => {
-        setIsHUDOpen(false);
     }
 
     return (
@@ -131,101 +139,7 @@ function Room() {
 
             {
                 isHUDOpen && (
-                    <div style={{ 
-                        position: 'fixed',
-                        width: '90%',
-                        height: '90%',
-                        top: '5%',
-                        left: '5%',
-                        zIndex: 100001,
-                    }}>
-                        <Grid container>
-                            <Grid item xs={12}>
-                                <Grid container>
-                                    <Grid item xs={6} style={{ display: 'flex' }}>
-                                        <Paper elevation={3}
-                                            style={{
-                                                position: 'relative',
-                                                backgroundImage: 'url(/assets/cards/objectives_back.png)',
-                                                backgroundSize: 'cover', 
-                                                width: cardDefaultWidth * .4, 
-                                                height: cardDefaultHeight * .4,
-                                                margin: 'auto'
-                                            }}>
-                                                <Paper elevation={3}
-                                                        style={{ 
-                                                            position: 'absolute',
-                                                            zIndex: -1,
-                                                            top: '.2rem',
-                                                            left: '.2rem',
-                                                            backgroundImage: 'url(/assets/cards/objectives_back.png)',
-                                                            backgroundSize: 'cover', 
-                                                            width: cardDefaultWidth * .4, 
-                                                            height: cardDefaultHeight * .4,
-                                                            margin: 'auto'
-                                                        }} />
-                                                <Paper elevation={5}
-                                                        style={{ 
-                                                            position: 'absolute',
-                                                            zIndex: -2,
-                                                            top: '.4rem',
-                                                            left: '.4rem',
-                                                            backgroundImage: 'url(/assets/cards/objectives_back.png)',
-                                                            backgroundSize: 'cover', 
-                                                            width: cardDefaultWidth * .4, 
-                                                            height: cardDefaultHeight * .4,
-                                                            margin: 'auto'
-                                                        }} />
-                                                <ButtonBase style={{ position: 'absolute', bottom: '0%', left: '50%', marginLeft: '-1.5rem', backgroundColor: 'teal', color: 'white', width: '3rem', height: '3rem', borderRadius: '1.5rem' }}
-                                                    onClick={drawObjectiveCard}>
-                                                    <DrawCardsIcon style={{ width: '2rem', height: '2rem' }} />
-                                                </ButtonBase>
-                                            </Paper>
-                                    </Grid>
-                                    <Grid item xs={6} style={{ display: 'flex' }}>
-                                        <Paper elevation={3}
-                                                style={{ 
-                                                    position: 'relative',
-                                                    backgroundImage: 'url(/assets/cards/powers_back.png)',
-                                                    backgroundSize: 'cover', 
-                                                    width: cardDefaultWidth * .4, 
-                                                    height: cardDefaultHeight * .4,
-                                                    margin: 'auto'
-                                                }}>
-                                            <Paper elevation={3}
-                                                    style={{ 
-                                                        position: 'absolute',
-                                                        zIndex: -1,
-                                                        top: '.2rem',
-                                                        left: '.2rem',
-                                                        backgroundImage: 'url(/assets/cards/powers_back.png)',
-                                                        backgroundSize: 'cover', 
-                                                        width: cardDefaultWidth * .4, 
-                                                        height: cardDefaultHeight * .4,
-                                                        margin: 'auto'
-                                                    }} />
-                                            <Paper elevation={5}
-                                                    style={{ 
-                                                        position: 'absolute',
-                                                        zIndex: -2,
-                                                        top: '.4rem',
-                                                        left: '.4rem',
-                                                        backgroundImage: 'url(/assets/cards/powers_back.png)',
-                                                        backgroundSize: 'cover', 
-                                                        width: cardDefaultWidth * .4, 
-                                                        height: cardDefaultHeight * .4,
-                                                        margin: 'auto'
-                                                    }} />
-                                            <ButtonBase style={{ position: 'absolute', bottom: '0%', left: '50%', marginLeft: '-1.5rem', backgroundColor: 'teal', color: 'white', width: '3rem', height: '3rem', borderRadius: '1.5rem' }}
-                                                onClick={drawPowerCard}>
-                                                <DrawCardsIcon style={{ width: '2rem', height: '2rem' }} />
-                                            </ButtonBase>
-                                        </Paper>
-                                    </Grid>
-                                </Grid>
-                            </Grid>
-                        </Grid>
-                    </div>
+                    <CardsHUD roomId={data.id} objectivesPile={objectiveDrawPile} powerCardsPile={powersDrawPile} serverHand={hand} onClose={setIsHUDOpen} />
                 )
             }    
         </div>

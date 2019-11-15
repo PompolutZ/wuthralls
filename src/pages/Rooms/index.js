@@ -9,6 +9,18 @@ import Grid from '@material-ui/core/Grid';
 import { FirebaseContext } from '../../firebase';
 import { useHistory } from 'react-router-dom';
 
+
+function shuffle(a) {
+    var j, x, i;
+    for (i = a.length - 1; i > 0; i--) {
+        j = Math.floor(Math.random() * (i + 1));
+        x = a[i];
+        a[i] = a[j];
+        a[j] = x;
+    }
+    return a;
+}
+
 function Rooms() {
     const myself = useAuthUser();
     const firebase = useContext(FirebaseContext);
@@ -156,8 +168,8 @@ function Rooms() {
             [myself.uid]: {
                 name: myself.username,
                 faction: 'ironsouls-condemners',
-                oDeck: new Array(12).fill(1).map((x, i) => `0${x + i + 5000}`),
-                pDeck: new Array(20).fill(13).map((x, i) => `0${x + i + 5000}`)
+                oDeck: shuffle(new Array(12).fill(1).map((x, i) => `0${x + i + 5000}`)).join(),
+                pDeck: shuffle(new Array(20).fill(13).map((x, i) => `0${x + i + 5000}`)).join()
             }
         };
 
@@ -177,8 +189,8 @@ function Rooms() {
         const playerInfo = {
             name: myself.username,
             faction: 'ironsouls-condemners',
-            oDeck: new Array(12).fill(1).map((x, i) => `0${x + i + 5000}`),
-            pDeck: new Array(20).fill(13).map((x, i) => `0${x + i + 5000}`)
+            oDeck: shuffle(new Array(12).fill(1).map((x, i) => `0${x + i + 5000}`)).join(),
+            pDeck: shuffle(new Array(20).fill(13).map((x, i) => `0${x + i + 5000}`)).join()
         };
 
         const warband = [
