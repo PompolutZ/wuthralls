@@ -27,6 +27,10 @@ import CardsHUD from './CardsHUD';
 const cardDefaultWidth = 300;
 const cardDefaultHeight = 420;
 
+const propertyToCards = (source, property) => {
+    return source && source[property] && source[property].split(',').map(cardId => ({ ...cardsDb[cardId], id: cardId }));
+};
+
 const useStyles = makeStyles(theme => ({
     tabs: {
         width: '100%',
@@ -47,9 +51,15 @@ function Room() {
     const [stickHeader, setStickHeader] = useState(false);
     const [actionsPanelOffsetHeight, setActionsPanelOffsetHeight] = useState(4 * 16);
     const [isHUDOpen, setIsHUDOpen] = useState(false);
-    const [hand, setHand] = useState(data[myself.uid].hand && data[myself.uid].hand.split(',').map(cardId => ({ ...cardsDb[cardId], id: cardId })));
-    const [objectiveDrawPile, setObjectiveDrawPile] = useState(data[myself.uid].oDeck.split(',').map(cardId => ({ ...cardsDb[cardId], id: cardId })));
-    const [powersDrawPile, setPowersDrawPile] = useState(data[myself.uid].pDeck.split(',').map(cardId => ({ ...cardsDb[cardId], id: cardId })));
+    const [hand, setHand] = useState(propertyToCards(data[myself.uid], 'hand')); 
+    
+    const [objectiveDrawPile, setObjectiveDrawPile] = useState(propertyToCards(data[myself.uid], 'oDeck')); 
+    const [powersDrawPile, setPowersDrawPile] = useState(propertyToCards(data[myself.uid], 'pDeck')); 
+    
+    const [scoredObjectivesPile, setScoredObjectivesPile] = useState(propertyToCards(data[myself.uid], 'sObjs')); 
+    const [objectivesDiscardPile, setObjectivesDiscardPile] = useState(propertyToCards(data[myself.uid], 'dObjs')); 
+    const [powersDiscardPile, setPowersDiscardPile] = useState(propertyToCards(data[myself.uid], 'dPws')); 
+
 
     useEffect(() => {
         const unsubscribe = firebase.setRoomListener(state.id, snapshot => {
@@ -76,9 +86,15 @@ function Room() {
         console.log('Room.OnDataUpdated', data);
         const serverHand = data[myself.uid].hand;
         console.log('My Current Hand', serverHand, objectiveDrawPile, powersDrawPile);
-        setHand(data[myself.uid].hand && data[myself.uid].hand.split(',').map(cardId => ({ ...cardsDb[cardId], id: cardId })));
-        setObjectiveDrawPile(data[myself.uid].oDeck.split(',').map(cardId => ({ ...cardsDb[cardId], id: cardId })));
-        setPowersDrawPile(data[myself.uid].pDeck.split(',').map(cardId => ({ ...cardsDb[cardId], id: cardId })));
+        setHand(propertyToCards(data[myself.uid], 'hand'));
+        
+        setObjectiveDrawPile(propertyToCards(data[myself.uid], 'oDeck'));
+        setPowersDrawPile(propertyToCards(data[myself.uid], 'pDeck'));
+        
+        setScoredObjectivesPile(propertyToCards(data[myself.uid], 'sObjs'));
+        setObjectivesDiscardPile(propertyToCards(data[myself.uid], 'dObjs'));
+        setPowersDiscardPile(propertyToCards(data[myself.uid], 'dPws'));
+    
     }, [data]);
 
     useEffect(() => {
@@ -139,7 +155,15 @@ function Room() {
 
             {
                 isHUDOpen && (
-                    <CardsHUD roomId={data.id} objectivesPile={objectiveDrawPile} powerCardsPile={powersDrawPile} serverHand={hand} onClose={setIsHUDOpen} />
+                    <CardsHUD 
+                        roomId={data.id} 
+                        objectivesPile={objectiveDrawPile} 
+                        powerCardsPile={powersDrawPile} 
+                        serverHand={hand} 
+                        scoredObjectivesPile={scoredObjectivesPile}
+                        objectivesDiscardPile={objectivesDiscardPile}
+                        powersDiscardPile={powersDiscardPile}
+                        onClose={setIsHUDOpen} />
                 )
             }    
         </div>

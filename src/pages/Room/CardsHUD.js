@@ -19,6 +19,8 @@ import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import ButtonBase from '@material-ui/core/ButtonBase';
 import DrawCardsIcon from '@material-ui/icons/GetApp';
+import PlayIcon from '@material-ui/icons/PlayArrow';
+import DeleteIcon from '@material-ui/icons/Delete';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import { useAuthUser } from '../../components/Session';
 import { Typography } from '@material-ui/core';
@@ -32,16 +34,24 @@ export default function CardsHUD({
     objectivesPile,
     powerCardsPile,
     serverHand,
+    scoredObjectivesPile,
+    objectivesDiscardPile,
+    powersDiscardPile,
     onClose,
 }) {
     const myself = useAuthUser();
     const [objectiveDrawPile, setObjectiveDrawPile] = useState(objectivesPile);
     const [powersDrawPile, setPowersDrawPile] = useState(powerCardsPile);
+    const [scoredObjectives, setScoredObjectives] = useState(scoredObjectivesPile);
+    const [discardedObjectives, setDiscardedObjectives] = useState(objectivesDiscardPile);
+    const [discardedPowers, setDiscardedPowers] = useState(powersDiscardPile);
     const [hand, setHand] = useState(serverHand || []);
     const firebase = useContext(FirebaseContext);
     const [highlightCard, setHighlightCard] = useState(null);
 
     useEffect(() => {
+        if(!hand) return;
+
         firebase.updateBoardProperty(
             roomId,
             `${myself.uid}.hand`,
@@ -50,6 +60,8 @@ export default function CardsHUD({
     }, [hand]);
 
     useEffect(() => {
+        if(!objectiveDrawPile) return;
+
         firebase.updateBoardProperty(
             roomId,
             `${myself.uid}.oDeck`,
@@ -58,12 +70,44 @@ export default function CardsHUD({
     }, [objectiveDrawPile]);
 
     useEffect(() => {
+        if(!powersDrawPile) return;
+
         firebase.updateBoardProperty(
             roomId,
             `${myself.uid}.pDeck`,
             powersDrawPile.map(x => x.id).join()
         );
     }, [powersDrawPile]);
+
+    useEffect(() => {
+        if(!scoredObjectives) return;
+
+        firebase.updateBoardProperty(
+            roomId,
+            `${myself.uid}.sObjs`,
+            scoredObjectives.map(x => x.id).join()
+        );
+    }, [scoredObjectives]);
+
+    useEffect(() => {
+        if(!discardedObjectives) return;
+
+        firebase.updateBoardProperty(
+            roomId,
+            `${myself.uid}.dObjs`,
+            discardedObjectives.map(x => x.id).join()
+        );
+    }, [discardedObjectives]);
+
+    useEffect(() => {
+        if(!discardedPowers) return;
+
+        firebase.updateBoardProperty(
+            roomId,
+            `${myself.uid}.dPws`,
+            discardedPowers.map(x => x.id).join()
+        );
+    }, [discardedPowers]);
 
     const drawObjectiveCard = async () => {
         const objectives = objectiveDrawPile.slice(0, 1);
@@ -85,8 +129,8 @@ export default function CardsHUD({
         setPowersDrawPile(prev => prev.slice(1));
     };
 
-    const handleHighlightCard = cardId => () => {
-        setHighlightCard(cardId);
+    const handleHighlightCard = card => () => {
+        setHighlightCard(card);
     };
 
     const handleClickAwayHightlight = e => {
@@ -98,6 +142,78 @@ export default function CardsHUD({
         onClose(false);
     }
 
+    const playCard = card => () => {
+        setHand(prev => prev.filter(c => c.id !== card.id));
+
+        if(card.type === 0) {
+            if(!scoredObjectives) {
+                setScoredObjectives([card]);
+            } else {
+                setScoredObjectives(prev => [...prev, card]);
+            }
+
+            firebase.addGenericMessage(roomId, {
+                author: 'Katophrane',
+                type: 'INFO',
+                subtype: 'SCORED_OBJECTIVE_CARD',
+                cardId: card.id,
+                value: `${myself.username} scored objective ${card.name} for at least ${card.glory} glory.`,
+            })
+        } else {
+            if(!discardedPowers) {
+                setDiscardedPowers([card]);
+            } else {
+                setDiscardedPowers(prev => [...prev, card]);
+            }
+
+            firebase.addGenericMessage(roomId, {
+                author: 'Katophrane',
+                type: 'INFO',
+                subtype: 'PLAYED_POWER_CARD',
+                cardId: card.id,
+                value: `${myself.username} played ${card.name}.`,
+            })
+        }
+
+        setHighlightCard(null);
+    }
+
+    const discardCard = card => () => {
+        setHand(prev => prev.filter(c => c.id !== card.id));
+
+        if(card.type === 0) {
+            if(!discardedObjectives) {
+                setDiscardedObjectives([card]);
+            } else {
+                setDiscardedObjectives(prev => [...prev, card]);
+            }
+
+            firebase.addGenericMessage(roomId, {
+                author: 'Katophrane',
+                type: 'INFO',
+                subtype: 'DISCARDED_OBJECTIVE_CARD',
+                cardId: card.id,
+                value: `${myself.username} discarded objective card: ${card.name}.`,
+            })
+        } else {
+            if(!discardedPowers) {
+                setDiscardedPowers([card]);
+            } else {
+                setDiscardedPowers(prev => [...prev, card]);
+            }
+
+            firebase.addGenericMessage(roomId, {
+                author: 'Katophrane',
+                type: 'INFO',
+                subtype: 'DISCARDED_POWER_CARD',
+                cardId: card.id,
+                value: `${myself.username} discarded power card: ${card.name}.`,
+            })
+        }
+
+        setHighlightCard(null);
+    }
+
     return (
         <div
             style={{
@@ -107,14 +223,15 @@ export default function CardsHUD({
                 top: '5%',
                 left: '5%',
                 zIndex: 100001,
+                overflowY: 'scroll',
             }}
         >
             <ButtonBase
                 style={{
-                    position: 'absolute',
+                    position: 'fixed',
                     top: '0%',
                     right: '0%',
-                    marginRight: '-1rem',
+                    marginRight: '1rem',
                     backgroundColor: 'red',
                     color: 'white',
                     width: '2rem',
@@ -365,7 +482,7 @@ export default function CardsHUD({
                                             }}
                                             elevation={10}
                                             onClick={handleHighlightCard(
-                                                card.id
+                                                card
                                             )}
                                         />
                                     ))}
@@ -419,7 +536,166 @@ export default function CardsHUD({
                                             }}
                                             elevation={10}
                                             onClick={handleHighlightCard(
-                                                card.id
+                                                card
+                                            )}
+                                        />
+                                    ))}
+                        </div>
+                    </Grid>
+                </Grid>
+                <Grid item xs={12}>
+                    <Typography style={{ marginTop: '1rem' }}>
+                        Scored objectives{' '}
+                        {`(${
+                            scoredObjectives ? scoredObjectives.length
+                                : 'empty'
+                        })`}
+                    </Typography>
+                    <Divider />
+                    <Grid container>
+                        <div
+                            style={{
+                                display: 'flex',
+                                width: '100%',
+                                overflowX: 'scroll',
+                            }}
+                        >
+                            {scoredObjectives &&
+                                scoredObjectives.length > 0 &&
+                                scoredObjectives
+                                    // .filter(c => c.type !== 0)
+                                    .map((card, idx, arr) => (
+                                        <Paper
+                                            key={card.id}
+                                            style={{
+                                                flexShrink: 0,
+                                                width: cardDefaultWidth * 0.4,
+                                                height: cardDefaultHeight * 0.4,
+                                                margin: `1rem ${
+                                                    idx === arr.length - 1
+                                                        ? '1rem'
+                                                        : '.3rem'
+                                                } 0 ${
+                                                    idx === 0 ? '1rem' : '0'
+                                                }`,
+                                                borderRadius: '1rem',
+                                                // border: '3px dashed black',
+                                                // boxSizing: 'border-box',
+                                                backgroundPosition:
+                                                    'center center',
+                                                backgroundSize: 'cover',
+                                                backgroundRepeat: 'no-repeat',
+                                                backgroundImage: `url(/assets/cards/${card.id}.png)`,
+                                            }}
+                                            elevation={10}
+                                            onClick={handleHighlightCard(
+                                                card
+                                            )}
+                                        />
+                                    ))}
+                        </div>
+                    </Grid>
+                </Grid>
+                <Grid item xs={12}>
+                    <Typography style={{ marginTop: '1rem' }}>
+                        Discarded objectives{' '}
+                        {`(${
+                            discardedObjectives ? discardedObjectives.length
+                                : 'empty'
+                        })`}
+                    </Typography>
+                    <Divider />
+                    <Grid container>
+                        <div
+                            style={{
+                                display: 'flex',
+                                width: '100%',
+                                overflowX: 'scroll',
+                            }}
+                        >
+                            {discardedObjectives &&
+                                discardedObjectives.length > 0 &&
+                                discardedObjectives
+                                    // .filter(c => c.type !== 0)
+                                    .map((card, idx, arr) => (
+                                        <Paper
+                                            key={card.id}
+                                            style={{
+                                                flexShrink: 0,
+                                                width: cardDefaultWidth * 0.4,
+                                                height: cardDefaultHeight * 0.4,
+                                                margin: `1rem ${
+                                                    idx === arr.length - 1
+                                                        ? '1rem'
+                                                        : '.3rem'
+                                                } 0 ${
+                                                    idx === 0 ? '1rem' : '0'
+                                                }`,
+                                                borderRadius: '1rem',
+                                                // border: '3px dashed black',
+                                                // boxSizing: 'border-box',
+                                                backgroundPosition:
+                                                    'center center',
+                                                backgroundSize: 'cover',
+                                                backgroundRepeat: 'no-repeat',
+                                                backgroundImage: `url(/assets/cards/${card.id}.png)`,
+                                            }}
+                                            elevation={10}
+                                            onClick={handleHighlightCard(
+                                                card
+                                            )}
+                                        />
+                                    ))}
+                        </div>
+                    </Grid>
+                </Grid>
+                <Grid item xs={12}>
+                    <Typography style={{ marginTop: '1rem' }}>
+                        Discarded powers{' '}
+                        {`(${
+                            discardedPowers ? discardedPowers.length
+                                : 'empty'
+                        })`}
+                    </Typography>
+                    <Divider />
+                    <Grid container>
+                        <div
+                            style={{
+                                display: 'flex',
+                                width: '100%',
+                                overflowX: 'scroll',
+                            }}
+                        >
+                            {discardedPowers &&
+                                discardedPowers.length > 0 &&
+                                discardedPowers
+                                    // .filter(c => c.type !== 0)
+                                    .map((card, idx, arr) => (
+                                        <Paper
+                                            key={card.id}
+                                            style={{
+                                                flexShrink: 0,
+                                                width: cardDefaultWidth * 0.4,
+                                                height: cardDefaultHeight * 0.4,
+                                                margin: `1rem ${
+                                                    idx === arr.length - 1
+                                                        ? '1rem'
+                                                        : '.3rem'
+                                                } 0 ${
+                                                    idx === 0 ? '1rem' : '0'
+                                                }`,
+                                                borderRadius: '1rem',
+                                                // border: '3px dashed black',
+                                                // boxSizing: 'border-box',
+                                                backgroundPosition:
+                                                    'center center',
+                                                backgroundSize: 'cover',
+                                                backgroundRepeat: 'no-repeat',
+                                                backgroundImage: `url(/assets/cards/${card.id}.png)`,
+                                            }}
+                                            elevation={10}
+                                            onClick={handleHighlightCard(
+                                                card
                                             )}
                                         />
                                     ))}
@@ -444,6 +720,7 @@ export default function CardsHUD({
                     <ClickAwayListener onClickAway={handleClickAwayHightlight}>
                         <Paper
                             style={{
+                                position: 'relative',
                                 flexShrink: 0,
                                 width: cardDefaultWidth * 0.8,
                                 height: cardDefaultHeight * 0.8,
@@ -454,10 +731,53 @@ export default function CardsHUD({
                                 backgroundPosition: 'center center',
                                 backgroundSize: 'cover',
                                 backgroundRepeat: 'no-repeat',
-                                backgroundImage: `url(/assets/cards/${highlightCard}.png)`,
+                                backgroundImage: `url(/assets/cards/${highlightCard.id}.png)`,
                             }}
                             elevation={10}
-                        />
+                        >
+                            <ButtonBase
+                                style={{
+                                    position: 'absolute',
+                                    bottom: '0%',
+                                    left: '0%',
+                                    marginLeft: '-1.5rem',
+                                    backgroundColor: 'teal',
+                                    color: 'white',
+                                    width: '3rem',
+                                    height: '3rem',
+                                    borderRadius: '1.5rem',
+                                }}
+                                onClick={playCard(highlightCard)}
+                            >
+                                <PlayIcon
+                                    style={{
+                                        width: '2rem',
+                                        height: '2rem',
+                                    }}
+                                />
+                            </ButtonBase>
+                            <ButtonBase
+                                style={{
+                                    position: 'absolute',
+                                    bottom: '0%',
+                                    right: '0%',
+                                    marginLeft: '-1.5rem',
+                                    backgroundColor: 'red',
+                                    color: 'white',
+                                    width: '3rem',
+                                    height: '3rem',
+                                    borderRadius: '1.5rem',
+                                }}
+                                onClick={discardCard(highlightCard)}
+                            >
+                                <DeleteIcon
+                                    style={{
+                                        width: '2rem',
+                                        height: '2rem',
+                                    }}
+                                />
+                            </ButtonBase>
+                        </Paper>
                     </ClickAwayListener>
                     {/* <ButtonBase
                             style={{
