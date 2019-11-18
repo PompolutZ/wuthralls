@@ -3,6 +3,7 @@ import { FirebaseContext } from '../../firebase';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
+import Paper from '@material-ui/core/Paper';
 import TextField from '@material-ui/core/TextField';
 import { makeStyles } from '@material-ui/core/styles';
 import SendIcon from '@material-ui/icons/Send';
@@ -49,8 +50,16 @@ function DiceRollMessage({ id, author, value, type }) {
     )
 }
 
+const cardDefaultWidth = 300;
+const cardDefaultHeight = 420;
+
 function CardMessageItem({ isLastMessage, author, isMineMessage, cardId, value }) {
     const classes = useStyles();
+    const [highlight, setHighlight] = useState(false);
+
+    const handleSwitchHighglight = () => {
+        setHighlight(prev => !prev);
+    }
 
     return (
         <Grid id={isLastMessage ? 'lastMessage' : 'message'} item xs={12} className={classes.item} style={{ backgroundColor: author === 'Katophrane' ? 'rgba(0, 128, 128, .2)' : isMineMessage ? 'rgba(255, 140, 0, .2)' : 'rgba(138, 43, 226, .2)' }}>
@@ -58,7 +67,44 @@ function CardMessageItem({ isLastMessage, author, isMineMessage, cardId, value }
                 <Typography variant="body2">{`${author}`}</Typography>
             </div>
             <Typography>{value}</Typography>
-            <img src={`/assets/cards/${cardId}.png`} style={{ width: '5rem' }} />
+            <img src={`/assets/cards/${cardId}.png`} style={{ width: '5rem', borderRadius: '.3rem', }} onClick={handleSwitchHighglight} />
+            {
+                highlight && (
+                    <div
+                    style={{
+                        position: 'fixed',
+                        width: '100%',
+                        height: '100%',
+                        top: '0',
+                        left: '0',
+                        display: 'flex',
+                        zIndex: 100000,
+                        perspective: '5rem',
+                        backgroundColor: 'rgba(255,255,255,.5)',
+                    }}
+                >
+                        <Paper
+                            style={{
+                                position: 'relative',
+                                flexShrink: 0,
+                                width: cardDefaultWidth * 0.8,
+                                height: cardDefaultHeight * 0.8,
+                                margin: 'auto',
+                                borderRadius: '1rem',
+                                // border: '3px dashed black',
+                                // boxSizing: 'border-box',
+                                backgroundPosition: 'center center',
+                                backgroundSize: 'cover',
+                                backgroundRepeat: 'no-repeat',
+                                backgroundImage: `url(/assets/cards/${cardId}.png)`,
+                            }}
+                            elevation={10}
+                            onClick={handleSwitchHighglight}
+                        >
+                        </Paper>
+                </div>
+                )
+            }
         </Grid>                            
     )
 }

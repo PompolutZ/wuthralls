@@ -1005,7 +1005,8 @@ export default function CardsHUD({
                         >
                             {
                                 (highlightFromSource === OBJECTIVES_HAND ||
-                                highlightFromSource === POWERS_HAND) && (
+                                highlightFromSource === POWERS_HAND) &&
+                                selectedGroup === MY_CARDS_GROUP && (
                                     <ButtonBase
                                         style={{
                                             position: 'absolute',
@@ -1032,7 +1033,8 @@ export default function CardsHUD({
                             {
                                 (highlightFromSource === OBJECTIVES_SCORED ||
                                 highlightFromSource === OBJECTIVES_DISCARDED ||
-                                highlightFromSource === POWERS_DISCARDED) && (
+                                highlightFromSource === POWERS_DISCARDED) && 
+                                selectedGroup === MY_CARDS_GROUP && (
                                     <ButtonBase
                                         style={{
                                             position: 'absolute',
@@ -1059,7 +1061,8 @@ export default function CardsHUD({
                             }
                             {
                                 (highlightFromSource === OBJECTIVES_HAND ||
-                                    highlightFromSource === POWERS_HAND) && (
+                                    highlightFromSource === POWERS_HAND) &&
+                                    selectedGroup === MY_CARDS_GROUP && (
                                         <ButtonBase
                                         style={{
                                             position: 'absolute',
@@ -1085,7 +1088,8 @@ export default function CardsHUD({
                             }
                             {
                                 (highlightFromSource === OBJECTIVES_HAND ||
-                                    highlightFromSource === POWERS_HAND) && (
+                                    highlightFromSource === POWERS_HAND) &&
+                                    selectedGroup === MY_CARDS_GROUP && (
                                         <ButtonBase
                                         style={{
                                             position: 'absolute',
