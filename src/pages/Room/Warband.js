@@ -29,7 +29,7 @@ export default function Warband({ myfighters, enemyFighters, onSelectedFighterCh
             {
                 fighters.map(fighter => (
                     <div key={fighter.id} style={{ marginRight: '1rem' }} onClick={handleFighterClicked(fighter)}>
-                        <img src={`/assets/fighters/${fighter.icon}.png`} style={{ 
+                        <img src={`/assets/fighters/${fighter.icon}-icon.png`} style={{ 
                             width: selectedFighter && selectedFighter.id === fighter.id ? pointyTokenBaseWidth * .8 : pointyTokenBaseWidth * .7,
                             border: fighter.id.startsWith(myself.uid) ? '3px solid green' : '3px dashed red',
                             borderRadius: selectedFighter && selectedFighter.id === fighter.id ? pointyTokenBaseWidth * .8 : pointyTokenBaseWidth * .7 }} />

@@ -314,10 +314,11 @@ export default function Board({ roomId, state, onBoardChange, selectedElement })
                                         position: 'absolute',
                                         zIndex: 600,
                                         width: 80 * scaleFactor,
-                                        top: k === selectedTokenId ? fighter.top + ((95 - 80) * scaleFactor) * 2.75 - 2 : fighter.top + ((95 - 80) * scaleFactor) * 2.75,
-                                        left: k === selectedTokenId ? fighter.left + ((95 - 80) * scaleFactor) / 2 - 2 : fighter.left + ((95 - 80) * scaleFactor) / 2,
-                                        border: k === selectedTokenId ? `3px dashed ${k.startsWith(myself.uid) ? 'limegreen' : 'red' }` : '',
-                                        borderRadius: k === selectedTokenId ? 80 * scaleFactor : 0,
+                                        top: fighter.top + ((95 - 80) * scaleFactor) * 2.75 - 2,
+                                        left: fighter.left + ((95 - 80) * scaleFactor) / 2 - 2,
+                                        border: k.startsWith(myself.uid) ? '3px solid limegreen' : '3px solid red',
+                                        borderRadius: 80,
+                                        boxShadow: k === selectedTokenId ? k.startsWith(myself.uid) ? '0 0 7px 7px limegreen' : '0 0 7px 7px red' : ''
                                     }}
                                 />
     

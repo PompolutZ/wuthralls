@@ -3,6 +3,7 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import ButtonBase from '@material-ui/core/ButtonBase';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
+import FightersIcon from '@material-ui/icons/SportsKabaddi';
 import SendMessageAction from './SendMessageAction';
 import DiceTray from '../../components/DiceTray';
 import RollDiceAction from './RollDiceAction';
@@ -28,10 +29,10 @@ const actions = [
         type: 'PLACE_FEATURE_HEX',
         value: 'Place Feature Hex',
     },
-    {
-        type: 'FIGHTERS',
-        value: 'Fighters',
-    },
+    // {
+    //     type: 'FIGHTERS',
+    //     value: 'Fighters',
+    // },
 ];
 
 export default function ActionsPalette({
@@ -59,6 +60,10 @@ export default function ActionsPalette({
     const handleClose = () => {
         setAnchorEl(null);
     };
+
+    const handleFightersClick = () => {
+        setSelectedAction('FIGHTERS');
+    }
 
     return (
         <div
@@ -102,11 +107,12 @@ export default function ActionsPalette({
                     width: '3rem',
                     height: '3rem',
                     backgroundColor: 'teal',
-                    right: '5rem',
+                    right: '4rem',
                     borderRadius: '1.5rem',
                     position: 'absolute',
                     top: '-1.8rem',
                     boxSizing: 'border-box',
+                    boxShadow: '0 0 5px 5px darkgrey'
                 }}
             >
                 <svg
@@ -121,6 +127,25 @@ export default function ActionsPalette({
                         fill="white"
                     />
                 </svg>
+            </ButtonBase>
+
+            <ButtonBase
+                onClick={handleFightersClick}
+                style={{
+                    padding: 0,
+                    width: '3rem',
+                    height: '3rem',
+                    backgroundColor: 'teal',
+                    right: '8rem',
+                    borderRadius: '1.5rem',
+                    position: 'absolute',
+                    top: '-1.8rem',
+                    boxSizing: 'border-box',
+                    boxShadow: '0 0 5px 5px darkgrey',
+                    color: 'white'
+                }}
+            >
+                <FightersIcon />
             </ButtonBase>
 
             <Menu

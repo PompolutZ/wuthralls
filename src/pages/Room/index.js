@@ -60,6 +60,10 @@ function Room() {
     const [objectivesDiscardPile, setObjectivesDiscardPile] = useState(propertyToCards(data[myself.uid], 'dObjs')); 
     const [powersDiscardPile, setPowersDiscardPile] = useState(propertyToCards(data[myself.uid], 'dPws')); 
 
+    const [enemyScoredObjectivesPile, setEnemyScoredObjectivesPile] = useState(propertyToCards(data[data.players.find(p => p !== myself.uid)], 'sObjs')); 
+    const [enemyObjectivesDiscardPile, setEnemyObjectivesDiscardPile] = useState(propertyToCards(data[data.players.find(p => p !== myself.uid)], 'dObjs')); 
+    const [enemyPowersDiscardPile, setEnemyPowersDiscardPile] = useState(propertyToCards(data[data.players.find(p => p !== myself.uid)], 'dPws')); 
+
 
     useEffect(() => {
         const unsubscribe = firebase.setRoomListener(state.id, snapshot => {
@@ -88,13 +92,19 @@ function Room() {
         console.log('My Current Hand', serverHand, objectiveDrawPile, powersDrawPile);
         setHand(propertyToCards(data[myself.uid], 'hand'));
         
+        // my drawing piles
         setObjectiveDrawPile(propertyToCards(data[myself.uid], 'oDeck'));
         setPowersDrawPile(propertyToCards(data[myself.uid], 'pDeck'));
         
+        // my stuff
         setScoredObjectivesPile(propertyToCards(data[myself.uid], 'sObjs'));
         setObjectivesDiscardPile(propertyToCards(data[myself.uid], 'dObjs'));
         setPowersDiscardPile(propertyToCards(data[myself.uid], 'dPws'));
-    
+
+        // enemy stuff
+        setEnemyScoredObjectivesPile(propertyToCards(data[data.players.find(p => p !== myself.uid)], 'sObjs'));
+        setEnemyObjectivesDiscardPile(propertyToCards(data[data.players.find(p => p !== myself.uid)], 'dObjs'));
+        setEnemyPowersDiscardPile(propertyToCards(data[data.players.find(p => p !== myself.uid)], 'dPws'));
     }, [data]);
 
     useEffect(() => {
@@ -126,7 +136,8 @@ function Room() {
                         stickHeader ? {
                             position: 'fixed',
                             top: 0,
-                            width: '100%'
+                            width: '100%',
+                            zIndex: '1000',
                         } : {}
                     }>
                     {/* <BottomNavigationAction label="Actions" icon={<RestoreIcon />} /> */}
@@ -163,6 +174,9 @@ function Room() {
                         scoredObjectivesPile={scoredObjectivesPile}
                         objectivesDiscardPile={objectivesDiscardPile}
                         powersDiscardPile={powersDiscardPile}
+                        enemyScoredObjectivesPile={enemyScoredObjectivesPile}
+                        enemyObjectivesDiscardPile={enemyObjectivesDiscardPile}
+                        enemyPowersDiscardPile={enemyPowersDiscardPile}
                         onClose={setIsHUDOpen} />
                 )
             }    

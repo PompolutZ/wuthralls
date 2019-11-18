@@ -17,7 +17,7 @@ export default function Playground() {
     const [data, setData] = useState({
         id: 'FIGHTER_ID',
         type: 'FIGHTER',
-        icon: 'ironsouls-condemners-f3',
+        icon: 'ironsouls-condemners-3',
         name: 'Tavian',
         from: {x: -1, y: -1},
         onBoard: {x: -1, y: -1},

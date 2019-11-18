@@ -75,7 +75,7 @@ function Rooms() {
                 fighters: {
                     [`${myself.uid}_F1`]: {
                         type: 'FIGHTER',
-                        icon: 'ironsouls-condemners-f1',
+                        icon: 'ironsouls-condemners-1',
                         name: 'Ironsoul',
                         from: {x: -1, y: -1},
                         onBoard: {x: -1, y: -1},
@@ -85,7 +85,7 @@ function Rooms() {
                     },
                     [`${myself.uid}_F2`]: {
                         type: 'FIGHTER',
-                        icon: 'ironsouls-condemners-f2',
+                        icon: 'ironsouls-condemners-2',
                         name: 'Blightbane',
                         from: {x: -1, y: -1},
                         onBoard: {x: -1, y: -1},
@@ -95,7 +95,7 @@ function Rooms() {
                     },
                     [`${myself.uid}_F3`]: {
                         type: 'FIGHTER',
-                        icon: 'ironsouls-condemners-f3',
+                        icon: 'ironsouls-condemners-3',
                         name: 'Tavian',
                         from: {x: -1, y: -1},
                         onBoard: {x: -1, y: -1},
@@ -196,7 +196,7 @@ function Rooms() {
         const warband = [
             {
                 type: 'FIGHTER',
-                icon: 'ironsouls-condemners-f1',
+                icon: 'ironsouls-condemners-1',
                 name: 'Ironsoul',
                 from: {x: -1, y: -1},
                 onBoard: {x: -1, y: -1},
@@ -205,7 +205,7 @@ function Rooms() {
                 wounds: 0,
             }, {
                 type: 'FIGHTER',
-                icon: 'ironsouls-condemners-f2',
+                icon: 'ironsouls-condemners-2',
                 name: 'Blightbane',
                 from: {x: -1, y: -1},
                 onBoard: {x: -1, y: -1},
@@ -215,7 +215,7 @@ function Rooms() {
             },
             {
                 type: 'FIGHTER',
-                icon: 'ironsouls-condemners-f3',
+                icon: 'ironsouls-condemners-3',
                 name: 'Tavian',
                 from: {x: -1, y: -1},
                 onBoard: {x: -1, y: -1},

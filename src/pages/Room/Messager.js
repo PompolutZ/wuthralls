@@ -49,6 +49,33 @@ function DiceRollMessage({ id, author, value, type }) {
     )
 }
 
+function CardMessageItem({ isLastMessage, author, isMineMessage, cardId, value }) {
+    const classes = useStyles();
+
+    return (
+        <Grid id={isLastMessage ? 'lastMessage' : 'message'} item xs={12} className={classes.item} style={{ backgroundColor: author === 'Katophrane' ? 'rgba(0, 128, 128, .2)' : isMineMessage ? 'rgba(255, 140, 0, .2)' : 'rgba(138, 43, 226, .2)' }}>
+            <div>
+                <Typography variant="body2">{`${author}`}</Typography>
+            </div>
+            <Typography>{value}</Typography>
+            <img src={`/assets/cards/${cardId}.png`} style={{ width: '5rem' }} />
+        </Grid>                            
+    )
+}
+
+function ChatMessageItem({ isLastMessage, author, isMineMessage, value }) {
+    const classes = useStyles();
+
+    return (
+        <Grid id={isLastMessage ? 'lastMessage' : 'message'} item xs={12} className={classes.item} style={{ backgroundColor: author === 'Katophrane' ? 'rgba(0, 128, 128, .2)' : isMineMessage ? 'rgba(255, 140, 0, .2)' : 'rgba(138, 43, 226, .2)' }}>
+            <div>
+                <Typography variant="body2">{`${author}`}</Typography>
+            </div>
+            <Typography>{value}</Typography>
+        </Grid>                            
+    )
+}
+
 function Messenger({ roomId, state }) {
     const classes = useStyles();
     const myself = useAuthUser();
@@ -61,7 +88,7 @@ function Messenger({ roomId, state }) {
         const unsubscribe = firebase.setMessagesListener(roomId, doc => {
             if(doc.exists) {
                 console.log(doc.data());
-                setMessages(Object.values(doc.data()));
+                setMessages(Object.entries(doc.data()).map(([id, v]) => ({...v, id: id })));
                 const lastMessage = document.getElementById('lastMessage');
                 if(lastMessage) {
                     lastMessage.scrollIntoView();
@@ -80,15 +107,30 @@ function Messenger({ roomId, state }) {
             <Grid ref={containerRef} container spacing={0} className={classes.root}>
                 {
                     messages.length > 0 && messages.map((m, i, arr) => {
+                        if (m.type === 'INFO' && m.subtype && m.subtype.includes('CARD')) {
+                            return <CardMessageItem
+                                        key={m.id} 
+                                        isLastMessage={arr.length - 1 === i} 
+                                        author={m.author === 'Katophrane' ? m.author : Boolean(state[m.author]) ? state[m.author].name : m.author}
+                                        isMineMessage={m.author === myself.uid}
+                                        cardId={m.cardId}
+                                        value={m.value} />
+                        }
+
                         if(m.type === 'CHAT' || m.type === 'INFO') {
-                            return (
-                                <Grid id={arr.length - 1 === i ? 'lastMessage' : 'message'} item xs={12} key={m.created} className={classes.item} style={{ backgroundColor: m.author === 'Katophrane' ? 'rgba(0, 128, 128, .2)' : m.author === myself.uid ? 'rgba(255, 140, 0, .2)' : 'rgba(138, 43, 226, .2)' }}>
-                                    <div>
-                                        <Typography variant="body2">{`${m.author === 'Katophrane' ? m.author : Boolean(state[m.author]) ? state[m.author].name : m.author}`}</Typography>
-                                    </div>
-                                    <Typography>{m.value}</Typography>
-                                </Grid>                            
-                            )
+                            return <ChatMessageItem 
+                                    key={m.id} 
+                                    isLastMessage={arr.length - 1 === i} 
+                                    author={m.author === 'Katophrane' ? m.author : Boolean(state[m.author]) ? state[m.author].name : m.author}
+                                    isMineMessage={m.author === myself.uid}
+                                    value={m.value} />
+                                // <Grid id={arr.length - 1 === i ? 'lastMessage' : 'message'} item xs={12} key={m.created} className={classes.item} style={{ backgroundColor: m.author === 'Katophrane' ? 'rgba(0, 128, 128, .2)' : m.author === myself.uid ? 'rgba(255, 140, 0, .2)' : 'rgba(138, 43, 226, .2)' }}>
+                                //     <div>
+                                //         <Typography variant="body2">{`${}`}</Typography>
+                                //     </div>
+                                //     <Typography>{m.value}</Typography>
+                                // </Grid>                            
+                            
                         } 
 
                         if(m.type === 'DICE_ROLL') {

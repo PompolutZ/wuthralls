@@ -190,7 +190,7 @@ export default function FighterHUD({ data, unspentGlory, availableUpgrades, onUp
                 <Grid item xs={12}>
                     <Grid container justify="center">
                         <div style={{ position: 'relative' }}>
-                            <img src={`/assets/fighters/${data.icon}-card${data.isInspired ? '-ins' : ''}.png`} style={{ width: cardImageWidth, height: cardImageHeight }} />
+                            <img src={`/assets/fighters/${data.icon}${data.isInspired ? '-inspired' : ''}.png`} style={{ width: cardImageWidth, height: cardImageHeight }} />
                             <WoundsCounter wounds={data.wounds} onWoundsCounterChange={handleUpdateWounds} />
                             <ButtonBase style={{ 
                                 position: 'absolute', 
