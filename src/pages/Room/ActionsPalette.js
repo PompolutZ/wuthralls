@@ -189,7 +189,7 @@ export default function ActionsPalette({
                 />
             )}
             {selectedAction === 'FIGHTERS' && (
-                <Warband
+                <Warband roomId={data.id}
                     onSelectedFighterChange={onSelectedElementChange}
                     myfighters={Object.entries(data.board.fighters)
                         .map(([id, value]) => ({ ...value, id: id }))

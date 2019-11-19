@@ -309,7 +309,7 @@ export default function Board({ roomId, state, onBoardChange, selectedElement })
                             return (
                                 <img
                                     key={k}
-                                    src={`/assets/fighters/${fighter.icon}.png`}
+                                    src={`/assets/fighters/${fighter.icon}-icon.png`}
                                     style={{
                                         position: 'absolute',
                                         zIndex: 600,

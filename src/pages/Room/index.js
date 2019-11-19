@@ -137,7 +137,7 @@ function Room() {
                             position: 'fixed',
                             top: 0,
                             width: '100%',
-                            zIndex: '1000',
+                            zIndex: '2000',
                         } : {}
                     }>
                     {/* <BottomNavigationAction label="Actions" icon={<RestoreIcon />} /> */}
