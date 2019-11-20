@@ -2,9 +2,10 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useAuthUser } from '../../components/Session';
 import ButtonBase from '@material-ui/core/ButtonBase';
 import DeleteIcon from '@material-ui/icons/Delete';
+import EditIcon from '@material-ui/icons/Edit';
 import { FirebaseContext } from '../../firebase';
 
-export default function Warband({ roomId, myfighters, enemyFighters, onSelectedFighterChange }) {
+export default function Warband({ roomId, myfighters, enemyFighters, onSelectedFighterChange, onShowSelectedFighterInfo, playerInfo }) {
     const myself = useAuthUser();
     const fighters = [...myfighters, ...enemyFighters];
     const pointyTokenBaseWidth = 95;
@@ -30,6 +31,11 @@ export default function Warband({ roomId, myfighters, enemyFighters, onSelectedF
             subtype: 'PLACEMENT',
             value: `${myself.username} took ${fighter.name} out of action.`,
         })
+    }
+
+    const handleShowFighterInfo = fighter => e => {
+        onShowSelectedFighterInfo({ ...fighter, unspentGlory: playerInfo.gloryScored - playerInfo.glorySpent, playerInfo: playerInfo, roomId: roomId });
+        e.preventDefault();
     }
 
     return (
@@ -69,6 +75,30 @@ export default function Warband({ roomId, myfighters, enemyFighters, onSelectedF
                                 }}
                             />
                         </ButtonBase>
+                        {
+                            selectedFighter && selectedFighter.id === fighter.id && (
+                                <ButtonBase
+                                        style={{
+                                            position: 'absolute',
+                                            top: '0%',
+                                            right: '0%',
+                                            backgroundColor: 'teal',
+                                            color: 'white',
+                                            width: '2rem',
+                                            height: '2rem',
+                                            borderRadius: '1.5rem',
+                                        }}
+                                        onClick={handleShowFighterInfo(fighter)}
+                                    >
+                                        <EditIcon
+                                            style={{
+                                                width: '1rem',
+                                                height: '1rem',
+                                            }}
+                                        />
+                                </ButtonBase>
+                            )
+                        }
                     </div>
                 ))
             }                

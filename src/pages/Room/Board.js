@@ -131,7 +131,7 @@ export default function Board({ roomId, state, onBoardChange, selectedElement })
 
         const update = {
             ...tokenHexes,
-            ...featureTokens.reduce((r, [k, v]) => ({...r, [k]: {...v, isRevealed: true }}), {})
+            ...featureTokens.reduce((r, [k, v]) => ({...r, [k]: {...v, isRevealed: true, isLethal: false, }}), {})
         };
         setTokenHexes(update);
 
@@ -287,7 +287,7 @@ export default function Board({ roomId, state, onBoardChange, selectedElement })
                                 <img
                                     key={k}
                                     src={
-                                        !hex.isRevealed
+                                        hex.isLethal
                                             ? `/assets/tokens/feature_back.png`
                                             : `/assets/tokens/feature_front_${hex.number}.png`
                                     }

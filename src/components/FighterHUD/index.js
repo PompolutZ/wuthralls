@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import ButtonBase from '@material-ui/core/ButtonBase';
@@ -10,6 +10,9 @@ import InspireIcon from '@material-ui/icons/TrendingUp';
 import UninspireIcon from '@material-ui/icons/TrendingDown';
 import DoneIcon from '@material-ui/icons/Done';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
+import { cardsDb } from '../../data';
+import { FirebaseContext } from '../../firebase';
+import { useAuthUser } from '../Session';
 
 // [`${myself.uid}_F3`]: {
 //     type: 'FIGHTER',
@@ -55,9 +58,10 @@ function WoundsCounter({ wounds, onWoundsCounterChange }) {
     )
 }
 
-function UpgradePicker({ availableUpgrades, onUpgradePickerOpen, isOpen, onUpgradeSelected }) {
+function UpgradePicker({ playerInfo, onUpgradePickerOpen, isOpen, onUpgradeSelected }) {
+    const availableUpgrades = playerInfo && playerInfo.hand && playerInfo.hand.split(',').map(cardId => ({...cardsDb[cardId], id: cardId})).filter(c => c.type === 2);
     const [currentIndex, setCurrentIndex] = useState(0);
-    const [canMoveRight, setCanMoveRight] = useState(currentIndex < availableUpgrades.length);
+    const [canMoveRight, setCanMoveRight] = useState(availableUpgrades ? currentIndex < availableUpgrades.length : false);
     const [canMoveLeft, setCanMoveLeft] = useState(currentIndex > 0);
 
     const handleClickAway = () => {
@@ -90,7 +94,7 @@ function UpgradePicker({ availableUpgrades, onUpgradePickerOpen, isOpen, onUpgra
         <ClickAwayListener onClickAway={handleClickAway}>
             <div style={{  }}>
                 {
-                    isOpen ? (
+                    isOpen && availableUpgrades && availableUpgrades.length > 0 ? (
                             <div style={{
                                 position: 'fixed',
                                 width: cardImageWidth * 1.2,
@@ -113,7 +117,7 @@ function UpgradePicker({ availableUpgrades, onUpgradePickerOpen, isOpen, onUpgra
                                     backgroundPosition: 'center center',
                                     backgroundSize: 'cover',
                                     backgroundRepeat: 'no-repeat',
-                                    backgroundImage: `url(/assets/cards/${availableUpgrades[currentIndex]}.png)`
+                                    backgroundImage: `url(/assets/cards/${availableUpgrades[currentIndex].id}.png)`
                                 }} elevation={10} />
                                 <ButtonBase style={{ position: 'absolute', top: '50%', right: 0, marginRight: '1.5rem', backgroundColor: 'teal', color: 'white', width: '3rem', height: '3rem', borderRadius: '1.5rem' }}
                                     onClick={handleMoverSelectionToRight}>
@@ -135,14 +139,27 @@ function UpgradePicker({ availableUpgrades, onUpgradePickerOpen, isOpen, onUpgra
     )
 }
 
-export default function FighterHUD({ data, unspentGlory, availableUpgrades, onUpdateFighter }) {
-    const [upgrades, setUpgrades] = useState(Object.keys(data.upgrades));
+export default function FighterHUD({ data }) {
+    const myself = useAuthUser();
+    const firebase = useContext(FirebaseContext);
+    const { unspentGlory, playerInfo, roomId } = data;
+    const [upgrades, setUpgrades] = useState(Boolean(data.upgrades) ? data.upgrades.split(',') : []); //Object.keys(data.upgrades)
     const [selectedCardId, setSelectedCardId] = useState(null);
     const [upgradePickerOpen, setUpgradePickerOpen] = useState(false);
+    const [isInspired, setIsInspired] = useState(data.isInspired);
 
     useEffect(() => {
-        setUpgrades(Object.keys(data.upgrades));
+        // setUpgrades(Object.keys(data.upgrades));
+        console.log('FIGHTER HUD ON DATA', data);
     }, [data])
+
+    useEffect(() => {
+        firebase.updateBoardProperty(
+            roomId,
+            `board.fighters.${data.id}.isInspired`,
+            isInspired,
+        );
+    }, [isInspired]);
 
     const handleBringToFront = id => () => {
         setSelectedCardId(id);
@@ -156,27 +173,40 @@ export default function FighterHUD({ data, unspentGlory, availableUpgrades, onUp
         setUpgradePickerOpen(true);
     }
 
-    const handleUpgradeFighter = cardId => {
-        console.log(cardId)
-        onUpdateFighter('APPLY_UPGRADE', {
-            property: 'upgrades',
-            value: [...upgrades, cardId].reduce((r, x) => ({...r, [x]: true}), {}),
-            appliedUpgrade: cardId,
-        });
+    const handleUpgradeFighter = async card => {
+        console.log(card);
+
+        const fightersUpgrades = [...upgrades, card.id];
+        setUpgrades(fightersUpgrades);
+
+        await firebase.updateBoardProperty(
+            roomId,
+            `${myself.uid}.hand`,
+            playerInfo.hand.split(',').filter(cardId => cardId !== card.id).join(),
+        );
+
+        await firebase.updateBoardProperty(
+            roomId,
+            `board.fighters.${data.id}.upgrades`,
+            fightersUpgrades.join(),
+        );
+        // onUpdateFighter('APPLY_UPGRADE', {
+        //     property: 'upgrades',
+        //     value: [...upgrades, cardId].reduce((r, x) => ({...r, [x]: true}), {}),
+        //     appliedUpgrade: cardId,
+        // });
     }
 
-    const handleUpdateWounds = value => {
-        onUpdateFighter('CHANGE_WOUNDS', {
-            property: 'wounds',
-            value: value
-        });
+    const handleUpdateWounds = async value => {
+        await firebase.updateBoardProperty(
+            roomId,
+            `board.fighters.${data.id}.wounds`,
+            value,
+        );
     }
 
-    const changeInspire = () => {
-        onUpdateFighter('CHANGE_INSPIRE', {
-            property: 'isInspired',
-            value: !data.isInspired
-        });
+    const changeInspire = async () => {
+        setIsInspired(prev => !prev);
     }
 
     return (
@@ -190,7 +220,7 @@ export default function FighterHUD({ data, unspentGlory, availableUpgrades, onUp
                 <Grid item xs={12}>
                     <Grid container justify="center">
                         <div style={{ position: 'relative' }}>
-                            <img src={`/assets/fighters/${data.icon}${data.isInspired ? '-inspired' : ''}.png`} style={{ width: cardImageWidth, height: cardImageHeight }} />
+                            <img src={`/assets/fighters/${data.icon}${isInspired ? '-inspired' : ''}.png`} style={{ width: cardImageWidth, height: cardImageHeight }} />
                             <WoundsCounter wounds={data.wounds} onWoundsCounterChange={handleUpdateWounds} />
                             <ButtonBase style={{ 
                                 position: 'absolute', 
@@ -208,7 +238,7 @@ export default function FighterHUD({ data, unspentGlory, availableUpgrades, onUp
                             }}
                                 onClick={changeInspire}>
                                 {
-                                    data.isInspired ? <UninspireIcon style={{ width: '2rem', height: '2rem' }} /> : <InspireIcon style={{ width: '2rem', height: '2rem' }} />
+                                    isInspired ? <UninspireIcon style={{ width: '2rem', height: '2rem' }} /> : <InspireIcon style={{ width: '2rem', height: '2rem' }} />
                                 }
                             </ButtonBase>
                         </div>
@@ -279,7 +309,7 @@ export default function FighterHUD({ data, unspentGlory, availableUpgrades, onUp
             }
             {
                 upgradePickerOpen && (
-                    <UpgradePicker isOpen={upgradePickerOpen} availableUpgrades={availableUpgrades} onUpgradePickerOpen={setUpgradePickerOpen} onUpgradeSelected={handleUpgradeFighter} />
+                    <UpgradePicker isOpen={upgradePickerOpen} playerInfo={playerInfo} onUpgradePickerOpen={setUpgradePickerOpen} onUpgradeSelected={handleUpgradeFighter} />
                 )
             }
         </>

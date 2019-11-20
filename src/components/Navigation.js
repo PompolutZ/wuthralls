@@ -21,13 +21,13 @@ function NavigationAuth({ authUser }) {
                 <li>
                     <Link to="/playground">Playground</Link>
                 </li> */}
-                {
+                {/* {
                     !!authUser.roles[ROLES.ADMIN] && (
                         <li>
                             <Link to={ROUTES.ADMIN}>Admin</Link>
                         </li>
                     )
-                }
+                } */}
                 {
                     !!authUser.roles[ROLES.ADMIN] && (
                         <li>

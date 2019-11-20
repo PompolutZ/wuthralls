@@ -21,6 +21,99 @@ function shuffle(a) {
     return a;
 }
 
+const featureTokens = [{
+    type: 'FEATURE_HEX',
+    number: 1,
+    isRevealed: false,
+    isLethal: true,
+    isOnBoard: false,
+    from: {x: -1, y: -1},
+    onBoard: {x: -1, y: -1}
+},
+{
+    type: 'FEATURE_HEX',
+    number: 2,
+    isLethal: true,
+    isRevealed: false,
+    isOnBoard: false,
+    from: {x: -1, y: -1},
+    onBoard: {x: -1, y: -1}
+},
+{
+    type: 'FEATURE_HEX',
+    number: 3,
+    isLethal: true,
+    isRevealed: false,
+    isOnBoard: false,
+    from: {x: -1, y: -1},
+    onBoard: {x: -1, y: -1}
+},
+{
+    type: 'FEATURE_HEX',
+    number: 4,
+    isLethal: true,
+    isRevealed: false,
+    isOnBoard: false,
+    from: {x: -1, y: -1},
+    onBoard: {x: -1, y: -1}
+},
+{
+    type: 'FEATURE_HEX',
+    number: 5,
+    isLethal: true,
+    isRevealed: false,
+    isOnBoard: false,
+    from: {x: -1, y: -1},
+    onBoard: {x: -1, y: -1}
+},
+]
+
+const lethalHexTokens = new Array(2).fill({
+    type: 'LETHAL_HEX',
+    isOnBoard: false,
+    from: {x: -1, y: -1},
+    onBoard: {x: -1, y: -1}
+})
+
+const IronsoulCondemners = [
+    {
+        type: 'FIGHTER',
+        icon: 'ironsouls-condemners-1',
+        name: 'Ironsoul',
+        from: {x: -1, y: -1},
+        onBoard: {x: -1, y: -1},
+        isOnBoard: false,
+        isInspired: false,
+        wounds: 0,
+        tokens: '',
+        upgrades: '',
+    },
+    {
+        type: 'FIGHTER',
+        icon: 'ironsouls-condemners-2',
+        name: 'Blightbane',
+        from: {x: -1, y: -1},
+        onBoard: {x: -1, y: -1},
+        isOnBoard: false,
+        isInspired: false,
+        wounds: 0,
+        tokens: '',
+        upgrades: '',
+    },
+    {
+        type: 'FIGHTER',
+        icon: 'ironsouls-condemners-3',
+        name: 'Tavian',
+        from: {x: -1, y: -1},
+        onBoard: {x: -1, y: -1},
+        isOnBoard: false,
+        isInspired: false,
+        wounds: 0,
+        tokens: '',
+        upgrades: '',
+    },    
+]
+
 function Rooms() {
     const myself = useAuthUser();
     const firebase = useContext(FirebaseContext);
@@ -57,111 +150,56 @@ function Rooms() {
     }  
 
     const handleAddNewRoom = async () => {
-    //     const objectiveDeck = selectedFaction === 'ironsouls-condemners' 
-    //     ? new Array(12).fill(1).map((x, i) => `0${x + i + 5000}`)
-    //     : new Array(12).fill(33).map((x, i) => `0${x + i + 5000}`);
-
-    // const powerDeck = selectedFaction === 'ironsouls-condemners' 
-    //     ? new Array(20).fill(13).map((x, i) => `0${x + i + 5000}`)
-    //     : new Array(20).fill(33 + 12).map((x, i) => `0${x + i + 5000}`)
+        const featureHexTokens = shuffle(featureTokens).reduce((r, token, idx) => ({ ...r, [`Feature_${idx}`]: token }), {});
+        const lethalHexes = lethalHexTokens.reduce((r, token, idx) => ({ ...r, [`Lethal_${idx}`]: token }), {});
+        const myWarband = IronsoulCondemners.reduce((r, fighter, idx) => ({ ...r, [`${myself.uid}_F${idx}`]: fighter }), {});
 
         const payload = {
             name: roomName,
             createdBy: myself.uid,
+            status: {
+                round: 1,
+            },
             board: {
                 topId: 1,
                 bottomId: 2,
                 orientation: 'pointy',
                 fighters: {
-                    [`${myself.uid}_F1`]: {
-                        type: 'FIGHTER',
-                        icon: 'ironsouls-condemners-1',
-                        name: 'Ironsoul',
-                        from: {x: -1, y: -1},
-                        onBoard: {x: -1, y: -1},
-                        isOnBoard: false,
-                        isInspired: false,
-                        wounds: 0,
-                    },
-                    [`${myself.uid}_F2`]: {
-                        type: 'FIGHTER',
-                        icon: 'ironsouls-condemners-2',
-                        name: 'Blightbane',
-                        from: {x: -1, y: -1},
-                        onBoard: {x: -1, y: -1},
-                        isOnBoard: false,
-                        isInspired: false,
-                        wounds: 0,
-                    },
-                    [`${myself.uid}_F3`]: {
-                        type: 'FIGHTER',
-                        icon: 'ironsouls-condemners-3',
-                        name: 'Tavian',
-                        from: {x: -1, y: -1},
-                        onBoard: {x: -1, y: -1},
-                        isOnBoard: false,
-                        isInspired: false,
-                        wounds: 0,
-                    },
+                    ...myWarband,
+                    // [`${myself.uid}_F1`]: {
+                    //     type: 'FIGHTER',
+                    //     icon: 'ironsouls-condemners-1',
+                    //     name: 'Ironsoul',
+                    //     from: {x: -1, y: -1},
+                    //     onBoard: {x: -1, y: -1},
+                    //     isOnBoard: false,
+                    //     isInspired: false,
+                    //     wounds: 0,
+                    // },
+                    // [`${myself.uid}_F2`]: {
+                    //     type: 'FIGHTER',
+                    //     icon: 'ironsouls-condemners-2',
+                    //     name: 'Blightbane',
+                    //     from: {x: -1, y: -1},
+                    //     onBoard: {x: -1, y: -1},
+                    //     isOnBoard: false,
+                    //     isInspired: false,
+                    //     wounds: 0,
+                    // },
+                    // [`${myself.uid}_F3`]: {
+                    //     type: 'FIGHTER',
+                    //     icon: 'ironsouls-condemners-3',
+                    //     name: 'Tavian',
+                    //     from: {x: -1, y: -1},
+                    //     onBoard: {x: -1, y: -1},
+                    //     isOnBoard: false,
+                    //     isInspired: false,
+                    //     wounds: 0,
+                    // },
                 },
                 tokens: {
-                    'Lethal_1': {
-                        type: 'LETHAL_HEX',
-                        isOnBoard: false,
-                        from: {x: -1, y: -1},
-                        onBoard: {x: -1, y: -1}
-                    },
-                    'Lethal_2': {
-                        type: 'LETHAL_HEX',
-                        isOnBoard: false,
-                        from: {x: -1, y: -1},
-                        onBoard: {x: -1, y: -1}
-                    },
-                    'Feature_1': {
-                        type: 'FEATURE_HEX',
-                        number: 1,
-                        isRevealed: false,
-                        isLethal: true,
-                        isOnBoard: false,
-                        from: {x: -1, y: -1},
-                        onBoard: {x: -1, y: -1}
-                    },
-                    'Feature_2': {
-                        type: 'FEATURE_HEX',
-                        number: 2,
-                        isLethal: true,
-                        isRevealed: false,
-                        isOnBoard: false,
-                        from: {x: -1, y: -1},
-                        onBoard: {x: -1, y: -1}
-                    },
-                    'Feature_3': {
-                        type: 'FEATURE_HEX',
-                        number: 3,
-                        isLethal: true,
-                        isRevealed: false,
-                        isOnBoard: false,
-                        from: {x: -1, y: -1},
-                        onBoard: {x: -1, y: -1}
-                    },
-                    'Feature_4': {
-                        type: 'FEATURE_HEX',
-                        number: 4,
-                        isLethal: true,
-                        isRevealed: false,
-                        isOnBoard: false,
-                        from: {x: -1, y: -1},
-                        onBoard: {x: -1, y: -1}
-                    },
-                    'Feature_5': {
-                        type: 'FEATURE_HEX',
-                        number: 5,
-                        isLethal: true,
-                        isRevealed: false,
-                        isOnBoard: false,
-                        from: {x: -1, y: -1},
-                        onBoard: {x: -1, y: -1}
-                    },
+                    ...lethalHexes,
+                    ...featureHexTokens
                 }
             },
             players: [myself.uid],
@@ -169,7 +207,10 @@ function Rooms() {
                 name: myself.username,
                 faction: 'ironsouls-condemners',
                 oDeck: shuffle(new Array(12).fill(1).map((x, i) => `0${x + i + 5000}`)).join(),
-                pDeck: shuffle(new Array(20).fill(13).map((x, i) => `0${x + i + 5000}`)).join()
+                pDeck: shuffle(new Array(20).fill(13).map((x, i) => `0${x + i + 5000}`)).join(),
+                gloryScored: 0,
+                glorySpent: 0,
+                activationsLeft: 4
             }
         };
 
@@ -190,42 +231,46 @@ function Rooms() {
             name: myself.username,
             faction: 'ironsouls-condemners',
             oDeck: shuffle(new Array(12).fill(1).map((x, i) => `0${x + i + 5000}`)).join(),
-            pDeck: shuffle(new Array(20).fill(13).map((x, i) => `0${x + i + 5000}`)).join()
+            pDeck: shuffle(new Array(20).fill(13).map((x, i) => `0${x + i + 5000}`)).join(),
+            gloryScored: 0,
+            glorySpent: 0,
+            activationsLeft: 4,
         };
 
-        const warband = [
-            {
-                type: 'FIGHTER',
-                icon: 'ironsouls-condemners-1',
-                name: 'Ironsoul',
-                from: {x: -1, y: -1},
-                onBoard: {x: -1, y: -1},
-                isOnBoard: false,
-                isInspired: false,
-                wounds: 0,
-            }, {
-                type: 'FIGHTER',
-                icon: 'ironsouls-condemners-2',
-                name: 'Blightbane',
-                from: {x: -1, y: -1},
-                onBoard: {x: -1, y: -1},
-                isOnBoard: false,
-                isInspired: false,
-                wounds: 0,
-            },
-            {
-                type: 'FIGHTER',
-                icon: 'ironsouls-condemners-3',
-                name: 'Tavian',
-                from: {x: -1, y: -1},
-                onBoard: {x: -1, y: -1},
-                isOnBoard: false,
-                isInspired: false,
-                wounds: 0,
-            },            
-        ]
+        const myWarband = IronsoulCondemners.reduce((r, fighter, idx) => ({ ...r, [`${myself.uid}_F${idx}`]: fighter }), {});
+        // const warband = [
+        //     {
+        //         type: 'FIGHTER',
+        //         icon: 'ironsouls-condemners-1',
+        //         name: 'Ironsoul',
+        //         from: {x: -1, y: -1},
+        //         onBoard: {x: -1, y: -1},
+        //         isOnBoard: false,
+        //         isInspired: false,
+        //         wounds: 0,
+        //     }, {
+        //         type: 'FIGHTER',
+        //         icon: 'ironsouls-condemners-2',
+        //         name: 'Blightbane',
+        //         from: {x: -1, y: -1},
+        //         onBoard: {x: -1, y: -1},
+        //         isOnBoard: false,
+        //         isInspired: false,
+        //         wounds: 0,
+        //     },
+        //     {
+        //         type: 'FIGHTER',
+        //         icon: 'ironsouls-condemners-3',
+        //         name: 'Tavian',
+        //         from: {x: -1, y: -1},
+        //         onBoard: {x: -1, y: -1},
+        //         isOnBoard: false,
+        //         isInspired: false,
+        //         wounds: 0,
+        //     },            
+        // ]
 
-        await firebase.addPlayerToRoom(room.id, myself.uid, playerInfo, {...room.board.fighters, ...warband.reduce((r, f, i) => ({...r, [`${myself.uid}_F${i + 1}`]: f}), {})});
+        await firebase.addPlayerToRoom(room.id, myself.uid, playerInfo, {...room.board.fighters, ...myWarband });
     }
 
     return (
