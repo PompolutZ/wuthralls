@@ -153,3 +153,23 @@
 	cache-control = '''
     public,
 	max-age=86400'''
+
+[[headers]]
+  # Define which paths this specific [[headers]] block will cover.
+  for = "/assets/fighters/*.png"
+
+  [headers.values]
+    # Multi-value headers are expressed with multi-line strings.
+	cache-control = '''
+    public,
+	max-age=86400'''
+
+[[headers]]
+  # Define which paths this specific [[headers]] block will cover.
+  for = "/assets/boards/*.jpg"
+
+  [headers.values]
+    # Multi-value headers are expressed with multi-line strings.
+	cache-control = '''
+    public,
+	max-age=86400'''
