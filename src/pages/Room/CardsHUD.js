@@ -292,6 +292,10 @@ export default function CardsHUD({
         setHighlightCard(null);
     }
 
+    const handleStopHighlighting = () => {
+        setHighlightCard(null);
+    }
+
     return (
         <div
             style={{
@@ -309,21 +313,26 @@ export default function CardsHUD({
             <ButtonBase
                 style={{
                     position: 'fixed',
-                    top: '0%',
+                    bottom: '0%',
                     right: '0%',
-                    marginRight: '1rem',
+                    marginRight: '2rem',
+                    marginBottom: '2rem',
                     backgroundColor: 'red',
                     color: 'white',
-                    width: '2rem',
-                    height: '2rem',
+                    width: '3rem',
+                    height: '3rem',
+                    borderRadius: '1.5rem',
+                    boxShadow: '3px 3px 3px 0px black',
+                    boxSizing: 'border-box',
+                    border: '2px solid white',
                     borderRadius: '1.5rem',
                 }}
                 onClick={handleClose}
             >
                 <AddIcon
                     style={{
-                        width: '1rem',
-                        height: '1rem',
+                        width: '2rem',
+                        height: '2rem',
                         transform: 'rotate(45deg)',
                     }}
                 />
@@ -1002,6 +1011,7 @@ export default function CardsHUD({
                                 backgroundImage: `url(/assets/cards/${highlightCard.id}.png)`,
                             }}
                             elevation={10}
+                            onClick={handleStopHighlighting}
                         >
                             {
                                 (highlightFromSource === OBJECTIVES_HAND ||
@@ -1116,7 +1126,8 @@ export default function CardsHUD({
                             {
                                 (highlightFromSource === OBJECTIVES_SCORED ||
                                     highlightFromSource === OBJECTIVES_DISCARDED ||
-                                    highlightFromSource === POWERS_DISCARDED) && (
+                                    highlightFromSource === POWERS_DISCARDED) &&
+                                    selectedGroup === MY_CARDS_GROUP && (
                                             <ButtonBase
                                         style={{
                                             position: 'absolute',
@@ -1142,62 +1153,6 @@ export default function CardsHUD({
                             }
                         </Paper>
                     </ClickAwayListener>
-                    {/* <ButtonBase
-                            style={{
-                                position: 'absolute',
-                                top: '50%',
-                                right: 0,
-                                marginRight: '1.5rem',
-                                backgroundColor: 'teal',
-                                color: 'white',
-                                width: '3rem',
-                                height: '3rem',
-                                borderRadius: '1.5rem',
-                            }}
-                            onClick={handleMoverSelectionToRight}
-                        >
-                            <AddIcon
-                                style={{ width: '2rem', height: '2rem' }}
-                            />
-                        </ButtonBase>
-                        <ButtonBase
-                            style={{
-                                position: 'absolute',
-                                top: '50%',
-                                left: 0,
-                                marginLeft: '1.5rem',
-                                backgroundColor: 'teal',
-                                color: 'white',
-                                width: '3rem',
-                                height: '3rem',
-                                borderRadius: '1.5rem',
-                            }}
-                            onClick={handleMoveSelectionToLeft}
-                        >
-                            <RemoveIcon
-                                style={{ width: '2rem', height: '2rem' }}
-                            />
-                        </ButtonBase>
-                        <ButtonBase
-                            style={{
-                                position: 'absolute',
-                                bottom: 0,
-                                left: '50%',
-                                marginLeft: '-2.5rem',
-                                backgroundColor: 'green',
-                                color: 'white',
-                                width: '5rem',
-                                height: '5rem',
-                                borderRadius: '2.5rem',
-                            }}
-                            onClick={selectUpgrade(
-                                availableUpgrades[currentIndex]
-                            )}
-                        >
-                            <DoneIcon
-                                style={{ width: '4rem', height: '4rem' }}
-                            />
-                        </ButtonBase> */}
                 </div>
             )}
 

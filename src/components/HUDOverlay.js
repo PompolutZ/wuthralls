@@ -20,7 +20,22 @@ export default function HUDOverlay({ onCloseOverlayClick, children }){
             display: 'flex',
             flexFlow: 'column nowrap',
         }}>
-            <ButtonBase style={{ backgroundColor: 'red', color: 'white', position: 'absolute', top: 0, right: 0, borderRadius: '1rem', width: '2rem', height: '2rem', boxSizing: 'border-box' }}
+            <ButtonBase style={{
+                    position: 'absolute', 
+                    bottom: '0%',
+                    right: '0%',
+                    marginRight: '2rem',
+                    marginBottom: '2rem',
+                    backgroundColor: 'red',
+                    color: 'white',
+                    width: '3rem',
+                    height: '3rem',
+                    borderRadius: '1.5rem',
+                    boxShadow: '3px 3px 3px 0px black',
+                    boxSizing: 'border-box',
+                    border: '2px solid white',
+                    borderRadius: '1.5rem',
+             }}
                 onClick={onCloseOverlayClick}>
                 <AddIcon style={{ transform: 'rotate(45deg)'}} />
             </ButtonBase>

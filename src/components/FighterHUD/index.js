@@ -8,11 +8,16 @@ import AddIcon from '@material-ui/icons/Add';
 import RemoveIcon from '@material-ui/icons/Remove';
 import InspireIcon from '@material-ui/icons/TrendingUp';
 import UninspireIcon from '@material-ui/icons/TrendingDown';
+import MoveNextIcon from '@material-ui/icons/LabelImportant';
 import DoneIcon from '@material-ui/icons/Done';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import { cardsDb } from '../../data';
 import { FirebaseContext } from '../../firebase';
 import { useAuthUser } from '../Session';
+import DrawCardsIcon from '@material-ui/icons/GetApp';
+import PlayIcon from '@material-ui/icons/PlayArrow';
+import DeleteIcon from '@material-ui/icons/Delete';
+
 
 // [`${myself.uid}_F3`]: {
 //     type: 'FIGHTER',
@@ -59,7 +64,7 @@ function WoundsCounter({ wounds, onWoundsCounterChange }) {
 }
 
 function UpgradePicker({ playerInfo, onUpgradePickerOpen, isOpen, onUpgradeSelected }) {
-    const availableUpgrades = playerInfo && playerInfo.hand && playerInfo.hand.split(',').map(cardId => ({...cardsDb[cardId], id: cardId})).filter(c => c.type === 2);
+    const [availableUpgrades, setAvailableUpgrades] = useState(playerInfo && playerInfo.hand && playerInfo.hand.split(',').map(cardId => ({...cardsDb[cardId], id: cardId})).filter(c => c.type === 2));
     const [currentIndex, setCurrentIndex] = useState(0);
     const [canMoveRight, setCanMoveRight] = useState(availableUpgrades ? currentIndex < availableUpgrades.length : false);
     const [canMoveLeft, setCanMoveLeft] = useState(currentIndex > 0);
@@ -85,8 +90,9 @@ function UpgradePicker({ playerInfo, onUpgradePickerOpen, isOpen, onUpgradeSelec
         }
     }
 
-    const selectUpgrade = cardId => () => {
-        onUpgradeSelected(cardId);
+    const selectUpgrade = card => () => {
+        onUpgradeSelected(card);
+        setAvailableUpgrades(prev => prev.filter(c => c.id !== card.id));
         onUpgradePickerOpen(false);
     }
 
@@ -121,11 +127,11 @@ function UpgradePicker({ playerInfo, onUpgradePickerOpen, isOpen, onUpgradeSelec
                                 }} elevation={10} />
                                 <ButtonBase style={{ position: 'absolute', top: '50%', right: 0, marginRight: '1.5rem', backgroundColor: 'teal', color: 'white', width: '3rem', height: '3rem', borderRadius: '1.5rem' }}
                                     onClick={handleMoverSelectionToRight}>
-                                    <AddIcon style={{ width: '2rem', height: '2rem' }} />
+                                    <MoveNextIcon style={{ width: '2rem', height: '2rem' }} />
                                 </ButtonBase>
                                 <ButtonBase style={{ position: 'absolute', top: '50%', left: 0, marginLeft: '1.5rem', backgroundColor: 'teal', color: 'white', width: '3rem', height: '3rem', borderRadius: '1.5rem' }}
                                     onClick={handleMoveSelectionToLeft}>
-                                    <RemoveIcon style={{ width: '2rem', height: '2rem' }} />
+                                    <MoveNextIcon style={{ width: '2rem', height: '2rem', transform: 'rotate(180deg)' }} />
                                 </ButtonBase>
                                 <ButtonBase style={{ position: 'absolute', bottom: 0, left: '50%', marginLeft: '-2.5rem', backgroundColor: 'green', color: 'white', width: '5rem', height: '5rem', borderRadius: '2.5rem' }}
                                     onClick={selectUpgrade(availableUpgrades[currentIndex])}>
@@ -142,7 +148,8 @@ function UpgradePicker({ playerInfo, onUpgradePickerOpen, isOpen, onUpgradeSelec
 export default function FighterHUD({ data }) {
     const myself = useAuthUser();
     const firebase = useContext(FirebaseContext);
-    const { unspentGlory, playerInfo, roomId } = data;
+    const { roomId } = data;
+    const [playerInfo, setPlayerInfo] = useState(data.playerInfo);
     const [upgrades, setUpgrades] = useState(Boolean(data.upgrades) ? data.upgrades.split(',') : []); //Object.keys(data.upgrades)
     const [selectedCardId, setSelectedCardId] = useState(null);
     const [upgradePickerOpen, setUpgradePickerOpen] = useState(false);
@@ -150,7 +157,7 @@ export default function FighterHUD({ data }) {
 
     useEffect(() => {
         // setUpgrades(Object.keys(data.upgrades));
-        console.log('FIGHTER HUD ON DATA', data);
+        console.log('FIGHTER HUD ON DATA', upgrades);
     }, [data])
 
     useEffect(() => {
@@ -173,32 +180,44 @@ export default function FighterHUD({ data }) {
         setUpgradePickerOpen(true);
     }
 
-    const handleUpgradeFighter = async card => {
+    const handleUpgradeFighter = card => {
         console.log(card);
 
         const fightersUpgrades = [...upgrades, card.id];
         setUpgrades(fightersUpgrades);
 
-        await firebase.updateBoardProperty(
+        const updatedPlayerInfo = {
+            ...playerInfo,
+            hand: playerInfo.hand.split(',').filter(cardId => cardId !== card.id).join(),
+            glorySpent: playerInfo.glorySpent + 1,
+        }
+
+        setPlayerInfo(updatedPlayerInfo);
+
+        firebase.updateBoardProperty(
             roomId,
-            `${myself.uid}.hand`,
-            playerInfo.hand.split(',').filter(cardId => cardId !== card.id).join(),
+            `${myself.uid}`,
+            updatedPlayerInfo 
         );
 
-        await firebase.updateBoardProperty(
+        firebase.updateBoardProperty(
             roomId,
             `board.fighters.${data.id}.upgrades`,
             fightersUpgrades.join(),
         );
-        // onUpdateFighter('APPLY_UPGRADE', {
-        //     property: 'upgrades',
-        //     value: [...upgrades, cardId].reduce((r, x) => ({...r, [x]: true}), {}),
-        //     appliedUpgrade: cardId,
-        // });
+
+
+        firebase.addGenericMessage(roomId, {
+            author: 'Katophrane',
+            type: 'INFO',
+            subtype: 'APPLIED_UPGRADE_CARD',
+            cardId: card.id,
+            value: `${playerInfo.name} equips ${data.name} with ${card.name} upgrade.`,
+        });
     }
 
-    const handleUpdateWounds = async value => {
-        await firebase.updateBoardProperty(
+    const handleUpdateWounds = value => {
+        firebase.updateBoardProperty(
             roomId,
             `board.fighters.${data.id}.wounds`,
             value,
@@ -207,6 +226,71 @@ export default function FighterHUD({ data }) {
 
     const changeInspire = async () => {
         setIsInspired(prev => !prev);
+    }
+
+    const returnUpgradeToHand = cardId => () => {
+        console.log('return to hand', cardId, playerInfo);
+        const updatedPlayerInfo = {
+            ...playerInfo,
+            glorySpent: playerInfo.glorySpent - 1,
+            hand: Boolean(playerInfo.hand) ? [...playerInfo.hand.split(','), cardId].join() : [cardId].join(),
+        }
+
+        const fightersUpgrades = upgrades.filter(upgradeId => upgradeId !== cardId);
+        
+        setUpgrades(fightersUpgrades);
+        setPlayerInfo(updatedPlayerInfo);
+
+        firebase.updateBoardProperty(
+            roomId,
+            `${myself.uid}`,
+            updatedPlayerInfo
+        )
+
+        firebase.updateBoardProperty(
+            roomId,
+            `board.fighters.${data.id}.upgrades`,
+            fightersUpgrades.join(),
+        );
+
+        firebase.addGenericMessage(roomId, {
+            author: 'Katophrane',
+            type: 'INFO',
+            value: `${playerInfo.name} returns upgrade ${cardsDb[cardId].name} to his hand and gets 1 glory back.`,
+        });
+    }
+
+    const discardCard = cardId => () => {
+        console.log('discard', cardId, playerInfo);
+        const updatedPlayerInfo = {
+            ...playerInfo,
+            dPws: Boolean(playerInfo.dPws) ? [...playerInfo.dPws.split(','), cardId].join() : [cardId].join(),
+        }
+
+        const fightersUpgrades = upgrades.filter(upgradeId => upgradeId !== cardId);
+        
+        setUpgrades(fightersUpgrades);
+        setPlayerInfo(updatedPlayerInfo);
+
+        firebase.updateBoardProperty(
+            roomId,
+            `${myself.uid}`,
+            updatedPlayerInfo
+        )
+
+        firebase.updateBoardProperty(
+            roomId,
+            `board.fighters.${data.id}.upgrades`,
+            fightersUpgrades.join(),
+        );
+
+        firebase.addGenericMessage(roomId, {
+            author: 'Katophrane',
+            type: 'INFO',
+            subtype: 'DISCARDS_UPGRADE_CARD',
+            cardId: cardId,
+            value: `${playerInfo.name} discards upgrade card: ${cardsDb[cardId].name}.`,
+        });
     }
 
     return (
@@ -247,7 +331,7 @@ export default function FighterHUD({ data }) {
                 <Grid item xs={12} style={{ margin: '0rem 1rem', }}>
                     <Typography>Upgrades</Typography>
                     <Divider />
-                    <div style={{ display: 'flex', justifyContent: 'space-between', overflowX: 'scroll', alignItems: 'center', margin: '1rem' }}>
+                    <div style={{ display: 'flex', overflowX: 'scroll', alignItems: 'center', margin: '1rem' }}>
                         {
                             upgrades.length > 0 && upgrades.map(u => (
                                 <Paper id={u} key={u} style={{ 
@@ -266,7 +350,7 @@ export default function FighterHUD({ data }) {
                             ))
                         }
                         {
-                            unspentGlory > 0 && (
+                            playerInfo.gloryScored - playerInfo.glorySpent > 0 && (
                                 <div style={{ flexShrink: 0, width: cardImageWidth *.25, height: cardImageHeight *.25, border: '3px dashed black', boxSizing: 'border-box', borderRadius: '.5rem', display: 'flex'}}
                                     onClick={openUpgradePicker}>
                                     <AddIcon style={{ margin: 'auto' }} />
@@ -291,6 +375,7 @@ export default function FighterHUD({ data }) {
                                 zIndex: 10000
                             }}>
                                 <Paper style={{ 
+                                    position: 'relative',
                                     flexShrink: 0,
                                     width: cardImageWidth * .8, 
                                     height: cardImageHeight * .8, 
@@ -302,7 +387,51 @@ export default function FighterHUD({ data }) {
                                     backgroundSize: 'cover',
                                     backgroundRepeat: 'no-repeat',
                                     backgroundImage: `url(/assets/cards/${selectedCardId}.png)`
-                                }} elevation={10} onClick={handleCloseSelection} />
+                                }} elevation={10} onClick={handleCloseSelection}>
+                                    <ButtonBase
+                                        style={{
+                                            position: 'absolute',
+                                            bottom: '0%',
+                                            left: '0%',
+                                            marginLeft: '-1.5rem',
+                                            backgroundColor: 'teal',
+                                            color: 'white',
+                                            width: '3rem',
+                                            height: '3rem',
+                                            borderRadius: '1.5rem',
+                                        }}
+                                        onClick={returnUpgradeToHand(selectedCardId)}
+                                    >
+                                        <DrawCardsIcon
+                                            style={{
+                                                width: '2rem',
+                                                height: '2rem',
+                                                transform: 'rotate(180deg)'
+                                            }}
+                                        />
+                                    </ButtonBase>
+                                    <ButtonBase
+                                        style={{
+                                            position: 'absolute',
+                                            bottom: '0%',
+                                            right: '0%',
+                                            marginRight: '-1.5rem',
+                                            backgroundColor: 'red',
+                                            color: 'white',
+                                            width: '3rem',
+                                            height: '3rem',
+                                            borderRadius: '1.5rem',
+                                        }}
+                                        onClick={discardCard(selectedCardId)}
+                                    >
+                                        <DeleteIcon
+                                            style={{
+                                                width: '2rem',
+                                                height: '2rem',
+                                            }}
+                                        />
+                                    </ButtonBase>
+                                </Paper>
                             </div>
                         </ClickAwayListener>
                     )
