@@ -8,7 +8,7 @@ import { useTheme } from '@material-ui/core/styles';
 import QuestionAnswerIcon from '@material-ui/icons/QuestionAnswer';
 import RestoreIcon from '@material-ui/icons/Restore';
 import { makeStyles } from '@material-ui/core/styles';
-import { FirebaseContext } from '../../firebase';
+import { FirebaseContext } from '../../../firebase';
 import Fade from '@material-ui/core/Fade';
 import Messenger from './Messager';
 import RoomActionMaker from './RoomActionMaker';
@@ -19,9 +19,9 @@ import Paper from '@material-ui/core/Paper';
 import ButtonBase from '@material-ui/core/ButtonBase';
 import DrawCardsIcon from '@material-ui/icons/GetApp';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
-import { useAuthUser } from '../../components/Session';
+import { useAuthUser } from '../../../components/Session';
 import { Typography } from '@material-ui/core';
-import { cardsDb } from '../../data/index';
+import { cardsDb } from '../../../data/index';
 import CardsHUD from './CardsHUD';
 
 const cardDefaultWidth = 300;
@@ -37,7 +37,7 @@ const useStyles = makeStyles(theme => ({
     }
 }))
 
-function Room() {
+export default function PhoneRoom() {
     const classes = useStyles();
     const myself = useAuthUser();
     const firebase = useContext(FirebaseContext);
@@ -183,5 +183,3 @@ function Room() {
         </div>
     )
 }
-
-export default Room;

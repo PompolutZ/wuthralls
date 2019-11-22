@@ -1,7 +1,7 @@
 import React, { useContext, useState, useEffect } from 'react';
 import Grid from '@material-ui/core/Grid';
-import { useAuthUser } from '../../components/Session';
-import { FirebaseContext } from '../../firebase';
+import { useAuthUser } from '../../../components/Session';
+import { FirebaseContext } from '../../../firebase';
 import ButtonBase from '@material-ui/core/ButtonBase';
 import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';

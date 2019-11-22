@@ -6,14 +6,13 @@ import AddCircleIcon from '@material-ui/icons/AddCircle';
 import FightersIcon from '@material-ui/icons/SportsKabaddi';
 import GameOverviewIcon from '@material-ui/icons/EmojiEvents';
 import SendMessageAction from './SendMessageAction';
-import DiceTray from '../../components/DiceTray';
 import RollDiceAction from './RollDiceAction';
 import LethalHexesPile from './LethalHexesPile';
 import ObjectiveHexesPile from './ObjectiveHexesPile';
 import Warband from './Warband';
-import { useAuthUser } from '../../components/Session';
-import HUDOverlay from '../../components/HUDOverlay';
-import FighterHUD from '../../components/FighterHUD';
+import { useAuthUser } from '../../../components/Session';
+import HUDOverlay from '../../../components/HUDOverlay';
+import FighterHUD from '../../../components/FighterHUD';
 import GameStatusHUD from './GameStatusHUD';
 
 const actions = [

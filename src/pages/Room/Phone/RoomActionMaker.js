@@ -1,9 +1,9 @@
 import React, { useState, useContext } from 'react';
 import SplitButton from './SplitButton';
-import { useAuthUser } from '../../components/Session';
-import { FirebaseContext } from '../../firebase';
+import { useAuthUser } from '../../../components/Session';
+import { FirebaseContext } from '../../../firebase';
 import TextField from '@material-ui/core/TextField';
-import DiceTray from '../../components/DiceTray';
+import DiceTray from '../../../components/DiceTray';
 
 function RoomActionMaker({ roomId, }) {
     const myself = useAuthUser();

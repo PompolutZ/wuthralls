@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useContext } from 'react';
 import ButtonBase from '@material-ui/core/ButtonBase';
 import DeleteIcon from '@material-ui/icons/Delete';
-import { FirebaseContext } from '../../firebase';
-import { useAuthUser } from '../../components/Session';
+import { FirebaseContext } from '../../../firebase';
+import { useAuthUser } from '../../../components/Session';
 
 export default function LethalHexesPile({ roomId, tokens, onSelectedTokenChange }) {
     const myself = useAuthUser();

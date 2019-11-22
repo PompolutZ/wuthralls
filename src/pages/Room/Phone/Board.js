@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useRef, useContext } from 'react';
 import { defineGrid, extendHex } from 'honeycomb-grid';
 import * as SVG from 'svg.js';
-import { FirebaseContext } from '../../firebase';
-import { useAuthUser } from '../../components/Session';
+import { FirebaseContext } from '../../../firebase';
+import { useAuthUser } from '../../../components/Session';
 
 export default function Board({ roomId, state, onBoardChange, selectedElement }) {
     const baseBoardWidth = 757;

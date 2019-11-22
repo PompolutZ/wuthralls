@@ -1,6 +1,6 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { useAuthUser } from '../../components/Session';
-import { FirebaseContext } from '../../firebase';
+import { useAuthUser } from '../../../components/Session';
+import { FirebaseContext } from '../../../firebase';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import ButtonBase from '@material-ui/core/ButtonBase';
@@ -9,8 +9,7 @@ import AddIcon from '@material-ui/icons/Add';
 import RemoveIcon from '@material-ui/icons/Remove';
 import Grid from '@material-ui/core/Grid';
 import SendIcon from '@material-ui/icons/Send';
-import DiceTray from '../../components/DiceTray';
-import Die from '../../components/Die';
+import Die from '../../../components/Die';
 
 function getRandomIntInclusive(min, max) {
     min = Math.ceil(min);

@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { useAuthUser } from '../../components/Session';
+import { useAuthUser } from '../../../components/Session';
 import ButtonBase from '@material-ui/core/ButtonBase';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
-import { FirebaseContext } from '../../firebase';
+import { FirebaseContext } from '../../../firebase';
 
 export default function Warband({ roomId, myfighters, enemyFighters, onSelectedFighterChange, onShowSelectedFighterInfo, playerInfo }) {
     const myself = useAuthUser();

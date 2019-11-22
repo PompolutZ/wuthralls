@@ -1,5 +1,5 @@
 import React, { useEffect, useContext, useState, useRef } from 'react';
-import { FirebaseContext } from '../../firebase';
+import { FirebaseContext } from '../../../firebase';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
@@ -7,9 +7,9 @@ import Paper from '@material-ui/core/Paper';
 import TextField from '@material-ui/core/TextField';
 import { makeStyles } from '@material-ui/core/styles';
 import SendIcon from '@material-ui/icons/Send';
-import { useAuthUser } from '../../components/Session';
+import { useAuthUser } from '../../../components/Session';
 import SplitButton from './SplitButton';
-import Die from '../../components/Die';
+import Die from '../../../components/Die';
 
 
 const useStyles = makeStyles(theme => ({

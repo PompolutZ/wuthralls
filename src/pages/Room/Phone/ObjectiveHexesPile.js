@@ -2,8 +2,8 @@ import React, { useState, useEffect, useContext } from 'react';
 import ButtonBase from '@material-ui/core/ButtonBase';
 import DeleteIcon from '@material-ui/icons/Delete';
 import FlipIcon from '@material-ui/icons/Loop';
-import { FirebaseContext } from '../../firebase';
-import { useAuthUser } from '../../components/Session';
+import { FirebaseContext } from '../../../firebase';
+import { useAuthUser } from '../../../components/Session';
 
 export default function ObjectiveHexesPile({ roomId, tokens, onSelectedTokenChange }) {
     const myself = useAuthUser();

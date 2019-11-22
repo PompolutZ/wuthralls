@@ -15,8 +15,8 @@ import Prepare from '../pages/Prepare'
 import Game from '../pages/Game'
 import InteractiveBoard from '../pages/InteractiveBoard'
 import Rooms from '../pages/Rooms'
-import Room from '../pages/Room'
 import Playground from '../pages/Playground'
+import RoomSizePicker from '../pages/Room/RoomSizePicker'
 
 function App() {
     return (
@@ -39,7 +39,7 @@ function App() {
                 <Route path="/:version/table/:tableId/prepare" component={Prepare} />
                 <Route path="/:version/game/:tableId" component={Game} />
                 <Route path="/playground" component={Playground} />
-                <Route path="/:version/room/:roomId" component={Room} />
+                <Route path="/:version/room/:roomId" component={RoomSizePicker} />
                 
             </div>
         </Router>
