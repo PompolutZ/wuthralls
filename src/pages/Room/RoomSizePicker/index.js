@@ -6,9 +6,9 @@ import PhoneRoom from '../Phone';
 
 export default function RoomSizePicker({}) {
     const theme = useTheme();
-    const isMd = useMediaQuery(theme.breakpoints.up('md'));
+    const isLg = useMediaQuery(theme.breakpoints.up('lg'));
 
-    if(isMd) {
+    if(isLg) {
         return <DesktopRoom />
     } else {
         return <PhoneRoom />

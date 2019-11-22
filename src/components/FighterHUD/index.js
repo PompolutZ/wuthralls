@@ -17,6 +17,8 @@ import { useAuthUser } from '../Session';
 import DrawCardsIcon from '@material-ui/icons/GetApp';
 import PlayIcon from '@material-ui/icons/PlayArrow';
 import DeleteIcon from '@material-ui/icons/Delete';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
 
 
 // [`${myself.uid}_F3`]: {
@@ -154,11 +156,17 @@ export default function FighterHUD({ data }) {
     const [selectedCardId, setSelectedCardId] = useState(null);
     const [upgradePickerOpen, setUpgradePickerOpen] = useState(false);
     const [isInspired, setIsInspired] = useState(data.isInspired);
+    const [addTokenAnchor, setAddTokenAnchor] = useState(null);
+    const [tokens, setTokens] = useState(Boolean(data.tokens) ? data.tokens.split(',') : []);
 
     useEffect(() => {
         // setUpgrades(Object.keys(data.upgrades));
         console.log('FIGHTER HUD ON DATA', upgrades);
     }, [data])
+
+    useEffect(() => {
+        console.log('TOKENS', tokens);
+    }, [tokens])
 
     useEffect(() => {
         firebase.updateBoardProperty(
@@ -167,6 +175,56 @@ export default function FighterHUD({ data }) {
             isInspired,
         );
     }, [isInspired]);
+
+    const handleOpenAddTokenMenu = e => {
+        setAddTokenAnchor(e.currentTarget);
+    }
+
+    const handleCloseAddTokenMenu = () => {
+        setAddTokenAnchor(null);
+    }
+
+    const handleAddTokenAndCloseMenu = token => () => {
+        setAddTokenAnchor(null);
+        const updatedTokens = [...tokens, token];
+        setTokens(updatedTokens);
+
+        firebase.updateBoardProperty(
+            roomId,
+            `board.fighters.${data.id}.tokens`,
+            updatedTokens.join(),
+        );
+
+        firebase.addGenericMessage(roomId, {
+            author: 'Katophrane',
+            type: 'INFO',
+            subtype: 'ADD_TOKEN',
+            cardId: token,
+            value: `${playerInfo.name} gives ${data.name} ${token} token.`,
+        });
+    }
+
+    const handleRemoveTokenAt = index => () => {
+        const tokenToRemove = tokens[index];
+        if(!tokenToRemove) return;
+
+        const updatedTokens = [...tokens.slice(0, index), ...tokens.slice(index + 1)];
+        setTokens(updatedTokens);
+
+        firebase.updateBoardProperty(
+            roomId,
+            `board.fighters.${data.id}.tokens`,
+            updatedTokens.join(),
+        );
+
+        firebase.addGenericMessage(roomId, {
+            author: 'Katophrane',
+            type: 'INFO',
+            subtype: 'REMOVE_TOKEN',
+            cardId: tokenToRemove,
+            value: `${playerInfo.name} gives ${data.name} ${tokenToRemove} token.`,
+        });
+    }
 
     const handleBringToFront = id => () => {
         setSelectedCardId(id);
@@ -296,15 +354,24 @@ export default function FighterHUD({ data }) {
     return (
         <>
             <Grid container spacing={3} direction="column" style={{ filter: selectedCardId || upgradePickerOpen ? 'blur(3px)' : ''}}>
-                {/* <Grid item xs={12}>
-                    <Grid container justify="center">
-                        <Typography>{data.name}</Typography>
-                    </Grid>
-                </Grid> */}
                 <Grid item xs={12}>
                     <Grid container justify="center">
-                        <div style={{ position: 'relative' }}>
-                            <img src={`/assets/fighters/${data.icon}${isInspired ? '-inspired' : ''}.png`} style={{ width: cardImageWidth, height: cardImageHeight }} />
+                        <div style={{ position: 'relative', display: 'flex', flexFlow: 'column nowrap' }}>
+                            <img src={`/assets/fighters/${data.icon}${isInspired ? '-inspired' : ''}.png`} style={{ width: cardImageWidth * .9, height: cardImageHeight * .9 }} />
+                            <div style={{ display: 'flex', alignItems: 'center', marginTop: '.5rem', alignSelf: 'flex-end' }} onClick={handleOpenAddTokenMenu}>
+                                <AddIcon style={{ width: '1rem', height: '1rem', color: 'teal' }} />
+                                <Typography style={{ fontSize: '1rem', color: 'teal', textDecoration: 'underline' }}>Add Token</Typography>
+                            </div>
+                            <Menu id="tokensMenu"
+                                anchorEl={addTokenAnchor}
+                                keepMounted
+                                open={Boolean(addTokenAnchor)}
+                                onClose={handleCloseAddTokenMenu}
+                                style={{ zIndex: 10000 }}>
+                                <MenuItem onClick={handleAddTokenAndCloseMenu('M')}>Move Token</MenuItem>
+                                <MenuItem onClick={handleAddTokenAndCloseMenu('C')}>Charge Token</MenuItem>
+                                <MenuItem onClick={handleAddTokenAndCloseMenu('G')}>Guard Token</MenuItem>
+                            </Menu>
                             <WoundsCounter wounds={data.wounds} onWoundsCounterChange={handleUpdateWounds} />
                             <ButtonBase style={{ 
                                 position: 'absolute', 
@@ -325,6 +392,28 @@ export default function FighterHUD({ data }) {
                                     isInspired ? <UninspireIcon style={{ width: '2rem', height: '2rem' }} /> : <InspireIcon style={{ width: '2rem', height: '2rem' }} />
                                 }
                             </ButtonBase>
+                            {
+                                tokens && tokens.length > 0 && (
+                                    <div style={{ display: 'flex', flexFlow: 'column nowrap', position: 'absolute', top: '1rem', right: 0, marginRight: '-3rem' }}>
+                                        {
+                                            tokens.map((token, idx) => (
+                                                <div style={{ 
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    marginBottom: '1rem',
+                                                }}
+                                                key={idx}>
+                                                    <img src={`/assets/other/${token}.png`} style={{ width: '3rem', height: '3rem', boxSizing: 'border-box', border: '2px solid white' }} />
+                                                    <div style={{ width: '1.5rem', height: '1.5rem', backgroundColor: 'red', marginLeft: '-.7rem', border: '2px solid white' }}
+                                                        onClick={handleRemoveTokenAt(idx)}>
+                                                        <AddIcon style={{ color: 'white', width: '1.5rem', height: '1.5rem', transform: 'rotate(45deg)' }} />
+                                                    </div>
+                                                </div>
+                                            ))
+                                        }
+                                    </div>
+                                )
+                            }
                         </div>
                     </Grid>
                 </Grid>

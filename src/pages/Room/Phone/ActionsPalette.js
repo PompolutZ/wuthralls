@@ -102,7 +102,7 @@ export default function ActionsPalette({
                 width: '100%',
                 minHeight: 95 * 1.2,
                 zIndex: 10000,
-                backgroundColor: 'lightgray',
+                backgroundColor: 'rgba(192,192,192, .8)',
             }}
         >
             <ButtonBase

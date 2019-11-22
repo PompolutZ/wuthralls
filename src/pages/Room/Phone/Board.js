@@ -15,14 +15,14 @@ export default function Board({ roomId, state, onBoardChange, selectedElement })
     const myself = useAuthUser();
     const firebase = useContext(FirebaseContext);
     const rootRef = useRef(null);
-    const [selectedBoardElement, setSelectedBoardElement] = useState(selectedElement);
+    // const [selectedBoardElement, setSelectedBoardElement] = useState(selectedElement);
     const [svg, setSvg] = React.useState(null);
     const [grid, setGrid] = React.useState(null);
     const [tokenHexes, setTokenHexes] = useState(state.board.tokens);
     const [fighters, setFighters] = useState(state.board.fighters);
     // const [featureHexes, setFeatureHexes] = useState(tokens.filter(t => t.id.startsWith('Feature')));
     // const [lethalHexes, setLethalHexes] = useState(tokens.filter(t => t.id.startsWith('Lethal')));
-    const [selectedToken, setSelectedToken] = useState(null);
+    // const [selectedToken, setSelectedToken] = useState(null);
     const [selectedTokenId, setSelectedTokenId] = useState(null);
     const [hexPrototype, setHexPrototype] = React.useState(
         {

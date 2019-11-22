@@ -191,6 +191,14 @@ export default function GameStatusHUD({ data }) {
             );
         });
 
+        const fightersWithoutTokens = Object.entries(data.board.fighters).reduce((r, [fighterId, fighterData]) => ({...r, [fighterId]: { ...fighterData, tokens: '' }}), {});
+
+        firebase.updateBoardProperty(
+            data.id,
+            `board.fighters`,
+            fightersWithoutTokens,
+        );
+
         firebase.addGenericMessage(data.id, {
             author: 'Katophrane',
             type: 'INFO',
