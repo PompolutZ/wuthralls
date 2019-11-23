@@ -1,6 +1,9 @@
 import React from 'react';
 import { withRouter } from 'react-router-dom';
 import { FirebaseContext } from '../../firebase';
+import TextField from '@material-ui/core/TextField';
+import Grid from '@material-ui/core/Grid';
+import Button from '@material-ui/core/Button';
 
 import * as ROUTES from '../../constants/routes';
 import * as ROLES from '../../constants/roles';
@@ -73,48 +76,50 @@ function SignUpForm({ history }) {
 
     return (
         <form onSubmit={onSubmit}>
-            <input
-                name="username"
-                value={username}
-                onChange={onChange}
-                type="text"
-                placeholder="Full Name"
-            />
-            <input
-                name="email"
-                value={email}
-                onChange={onChange}
-                type="text"
-                placeholder="Email Address"
-            />
-            <input
-                name="passwordOne"
-                value={passwordOne}
-                onChange={onChange}
-                type="password"
-                placeholder="Password"
-            />
-            <input
-                name="passwordTwo"
-                value={passwordTwo}
-                onChange={onChange}
-                type="password"
-                placeholder="Confirm Password"
-            />
-            <label>
-                Admin:
-                <input
-                    name="isAdmin"
-                    type="checkbox"
-                    checked={isAdmin}
-                    onChange={onChangeCheckbox}
-                />
-            </label>
-            <button type="submit" disabled={isInvalid}>
-                Sign Up
-            </button>
-
-            {error && <p>{error.message}</p>}
+            <Grid container spacing={3} style={{ margin: '1rem' }}>
+                <Grid item xs={12}>
+                    <TextField
+                        name="username"
+                        value={username}
+                        onChange={onChange}
+                        type="text"
+                        placeholder="Full Name"
+                    />
+                </Grid>
+                <Grid item xs={12}>
+                    <TextField
+                        name="email"
+                        value={email}
+                        onChange={onChange}
+                        type="text"
+                        placeholder="Email Address"
+                    />
+                </Grid>
+                <Grid item xs={12}>
+                    <TextField
+                        name="passwordOne"
+                        value={passwordOne}
+                        onChange={onChange}
+                        type="password"
+                        placeholder="Password"
+                    />
+                </Grid>
+                <Grid item xs={12}>
+                    <TextField
+                        name="passwordTwo"
+                        value={passwordTwo}
+                        onChange={onChange}
+                        type="password"
+                        placeholder="Confirm Password"
+                    />
+                </Grid>
+                <Grid item xs={12}>
+                    <Button type="submit" disabled={isInvalid} color="primary" variant="contained">
+                        Sign Up
+                    </Button>
+                    {error && <p>{error.message}</p>}
+                </Grid>
+            </Grid>
         </form>
     )
 }

@@ -124,6 +124,8 @@ function Rooms() {
     const [otherRooms, setOtherRooms] = useState([]);
 
     useEffect(() => {
+        if(!myself) return;
+
         const unsubscribe = firebase.setRoomsListener(snapshot => {
             setRooms(snapshot.docs.map(doc => ({
                 id: doc.id,
@@ -136,11 +138,7 @@ function Rooms() {
 
     useEffect(() => {
         if(!rooms) return;
-        if(!myself) {
-            history.push('/signin');
-            return;
-        }
-        console.log(rooms)
+
         setMyRooms(rooms.filter(r => r.players.includes(myself.uid)));
         setOtherRooms(rooms.filter(r => !r.players.includes(myself.uid)));
     }, [rooms])
@@ -166,36 +164,6 @@ function Rooms() {
                 orientation: 'pointy',
                 fighters: {
                     ...myWarband,
-                    // [`${myself.uid}_F1`]: {
-                    //     type: 'FIGHTER',
-                    //     icon: 'ironsouls-condemners-1',
-                    //     name: 'Ironsoul',
-                    //     from: {x: -1, y: -1},
-                    //     onBoard: {x: -1, y: -1},
-                    //     isOnBoard: false,
-                    //     isInspired: false,
-                    //     wounds: 0,
-                    // },
-                    // [`${myself.uid}_F2`]: {
-                    //     type: 'FIGHTER',
-                    //     icon: 'ironsouls-condemners-2',
-                    //     name: 'Blightbane',
-                    //     from: {x: -1, y: -1},
-                    //     onBoard: {x: -1, y: -1},
-                    //     isOnBoard: false,
-                    //     isInspired: false,
-                    //     wounds: 0,
-                    // },
-                    // [`${myself.uid}_F3`]: {
-                    //     type: 'FIGHTER',
-                    //     icon: 'ironsouls-condemners-3',
-                    //     name: 'Tavian',
-                    //     from: {x: -1, y: -1},
-                    //     onBoard: {x: -1, y: -1},
-                    //     isOnBoard: false,
-                    //     isInspired: false,
-                    //     wounds: 0,
-                    // },
                 },
                 tokens: {
                     ...lethalHexes,
@@ -215,6 +183,7 @@ function Rooms() {
         };
 
         await firebase.addRoom(payload);
+        setRoomName('');
     }
 
     const handleGetInRoom = room => () => {
@@ -238,45 +207,13 @@ function Rooms() {
         };
 
         const myWarband = IronsoulCondemners.reduce((r, fighter, idx) => ({ ...r, [`${myself.uid}_F${idx}`]: fighter }), {});
-        // const warband = [
-        //     {
-        //         type: 'FIGHTER',
-        //         icon: 'ironsouls-condemners-1',
-        //         name: 'Ironsoul',
-        //         from: {x: -1, y: -1},
-        //         onBoard: {x: -1, y: -1},
-        //         isOnBoard: false,
-        //         isInspired: false,
-        //         wounds: 0,
-        //     }, {
-        //         type: 'FIGHTER',
-        //         icon: 'ironsouls-condemners-2',
-        //         name: 'Blightbane',
-        //         from: {x: -1, y: -1},
-        //         onBoard: {x: -1, y: -1},
-        //         isOnBoard: false,
-        //         isInspired: false,
-        //         wounds: 0,
-        //     },
-        //     {
-        //         type: 'FIGHTER',
-        //         icon: 'ironsouls-condemners-3',
-        //         name: 'Tavian',
-        //         from: {x: -1, y: -1},
-        //         onBoard: {x: -1, y: -1},
-        //         isOnBoard: false,
-        //         isInspired: false,
-        //         wounds: 0,
-        //     },            
-        // ]
-
         await firebase.addPlayerToRoom(room.id, myself.uid, playerInfo, {...room.board.fighters, ...myWarband });
     }
 
-    return (
-        <div>
-            <div style={{ display: 'flex', margin: 'auto 1rem' }}>
-                <TextField style={{ flex: '1' }} autoFocus
+    return myself ? (
+        <div style={{ margin: '1rem' }}>
+            <div style={{ display: 'flex', }}>
+                <TextField style={{ flex: '1' }}
                 margin="dense"
                 id="roomName"
                 label="Room name"
@@ -294,6 +231,7 @@ function Rooms() {
                     <Typography>No rooms available at the moment. Why don't you make one?</Typography>
                 )
             }
+            <br />
             {
                 rooms && (
                     <Grid container spacing={3}>
@@ -337,6 +275,10 @@ function Rooms() {
                     </Grid>
                 )
             }
+        </div>
+    ) : (
+        <div style={{ margin: '1rem' }}>
+            <Typography>Sign in to create rooms</Typography>
         </div>
     )
 }

@@ -13,8 +13,13 @@ export default function Warband({ roomId, myfighters, enemyFighters, onSelectedF
     const firebase = useContext(FirebaseContext);
 
     const handleFighterClicked = fighter => () => {
-        setSelectedFighter(fighter);
-        onSelectedFighterChange(fighter);
+        if(!selectedFighter || selectedFighter.id !== fighter.id) {
+            setSelectedFighter(fighter);
+            onSelectedFighterChange(fighter);
+        } else  {
+            setSelectedFighter(null);
+            onSelectedFighterChange(null);
+        }
     }
 
     useEffect(() => {
@@ -62,7 +67,7 @@ export default function Warband({ roomId, myfighters, enemyFighters, onSelectedF
                                 <div style={{ display: 'flex' }}>
                                     {
                                         fighter.tokens.split(',').map((token, idx) => (
-                                            <img key={idx} src={`/assets/other/${token}.png`} style={{ width: '1rem', marginRight: '.1rem' }} />
+                                            <img key={idx} src={`/assets/other/${token}.png`} style={{ width: '1rem', height: '1rem', marginRight: '.1rem' }} />
                                         ))
                                     }
                                 </div>

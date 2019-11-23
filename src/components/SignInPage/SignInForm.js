@@ -3,6 +3,9 @@ import { withRouter } from 'react-router-dom'
 
 import * as ROUTES from '../../constants/routes'
 import { FirebaseContext } from '../../firebase';
+import TextField from '@material-ui/core/TextField';
+import Grid from '@material-ui/core/Grid';
+import Button from '@material-ui/core/Button';
 
 const INITIAL_STATE = {
     email: '',
@@ -26,7 +29,7 @@ function SignInForm({ history }) {
             .signInWithEmailAndPassword(email, password)
             .then(() => {
                 setSignInFormState(INITIAL_STATE);
-                history.push(ROUTES.HOME)
+                history.push(ROUTES.LANDING)
             })
             .catch(error => {
                 setSignInFormState(prev => ({ ...prev, error: error }));
@@ -37,25 +40,37 @@ function SignInForm({ history }) {
 
     return (
         <form onSubmit={onSubmit}>
-            <input
-                name="email"
-                value={email}
-                onChange={onChange}
-                type="text"
-                placeholder="Email Address"
-            />
-            <input
-                name="password"
-                value={password}
-                onChange={onChange}
-                type="password"
-                placeholder="Password"
-            />
-            <button disabled={isInvalid} type="submit">
-                Sign In
-            </button>
+            <Grid container spacing={3} style={{ padding: '1rem'}}>
+                <Grid item xs={12}>
+                    <TextField
+                        fullWidth
+                        name="email"
+                        value={email}
+                        onChange={onChange}
+                        type="text"
+                        placeholder="Email Address"
+                    />
+                </Grid>
+                <Grid item xs={12}>
+                    <TextField
+                        fullWidth
+                        name="password"
+                        value={password}
+                        onChange={onChange}
+                        type="password"
+                        placeholder="Password"
+                    />
+                </Grid>
+                <Grid item xs={12}>
+                    <Button disabled={isInvalid} type="submit" color="primary" variant="contained">
+                        Sign In
+                    </Button>
+                </Grid>
+                <Grid item xs={12}>
+                    {error && <p>{error.message}</p>}
+                </Grid>
+            </Grid>
 
-            {error && <p>{error.message}</p>}
         </form>
     )
 }
