@@ -27,11 +27,11 @@ const actions = [
     },
     {
         type: 'PLACE_LETHAL_HEX',
-        value: 'Place Lethal Hex',
+        value: 'Lethal Hexes',
     },
     {
         type: 'PLACE_FEATURE_HEX',
-        value: 'Place Feature Hex',
+        value: 'Feature Hexes',
     },
     // {
     //     type: 'FIGHTERS',
@@ -59,7 +59,11 @@ export default function ActionsPalette({
     const [mainHUDPayload, setMainHUDPayload] = useState(null);
 
     const handleClick = event => {
-        setAnchorEl(event.currentTarget);
+        if(anchorEl) {
+            setAnchorEl(null);    
+        } else {
+            setAnchorEl(event.currentTarget);
+        }
     };
 
     const handleItemSelect = type => () => {
