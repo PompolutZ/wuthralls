@@ -1,5 +1,5 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import * as ROUTES from '../constants/routes'
 import * as ROLES from '../constants/roles'
 import SignOut from './SignOut'
@@ -39,17 +39,14 @@ function NavigationAuth({ authUser }) {
                     <SignOut />
                 </li>
             </ul>
-            <div>{authUser.uid}</div>   
-            <div>ver 1.1</div> 
+            <div>{authUser.username}</div>   
+            <div>ver 0.2.0</div> 
         </div>
     )
 }
 
 const NavigationNonAuth = () => (
     <ul>
-        {/* <li>
-            <Link to={ROUTES.LANDING}>Landing</Link>
-        </li> */}
         <li>
             <Link to={ROUTES.SIGN_IN}>Sign In</Link>
         </li>
@@ -58,6 +55,11 @@ const NavigationNonAuth = () => (
 
 function Navigation() {
     const authUser = useAuthUser()
+    const { pathname } = useLocation();
+    
+    if(pathname.includes('/v1/room')) {
+        return <span></span>
+    }
 
     return <div>{authUser ? <NavigationAuth authUser={authUser} /> : <NavigationNonAuth />}</div>
 }

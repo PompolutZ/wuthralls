@@ -3,7 +3,8 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import ButtonBase from '@material-ui/core/ButtonBase';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
-import FightersIcon from '@material-ui/icons/SportsKabaddi';
+import MessengerScreenIcon from '@material-ui/icons/QuestionAnswer';
+import BoardScreenIcon from '@material-ui/icons/ViewStream';
 import GameOverviewIcon from '@material-ui/icons/EmojiEvents';
 import SendMessageAction from './SendMessageAction';
 import RollDiceAction from './RollDiceAction';
@@ -46,7 +47,9 @@ export default function ActionsPalette({
     data,
     onSelectedElementChange,
     onActionTypeChange,
-    onOpenDeckHUD
+    onOpenDeckHUD,
+    visibleScreenType,
+    onSetScreenTabIndex
 }) {
     const myself = useAuthUser();
     const [anchorEl, setAnchorEl] = React.useState(null);
@@ -88,6 +91,10 @@ export default function ActionsPalette({
         setMainHUDPayload(null);
         
         e.preventDefault();
+    }
+
+    const handleSwitchScreen = () => {
+        onSetScreenTabIndex(Number(!Boolean(visibleScreenType)));
     }
 
     return (
@@ -200,6 +207,28 @@ export default function ActionsPalette({
                 }}
             >
                 <GameOverviewIcon />
+            </ButtonBase>
+
+            <ButtonBase
+                onClick={handleSwitchScreen}
+                style={{
+                    padding: 0,
+                    width: '3rem',
+                    height: '3rem',
+                    backgroundColor: 'teal',
+                    left: 0,
+                    marginLeft: '4rem',
+                    borderRadius: '1.5rem',
+                    position: 'absolute',
+                    top: '-1.8rem',
+                    boxSizing: 'border-box',
+                    boxShadow: '0 0 5px 5px darkgrey',
+                    color: 'white'
+                }}
+            >
+                {
+                    visibleScreenType === 1 ? <MessengerScreenIcon /> : <BoardScreenIcon />
+                }    
             </ButtonBase>
 
             <Menu

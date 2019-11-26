@@ -17,14 +17,13 @@ import InteractiveBoard from '../pages/InteractiveBoard'
 import Rooms from '../pages/Rooms'
 import Playground from '../pages/Playground'
 import RoomSizePicker from '../pages/Room/RoomSizePicker'
+import SpawnRoom from '../pages/SpawnRoom'
 
 function App() {
     return (
         <Router>
             <div>
                 <Navigation />
-
-                <hr />
 
                 <Route exact path={ROUTES.LANDING} component={Rooms} />
                 <Route path={ROUTES.SIGN_UP} component={SignUpPage} />
@@ -37,6 +36,7 @@ function App() {
                 <Route path={ROUTES.ACCOUNT} component={Account} />
                 <Route path={ROUTES.ADMIN} component={Admin} />
                 <Route exact path="/:version/room/:roomId/prepare" component={Prepare} />
+                <Route exact path="/:version/new/room" component={SpawnRoom} />
                 <Route path="/:version/game/:tableId" component={Game} />
                 <Route path="/playground" component={Playground} />
                 <Route exact path="/:version/room/:roomId" component={RoomSizePicker} />

@@ -1,31 +1,15 @@
 import React, { useEffect, useContext, useState, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
-import BottomNavigation from '@material-ui/core/BottomNavigation';
-import BottomNavigationAction from '@material-ui/core/BottomNavigationAction';
-import Divider from '@material-ui/core/Divider';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { useTheme } from '@material-ui/core/styles';
-import QuestionAnswerIcon from '@material-ui/icons/QuestionAnswer';
-import RestoreIcon from '@material-ui/icons/Restore';
 import { makeStyles } from '@material-ui/core/styles';
 import { FirebaseContext } from '../../../firebase';
-import Fade from '@material-ui/core/Fade';
 import Messenger from './Messager';
-import RoomActionMaker from './RoomActionMaker';
 import ActionsPalette from './ActionsPalette';
 import Board from './Board';
-import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper';
-import ButtonBase from '@material-ui/core/ButtonBase';
-import DrawCardsIcon from '@material-ui/icons/GetApp';
-import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import { useAuthUser } from '../../../components/Session';
-import { Typography } from '@material-ui/core';
 import { cardsDb } from '../../../data/index';
 import CardsHUD from './CardsHUD';
-
-const cardDefaultWidth = 300;
-const cardDefaultHeight = 420;
 
 const propertyToCards = (source, property) => {
     return source && source[property] && source[property].split(',').map(cardId => ({ ...cardsDb[cardId], id: cardId }));
@@ -72,17 +56,6 @@ export default function PhoneRoom() {
             }
         });
 
-        window.onscroll = () => {
-            if(navigationRef.current) {
-                console.log('scrolling', navigationRef.current.offsetTop);
-                if(window.pageYOffset > navigationRef.current.offsetTop) {
-                    setStickHeader(true);
-                } else {
-                    setStickHeader(false);
-                }
-            }
-        }
-
         return () => unsubscribe();
     }, []);
 
@@ -111,10 +84,6 @@ export default function PhoneRoom() {
         console.log('Room.onSelectedElementChange', selectedElement);
     }, [selectedElement]);
 
-    const handleTabChange = (event, newValue) => {
-        setTabIndex(newValue);
-    }
-
     const handleActionTypeChange = offsetHeight  => {
         setActionsPanelOffsetHeight(offsetHeight);
     }
@@ -126,25 +95,6 @@ export default function PhoneRoom() {
     return (
         <div>
             <div style={{ filter: isHUDOpen ? 'blur(3px)' : '' }}>
-                <BottomNavigation
-                    ref={navigationRef}
-                    className={classes.tabs}
-                    value={tabIndex}
-                    onChange={handleTabChange}
-                    showLabels
-                    style={
-                        stickHeader ? {
-                            position: 'fixed',
-                            top: 0,
-                            width: '100%',
-                            zIndex: '2000',
-                        } : {}
-                    }>
-                    {/* <BottomNavigationAction label="Actions" icon={<RestoreIcon />} /> */}
-                    <BottomNavigationAction label="Messages" icon={<QuestionAnswerIcon />} />
-                    <BottomNavigationAction label="Board" />
-                </BottomNavigation>
-                <Divider />                    
                 <div style={{ marginBottom: isHUDOpen ? 0 : 140 }}>
                 {
                     tabIndex === 0 && (
@@ -160,8 +110,9 @@ export default function PhoneRoom() {
                 <ActionsPalette onActionTypeChange={handleActionTypeChange} 
                     data={data} 
                     onSelectedElementChange={setSelectedElement}
-                    onOpenDeckHUD={changeOpenDeckHUD} />
-                {/* <RoomActionMaker roomId={state.id} /> */}
+                    onOpenDeckHUD={changeOpenDeckHUD}
+                    visibleScreenType={tabIndex}
+                    onSetScreenTabIndex={setTabIndex} />
             </div>
 
             {

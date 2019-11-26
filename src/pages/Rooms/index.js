@@ -22,60 +22,6 @@ function shuffle(a) {
     return a;
 }
 
-const featureTokens = [{
-    type: 'FEATURE_HEX',
-    number: 1,
-    isRevealed: false,
-    isLethal: true,
-    isOnBoard: false,
-    from: {x: -1, y: -1},
-    onBoard: {x: -1, y: -1}
-},
-{
-    type: 'FEATURE_HEX',
-    number: 2,
-    isLethal: true,
-    isRevealed: false,
-    isOnBoard: false,
-    from: {x: -1, y: -1},
-    onBoard: {x: -1, y: -1}
-},
-{
-    type: 'FEATURE_HEX',
-    number: 3,
-    isLethal: true,
-    isRevealed: false,
-    isOnBoard: false,
-    from: {x: -1, y: -1},
-    onBoard: {x: -1, y: -1}
-},
-{
-    type: 'FEATURE_HEX',
-    number: 4,
-    isLethal: true,
-    isRevealed: false,
-    isOnBoard: false,
-    from: {x: -1, y: -1},
-    onBoard: {x: -1, y: -1}
-},
-{
-    type: 'FEATURE_HEX',
-    number: 5,
-    isLethal: true,
-    isRevealed: false,
-    isOnBoard: false,
-    from: {x: -1, y: -1},
-    onBoard: {x: -1, y: -1}
-},
-]
-
-const lethalHexTokens = new Array(2).fill({
-    type: 'LETHAL_HEX',
-    isOnBoard: false,
-    from: {x: -1, y: -1},
-    onBoard: {x: -1, y: -1}
-})
-
 function Rooms() {
     const myself = useAuthUser();
     const firebase = useContext(FirebaseContext);
@@ -110,42 +56,7 @@ function Rooms() {
     }  
 
     const handleAddNewRoom = async () => {
-        const featureHexTokens = shuffle(featureTokens).reduce((r, token, idx) => ({ ...r, [`Feature_${idx}`]: token }), {});
-        const lethalHexes = lethalHexTokens.reduce((r, token, idx) => ({ ...r, [`Lethal_${idx}`]: token }), {});
-        const myWarband = warbands['ironsouls-condemners'].reduce((r, fighter, idx) => ({ ...r, [`${myself.uid}_F${idx}`]: fighter }), {});
-
-        const payload = {
-            name: roomName,
-            createdBy: myself.uid,
-            status: {
-                round: 1,
-            },
-            board: {
-                topId: 1,
-                bottomId: 2,
-                orientation: 'pointy',
-                fighters: {
-                    ...myWarband,
-                },
-                tokens: {
-                    ...lethalHexes,
-                    ...featureHexTokens
-                }
-            },
-            players: [myself.uid],
-            [myself.uid]: {
-                name: myself.username,
-                faction: 'ironsouls-condemners',
-                oDeck: shuffle(new Array(12).fill(1).map((x, i) => `0${x + i + 5000}`)).join(),
-                pDeck: shuffle(new Array(20).fill(13).map((x, i) => `0${x + i + 5000}`)).join(),
-                gloryScored: 0,
-                glorySpent: 0,
-                activationsLeft: 4
-            }
-        };
-
-        await firebase.addRoom(payload);
-        setRoomName('');
+        history.push(`/${'v1'}/new/room`);
     }
 
     const handleGetInRoom = room => () => {
@@ -164,7 +75,7 @@ function Rooms() {
     return myself ? (
         <div style={{ margin: '1rem' }}>
             <div style={{ display: 'flex', }}>
-                <TextField style={{ flex: '1' }}
+                {/* <TextField style={{ flex: '1' }}
                 margin="dense"
                 id="roomName"
                 label="Room name"
@@ -172,9 +83,9 @@ function Rooms() {
                 onChange={handleTextChange('roomName')}
                 type="text"
                 fullWidth
-                inputProps={{ maxLength: 100 }}/>
-                <Button variant="contained" color="primary" onClick={handleAddNewRoom} disabled={!roomName}>
-                    <AddIcon />
+                inputProps={{ maxLength: 100 }}/> */}
+                <Button variant="contained" color="primary" onClick={handleAddNewRoom} style={{ flex: '1' }} disabled={!myself}>
+                    Spawn New Room
                 </Button>
             </div>
             {
