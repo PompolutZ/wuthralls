@@ -8,6 +8,7 @@ import Divider from '@material-ui/core/Divider';
 import Grid from '@material-ui/core/Grid';
 import { FirebaseContext } from '../../firebase';
 import { useHistory } from 'react-router-dom';
+import { warbands } from '../../data';
 
 
 function shuffle(a) {
@@ -75,45 +76,6 @@ const lethalHexTokens = new Array(2).fill({
     onBoard: {x: -1, y: -1}
 })
 
-const IronsoulCondemners = [
-    {
-        type: 'FIGHTER',
-        icon: 'ironsouls-condemners-1',
-        name: 'Ironsoul',
-        from: {x: -1, y: -1},
-        onBoard: {x: -1, y: -1},
-        isOnBoard: false,
-        isInspired: false,
-        wounds: 0,
-        tokens: '',
-        upgrades: '',
-    },
-    {
-        type: 'FIGHTER',
-        icon: 'ironsouls-condemners-2',
-        name: 'Blightbane',
-        from: {x: -1, y: -1},
-        onBoard: {x: -1, y: -1},
-        isOnBoard: false,
-        isInspired: false,
-        wounds: 0,
-        tokens: '',
-        upgrades: '',
-    },
-    {
-        type: 'FIGHTER',
-        icon: 'ironsouls-condemners-3',
-        name: 'Tavian',
-        from: {x: -1, y: -1},
-        onBoard: {x: -1, y: -1},
-        isOnBoard: false,
-        isInspired: false,
-        wounds: 0,
-        tokens: '',
-        upgrades: '',
-    },    
-]
-
 function Rooms() {
     const myself = useAuthUser();
     const firebase = useContext(FirebaseContext);
@@ -150,7 +112,7 @@ function Rooms() {
     const handleAddNewRoom = async () => {
         const featureHexTokens = shuffle(featureTokens).reduce((r, token, idx) => ({ ...r, [`Feature_${idx}`]: token }), {});
         const lethalHexes = lethalHexTokens.reduce((r, token, idx) => ({ ...r, [`Lethal_${idx}`]: token }), {});
-        const myWarband = IronsoulCondemners.reduce((r, fighter, idx) => ({ ...r, [`${myself.uid}_F${idx}`]: fighter }), {});
+        const myWarband = warbands['ironsouls-condemners'].reduce((r, fighter, idx) => ({ ...r, [`${myself.uid}_F${idx}`]: fighter }), {});
 
         const payload = {
             name: roomName,
@@ -195,19 +157,8 @@ function Rooms() {
         setRooms(rooms => rooms.filter(r => r.id !== id));
     }
 
-    const handleJoinRoom = room => async () => {
-        const playerInfo = {
-            name: myself.username,
-            faction: 'ironsouls-condemners',
-            oDeck: shuffle(new Array(12).fill(1).map((x, i) => `0${x + i + 5000}`)).join(),
-            pDeck: shuffle(new Array(20).fill(13).map((x, i) => `0${x + i + 5000}`)).join(),
-            gloryScored: 0,
-            glorySpent: 0,
-            activationsLeft: 4,
-        };
-
-        const myWarband = IronsoulCondemners.reduce((r, fighter, idx) => ({ ...r, [`${myself.uid}_F${idx}`]: fighter }), {});
-        await firebase.addPlayerToRoom(room.id, myself.uid, playerInfo, {...room.board.fighters, ...myWarband });
+    const handleJoinRoom = room => () => {
+        history.push(`/${'v1'}/room/${room.id}/prepare`, room);
     }
 
     return myself ? (

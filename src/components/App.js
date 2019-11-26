@@ -36,10 +36,10 @@ function App() {
                 {/* <Route path={ROUTES.HOME} component={Home} /> */}
                 <Route path={ROUTES.ACCOUNT} component={Account} />
                 <Route path={ROUTES.ADMIN} component={Admin} />
-                <Route path="/:version/table/:tableId/prepare" component={Prepare} />
+                <Route exact path="/:version/room/:roomId/prepare" component={Prepare} />
                 <Route path="/:version/game/:tableId" component={Game} />
                 <Route path="/playground" component={Playground} />
-                <Route path="/:version/room/:roomId" component={RoomSizePicker} />
+                <Route exact path="/:version/room/:roomId" component={RoomSizePicker} />
                 
             </div>
         </Router>

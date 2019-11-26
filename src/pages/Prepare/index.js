@@ -3,21 +3,43 @@ import { useAuthUser } from '../../components/Session';
 import { useLocation, useHistory } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
+import Divider from '@material-ui/core/Divider';
+import TextField from '@material-ui/core/TextField';
 import ButtonBase from '@material-ui/core/ButtonBase';
 import Button from '@material-ui/core/Button';
+import UnknownIcon from '@material-ui/icons/Help';
 import { makeStyles } from '@material-ui/core/styles';
-import { factions } from '../../data';
+import { factions, cardsIdToFactionIndex, factionIndexes, warbands } from '../../data';
 import { FirebaseContext } from '../../firebase';
+
+function shuffle(a) {
+    var j, x, i;
+    for (i = a.length - 1; i > 0; i--) {
+        j = Math.floor(Math.random() * (i + 1));
+        x = a[i];
+        a[i] = a[j];
+        a[j] = x;
+    }
+    return a;
+}
 
 const useStyles = makeStyles(theme => ({
     root: {
         flexGrow: 1,
+        margin: '1rem',
     },
 
     iconImage: {
         width: '2rem',
         height: '2rem'
     },
+
+    factionIcon: { 
+        width: '4rem', 
+        height: '4rem', 
+        fill: 'teal', 
+        color: 'white' 
+    }
 }));
 
 function Prepare() {
@@ -26,72 +48,102 @@ function Prepare() {
     const firebase = useContext(FirebaseContext);
     const history = useHistory();
     const { state } = useLocation();
-    const [myData, setMyData] = useState(state && myself && state[myself.uid]);
-    const [selectedFaction, setSelectedFaction] = useState((myData && myData.faction) || null);
-    
-    useEffect(() => {
-        console.log(state);
-    }, []);
+    const [selectedFaction, setSelectedFaction] = useState(null);
+    const [objectiveCards, setObjectiveCards] = useState('');
+    const [powerCards, setPowerCards] = useState('');
+    const [playerIsReady, setPlayerIsReady] = useState(false);
 
     useEffect(() => {
-        console.log('MY DATA', myData);
-    }, [myData]);
+        console.log(objectiveCards, powerCards);
+        if(!Boolean(objectiveCards) && !Boolean(powerCards)) return;
 
-    useEffect(() => {
-        console.log('MY FACTION', selectedFaction);
-    }, [selectedFaction]);
-
-    const handleFactionClick = faction => () => {
-        console.log(faction);
-        setSelectedFaction(faction);
-    }
-
-    const handleReadyClick = async () => {
-        console.log(selectedFaction);
-        const objectiveDeck = selectedFaction === 'ironsouls-condemners' 
-            ? new Array(12).fill(1).map((x, i) => `0${x + i + 5000}`)
-            : new Array(12).fill(33).map((x, i) => `0${x + i + 5000}`);
-
-        const powerDeck = selectedFaction === 'ironsouls-condemners' 
-            ? new Array(20).fill(13).map((x, i) => `0${x + i + 5000}`)
-            : new Array(20).fill(33 + 12).map((x, i) => `0${x + i + 5000}`)
-            
-        const myUpdatedData = {
-            ...myData,
-            state: 'READY',
-            faction: selectedFaction,
-            objectiveDeck: objectiveDeck,
-            powerDeck: powerDeck,
+        const objectives = objectiveCards && objectiveCards.split(',');
+        const powers = powerCards && powerCards.split(',');
+        const allCards = [...objectives, ...powers];
+        let autoDeterminedFaction = null;
+        for(let c of allCards) {
+            if(Boolean(cardsIdToFactionIndex[c])) {
+                autoDeterminedFaction = factionIndexes[cardsIdToFactionIndex[c]];
+                setSelectedFaction(autoDeterminedFaction);
+                break;
+            }
         }
 
-        await firebase.updatePlayerInfo(state.id, myself.uid, myUpdatedData);
+        if(Boolean(autoDeterminedFaction) && objectives.length === 12 && powers.length >= 20) {
+            setPlayerIsReady(true);
+        }
+
+    }, [objectiveCards, powerCards])
+
+    const handleObjectiveCardsChange = e => {
+        setObjectiveCards(e.target.value);
+    }
+
+    const handlePowerCardsChange = e => {
+        setPowerCards(e.target.value);
+    }
+
+    const handleJoinTheRoom = async () => {
+        const playerInfo = {
+            name: myself.username,
+            faction: selectedFaction,
+            oDeck: shuffle(objectiveCards.split(',')).join(),
+            pDeck: shuffle(powerCards.split(',')).join(),
+            gloryScored: 0,
+            glorySpent: 0,
+            activationsLeft: 4,
+        };
+
+        const myWarband = warbands[selectedFaction].reduce((r, fighter, idx) => ({ ...r, [`${myself.uid}_F${idx}`]: fighter }), {});
+        console.log(state.id, myself.uid, playerInfo, {...state.board.fighters, ...myWarband });
+        await firebase.addPlayerToRoom(state.id, myself.uid, playerInfo, {...state.board.fighters, ...myWarband });
         history.push('/');
     }
 
     return (
-        <div>
-            <Grid className={classes.root} container spacing={3} direction="column" justify="center" alignItems="center">
+        <div className={classes.root}>
+            <Grid container spacing={3}>
                 <Grid item xs={12}>
-                    <Typography>Pick you faction wisely</Typography>
+                    <Typography>Copy paste your objective and power decks. Faction will be determined automatically.</Typography>
+                </Grid>
+                <Grid item xs={12} container alignItems="center" direction="column">
+                    <Typography variant="h6">Faction</Typography>
+                    {
+                        selectedFaction 
+                        ? <img className={classes.factionIcon} src={`/assets/factions/${selectedFaction}-icon.png`} />
+                        : <UnknownIcon className={classes.factionIcon} />
+                    }
+                    <Typography>Currently supported factions:</Typography>
+                    <div>
+                    {
+                        Object.keys(warbands).map(warband => (
+                            <img key={warband} src={`/assets/factions/${warband}-icon.png`} style={{ width: '2rem', height: '2rem'}} />
+                        ))
+                    }
+                    </div>
                 </Grid>
                 <Grid item xs={12}>
-                    <Grid container spacing={3}>
-                        {
-                            Object.keys(factions).map(faction => (
-                                <Grid item xs={4} key={faction}>
-                                    <ButtonBase onClick={handleFactionClick(faction)}>
-                                        <img className={classes.iconImage} src={`/assets/factions/${faction}-icon.png`} alt={faction}
-                                            style={{
-                                                transform: faction === selectedFaction ? 'scale(1.2)' : 'scale(1)'
-                                            }} />
-                                    </ButtonBase>
-                                </Grid>
-                            ))
-                        }
-                    </Grid>
+                    <Typography variant="h6">Objective cards pile</Typography>
+                    <Divider />
+                    <TextField 
+                        fullWidth 
+                        type="text"
+                        multiline
+                        value={objectiveCards}
+                        onChange={handleObjectiveCardsChange} />
                 </Grid>
                 <Grid item xs={12}>
-                    <Button variant="contained" color="primary" onClick={handleReadyClick} disabled={!selectedFaction}>I am Ready</Button>
+                    <Typography variant="h6">Power cards pile</Typography>
+                    <Divider />
+                    <TextField 
+                        fullWidth 
+                        type="text"
+                        multiline
+                        value={powerCards}
+                        onChange={handlePowerCardsChange} />
+                </Grid>
+                <Grid item xs={12}>
+                    <Button variant="contained" color="primary" onClick={handleJoinTheRoom} disabled={!playerIsReady}>Join</Button>
                 </Grid>
             </Grid>
         </div>
