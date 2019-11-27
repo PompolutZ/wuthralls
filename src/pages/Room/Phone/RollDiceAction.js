@@ -10,12 +10,20 @@ import RemoveIcon from '@material-ui/icons/Remove';
 import Grid from '@material-ui/core/Grid';
 import SendIcon from '@material-ui/icons/Send';
 import Die from '../../../components/Die';
+import { getRandomIntInclusive } from '../../../data/seed';
+//import seedrandom from 'seedrandom';
+//import { seeds } from '../../../data/seed';
 
-function getRandomIntInclusive(min, max) {
-    min = Math.ceil(min);
-    max = Math.floor(max);
-    return Math.floor(Math.random() * (max - min + 1)) + min; //The maximum is inclusive and the minimum is inclusive
-}
+// function getRandomIntInclusive(min, max, nextRandom) {
+//     min = Math.ceil(min);
+//     max = Math.floor(max);
+//     return Math.floor(nextRandom() * (max - min + 1)) + min; //The maximum is inclusive and the minimum is inclusive
+// }
+
+// const seeder = seedrandom();
+
+// const rng = seedrandom(seeds[getRandomIntInclusive(0, seeds.length - 1, seeder)], { entropy: true });
+
 
 export default function RollDiceAction({ roomId, rollResult, defaultAmount }) {
     const myself = useAuthUser();
@@ -37,16 +45,19 @@ export default function RollDiceAction({ roomId, rollResult, defaultAmount }) {
     // }
 
     const handleSendTextMessage = async () => {
-        const updated = values.map(_ => getRandomIntInclusive(1, 6));
-        setValues(updated);
-        // if(currentMessage.length <= 0) return;
-        // const copy = currentMessage;
-        // setCurrentMessage('');
-        await firebase.addDiceRoll(roomId, {
-            uid: myself.uid,
-            type: selectedType,
-            value: updated.join(),
-        });
+        //const updated = values.map(_ => getRandomIntInclusive(1, 6));
+        const amountOfRolls = 150;
+        const res = new Array(amountOfRolls).fill(0).map(v => getRandomIntInclusive(1, 6)).reduce((r, v) => ({...r, [v]: r[v] + 1}), { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0 });
+        console.table(Object.entries(res).reduce((r, [k, v]) => ({...r, [k]: v / amountOfRolls }), { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0 }));
+        // setValues(updated);
+        // // if(currentMessage.length <= 0) return;
+        // // const copy = currentMessage;
+        // // setCurrentMessage('');
+        // await firebase.addDiceRoll(roomId, {
+        //     uid: myself.uid,
+        //     type: selectedType,
+        //     value: updated.join(),
+        // });
     };
 
     const handleRollClick = () => {};
