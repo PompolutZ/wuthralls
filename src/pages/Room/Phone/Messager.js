@@ -34,13 +34,28 @@ function DiceRollMessage({ id, author, value, type, timestamp }) {
         setCreated(date);
     }, [])
 
+    console.log(type);
+
     return (
             <Grid id={id} item xs={12} className={classes.item} style={{ backgroundColor: 'rgba(30,144,255,.2)' }}>
             <Typography variant="body2" style={{ color: 'gray', fontWeight: 'bold', fontSize: '.6rem' }}>{`${author} rolls ${type}:`}</Typography>
             <Typography variant="body2" style={{ color: 'gray', fontSize: '.6rem' }}>{`${created && created.toLocaleString('en-US', { hour12: false })}`}</Typography>
             <div>
                 {
-                    value.split(',').map((x, i) => (
+                    value.split(',').map((x, i) => {
+                        console.log(i % 2);
+                        return type === 'INITIATIVE' ?
+                        <Die
+                            key={i}
+                            side={x}
+                            type={type}
+                            prefix={i % 2 === 0 ? 'D' : 'A'}
+                            style={{
+                                width: '2rem',
+                                height: '2rem',
+                                marginRight: '.2rem',
+                            }}
+                        /> :
                         <Die
                             key={i}
                             side={x}
@@ -51,8 +66,8 @@ function DiceRollMessage({ id, author, value, type, timestamp }) {
                                 marginRight: '.2rem',
                             }}
                         />
-                    ))    
-                }                
+                })
+            }                
             </div>
         </Grid>
     )
