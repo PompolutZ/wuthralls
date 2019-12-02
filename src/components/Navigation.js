@@ -40,7 +40,8 @@ function NavigationAuth({ authUser }) {
                 </li>
             </ul>
             <div>{authUser.username}</div>   
-            <div>ver 0.2.0</div> 
+            <div>ver 0.3.0</div>
+            <p> New: More boards and boards selection. </p> 
         </div>
     )
 }
