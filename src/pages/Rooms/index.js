@@ -109,7 +109,7 @@ function Rooms() {
                                         <Grid item xs={12}>
                                             <Button onClick={handleGetInRoom(r)}>Get In</Button>
                                             {
-                                                r.createdBy === myself.uid && (
+                                                (r.createdBy === myself.uid || (myself.roles && myself.roles['ADMIN'])) && (
                                                     <Button style={{ color: 'red' }} onClick={handleDeleteRoom(r.id)}>Delete</Button>
                                                 )
                                             }
@@ -129,6 +129,11 @@ function Rooms() {
                                         </Grid>
                                         <Grid item xs={12}>
                                             <Button onClick={handleJoinRoom(r)} disabled={!(r.players.length < 2)}>Join</Button>
+                                            {
+                                                myself.roles && myself.roles['ADMIN'] && (
+                                                    <Button style={{ color: 'red' }} onClick={handleDeleteRoom(r.id)}>Delete</Button>
+                                                )
+                                            }
                                         </Grid>
                                     </Grid>
                                 ))

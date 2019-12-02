@@ -33,6 +33,8 @@ class Firebase {
     signInWithEmailAndPassword = (email, password) => 
         this.auth.signInWithEmailAndPassword(email, password);
 
+    signInAnonymously = () => this.auth.signInAnonymously();        
+
     signOut = () => this.auth.signOut();
 
     sendPasswordResetEmail = email => this.auth.sendPasswordResetEmail(email);
@@ -42,21 +44,41 @@ class Firebase {
     onAuthUserListener = (next, fallback) => 
         this.auth.onAuthStateChanged(user => {
             if(user) {
-                this.user(user.uid)
-                .once('value')
-                .then(snapshot => {
-                    const dbUser = snapshot.val();
+                if(user.isAnonymous) {
+                    const anonUserPayload = {
+                        username: 'Anonymous',
+                        email: 'none',
+                    };
+                    this.user(user.uid).set(anonUserPayload)
+                    .then(() => {
+                        next({
+                            uid: user.uid,
+                            username: anonUserPayload.username,
+                            roles: {},
+                        });
+                    })
+                } else {
+                    this.user(user.uid)
+                    .once('value')
+                    .then(snapshot => {
+                        const dbUser = snapshot.val();
+                        
+                        if(!dbUser) {
+                            fallback();
+                            return;
+                        }
     
-                    if(!dbUser.roles) {
-                        dbUser.roles = {};
-                    }
-                    
-                    next({
-                        uid: user.uid,
-                        email: user.email,
-                        ...dbUser,
+                        if(!dbUser.roles) {
+                            dbUser.roles = {};
+                        }
+                        
+                        next({
+                            uid: user.uid,
+                            email: user.email,
+                            ...dbUser,
+                        });
                     });
-                });
+                }
             } else {
                 fallback();
             }

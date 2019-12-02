@@ -6,6 +6,8 @@ import { FirebaseContext } from '../../firebase';
 import TextField from '@material-ui/core/TextField';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
+import Divider from '@material-ui/core/Divider';
+import Typography from '@material-ui/core/Typography';
 
 const INITIAL_STATE = {
     email: '',
@@ -38,6 +40,12 @@ function SignInForm({ history }) {
         event.preventDefault();
     }
 
+    const handleAnonSignIn = () => {
+        firebase.signInAnonymously()
+            .then(() => history.push("/"))
+            .catch(e => setSignInFormState(prev => ({ ...prev, error: e })));
+    }
+
     return (
         <form onSubmit={onSubmit}>
             <Grid container spacing={3} style={{ padding: '1rem'}}>
@@ -65,6 +73,25 @@ function SignInForm({ history }) {
                     <Button disabled={isInvalid} type="submit" color="primary" variant="contained">
                         Sign In
                     </Button>
+                </Grid>
+                <Grid item xs={12}>
+                    <Grid container spacing={3}>
+                        <Grid item xs={5}>
+                            <Divider />
+                        </Grid>
+                        <Grid item xs={2} container justify="center">
+                            <Typography>OR</Typography>
+                        </Grid>
+                        <Grid item xs={5}>
+                            <Divider />
+                        </Grid>
+                    </Grid>
+                </Grid>
+                <Grid item xs={12}>
+                    <Button color="primary" variant="contained" onClick={handleAnonSignIn}>
+                        Sign In anonymously
+                    </Button>
+                    <Typography variant="body2">Note! This option is best only for trying this website. IF you want to access your rooms you need to sign in with some email and password (or sign up).</Typography>
                 </Grid>
                 <Grid item xs={12}>
                     {error && <p>{error.message}</p>}
