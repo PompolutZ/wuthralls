@@ -47,6 +47,7 @@ export default function CardsHUD({
     objectivesPile,
     powerCardsPile,
     serverHand,
+    enemyHand,
     scoredObjectivesPile,
     objectivesDiscardPile,
     powersDiscardPile,
@@ -62,6 +63,7 @@ export default function CardsHUD({
     const [discardedObjectives, setDiscardedObjectives] = useState(objectivesDiscardPile);
     const [discardedPowers, setDiscardedPowers] = useState(powersDiscardPile);
     const [hand, setHand] = useState(serverHand || []);
+    //const [enemyHand, setEnemyHand] = useState(serverHand || []);
     const firebase = useContext(FirebaseContext);
     const [highlightCard, setHighlightCard] = useState(null);
     const [highlightFromSource, setHighlightFromSource] = useState(null);
@@ -814,6 +816,98 @@ export default function CardsHUD({
             {
                 selectedGroup === ENEMY_CARDS_GROUP && (
                     <Grid container>
+                        <Grid item xs={12}>
+                            <Typography style={{ marginTop: '1rem' }}>
+                                Opponents Hand{' '}
+                                {`(${
+                                    enemyHand ? enemyHand.length
+                                        : 'empty'
+                                })`}
+                            </Typography>
+                            <Divider />
+                            <Grid container>
+                                <Grid item xs={6}>
+                                    <Paper
+                                        elevation={3}
+                                        style={{
+                                            position: 'relative',
+                                            backgroundImage:
+                                                'url(/assets/cards/objectives_back.png)',
+                                            backgroundSize: 'cover',
+                                            width: cardDefaultWidth * 0.2,
+                                            height: cardDefaultHeight * 0.2,
+                                            margin: 'auto',
+                                        }}
+                                    >
+                                        <Paper
+                                            elevation={3}
+                                            style={{
+                                                position: 'absolute',
+                                                zIndex: 1,
+                                                top: '0%',
+                                                left: '0%',
+                                                backgroundColor: 'goldenrod',
+                                                width: '2rem',
+                                                height: '2rem',
+                                                display: 'flex',
+                                                borderRadius: '1.5rem',
+                                                color: 'white',
+                                            }}
+                                        >
+                                            <Typography
+                                                style={{
+                                                    margin: 'auto',
+                                                    fontSize: '1.2rem',
+                                                }}
+                                            >
+                                                {enemyHand &&
+                                                    enemyHand.filter(c => c.type === 0).length}
+                                            </Typography>
+                                        </Paper>
+                                    </Paper>
+                                </Grid>
+                                <Grid item xs={6}>
+                                    <Paper
+                                        elevation={3}
+                                        style={{
+                                            position: 'relative',
+                                            backgroundImage:
+                                                'url(/assets/cards/powers_back.png)',
+                                            backgroundSize: 'cover',
+                                            width: cardDefaultWidth * 0.2,
+                                            height: cardDefaultHeight * 0.2,
+                                            margin: 'auto',
+                                        }}
+                                    >
+                                        <Paper
+                                            elevation={3}
+                                            style={{
+                                                position: 'absolute',
+                                                zIndex: 1,
+                                                top: '0%',
+                                                left: '0%',
+                                                backgroundColor: 'goldenrod',
+                                                width: '2rem',
+                                                height: '2rem',
+                                                display: 'flex',
+                                                borderRadius: '1.5rem',
+                                                color: 'white',
+                                            }}
+                                        >
+                                            <Typography
+                                                style={{
+                                                    margin: 'auto',
+                                                    fontSize: '1.2rem',
+                                                }}
+                                            >
+                                                {enemyHand &&
+                                                    enemyHand.filter(c => c.type !== 0).length}
+                                            </Typography>
+                                        </Paper>
+                                    </Paper>
+                                </Grid>
+                            </Grid>
+                        </Grid>
                         <Grid item xs={12}>
                             <Typography style={{ marginTop: '1rem' }}>
                                 Scored objectives{' '}

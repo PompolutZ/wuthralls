@@ -10,6 +10,7 @@ import Board from './Board';
 import { useAuthUser } from '../../../components/Session';
 import { cardsDb } from '../../../data/index';
 import CardsHUD from './CardsHUD';
+import useKatophrane from '../../../components/hooks/useKatophrane';
 
 const propertyToCards = (source, property) => {
     return source && source[property] && source[property].split(',').map(cardId => ({ ...cardsDb[cardId], id: cardId }));
@@ -26,6 +27,7 @@ export default function PhoneRoom() {
     const myself = useAuthUser();
     const firebase = useContext(FirebaseContext);
     const { state } = useLocation();
+    const katophrane = useKatophrane(state);
     const theme = useTheme();
     const isMd = useMediaQuery(theme.breakpoints.up('md'));
     const [tabIndex, setTabIndex] = React.useState(0);
@@ -36,6 +38,7 @@ export default function PhoneRoom() {
     const [actionsPanelOffsetHeight, setActionsPanelOffsetHeight] = useState(4 * 16);
     const [isHUDOpen, setIsHUDOpen] = useState(false);
     const [hand, setHand] = useState(propertyToCards(data[myself.uid], 'hand')); 
+    const [enemyHand, setEnemyHand] = useState(propertyToCards(data[data.players.find(p => p !== myself.uid)], 'hand')); 
     
     const [objectiveDrawPile, setObjectiveDrawPile] = useState(propertyToCards(data[myself.uid], 'oDeck')); 
     const [powersDrawPile, setPowersDrawPile] = useState(propertyToCards(data[myself.uid], 'pDeck')); 
@@ -60,6 +63,10 @@ export default function PhoneRoom() {
     }, []);
 
     useEffect(() => {
+        console.log('KATO', katophrane);
+    }, [katophrane]);
+
+    useEffect(() => {
         console.log('Room.OnDataUpdated', data);
         const serverHand = data[myself.uid].hand;
         console.log('My Current Hand', serverHand, objectiveDrawPile, powersDrawPile);
@@ -75,6 +82,7 @@ export default function PhoneRoom() {
         setPowersDiscardPile(propertyToCards(data[myself.uid], 'dPws'));
 
         // enemy stuff
+        setEnemyHand(propertyToCards(data[data.players.find(p => p !== myself.uid)], 'hand'));
         setEnemyScoredObjectivesPile(propertyToCards(data[data.players.find(p => p !== myself.uid)], 'sObjs'));
         setEnemyObjectivesDiscardPile(propertyToCards(data[data.players.find(p => p !== myself.uid)], 'dObjs'));
         setEnemyPowersDiscardPile(propertyToCards(data[data.players.find(p => p !== myself.uid)], 'dPws'));
@@ -122,6 +130,7 @@ export default function PhoneRoom() {
                         objectivesPile={objectiveDrawPile} 
                         powerCardsPile={powersDrawPile} 
                         serverHand={hand} 
+                        enemyHand={enemyHand}
                         scoredObjectivesPile={scoredObjectivesPile}
                         objectivesDiscardPile={objectivesDiscardPile}
                         powersDiscardPile={powersDiscardPile}

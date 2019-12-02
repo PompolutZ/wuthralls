@@ -112,6 +112,38 @@ class Firebase {
         }
     }
 
+    updateInteractiveMessage = async (roomId, path, payload) => {
+        try {
+            const roomRef = await this.fstore.collection("messages").doc(roomId);
+            await roomRef.update({
+                [path]: payload
+            });
+        } catch(error) {
+            console.error('updateInteractiveMessage', error);
+        }
+    }
+
+    updateInteractiveMessage3 = async (roomId, payload) => {
+        try {
+            const roomRef = await this.fstore.collection("messages").doc(roomId);
+            await roomRef.update(payload);
+        } catch(error) {
+            console.error('updateInteractiveMessage', error);
+        }
+    }
+
+    updateInteractiveMessage2 = async (roomId, timestamp, payload, playerId) => {
+        try {
+            const roomRef = await this.fstore.collection("messages").doc(roomId);
+            await roomRef.update({
+                ...payload,
+                [`${timestamp}.waitingFor`]: this.firestoreArrayRemove(playerId)
+            });
+        } catch(error) {
+            console.error('updateInteractiveMessage', error);
+        }
+    }
+
     setRoomsListener = onSnapshot => this.fstore.collection('rooms').onSnapshot(onSnapshot);
     setRoomListener = (roomId, onSnapshot) => this.fstore.collection('rooms').doc(roomId).onSnapshot(onSnapshot);
     setMessagesListener = (roomId, handler) => this.fstore.collection('messages').doc(roomId).onSnapshot(handler);

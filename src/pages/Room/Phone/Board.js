@@ -3,6 +3,7 @@ import { defineGrid, extendHex } from 'honeycomb-grid';
 import * as SVG from 'svg.js';
 import { FirebaseContext } from '../../../firebase';
 import { useAuthUser } from '../../../components/Session';
+import { Typography } from '@material-ui/core';
 
 export default function Board({ roomId, state, onBoardChange, selectedElement }) {
     const baseBoardWidth = 757;
@@ -68,6 +69,8 @@ export default function Board({ roomId, state, onBoardChange, selectedElement })
     const Grid = defineGrid(Hex);
 
     useEffect(() => {
+        if(!state.board.map) return;
+
         console.log(state);
         const svg = SVG(rootRef.current);
         setSvg(svg);
@@ -88,7 +91,7 @@ export default function Board({ roomId, state, onBoardChange, selectedElement })
             [0, 10], [1, 10], [2, 10], [3,10], [4,10], [5,10], [6,10], [7,10],            
         );
         
-        initGrid.forEach(hex => hex.render(svg, 'white'));
+        initGrid.forEach(hex => hex.render(svg, 'rgba(192,192,192,.7)'));
         setGrid(initGrid);
     }, []);
 
@@ -106,21 +109,6 @@ export default function Board({ roomId, state, onBoardChange, selectedElement })
         setTokenHexes(state.board.tokens);
         setFighters(state.board.fighters);
     }, [state]);
-
-    // useEffect(() => {
-    //     // if(!featureHexes || !selectedToken) return;
-    //     if(!tokenHexes || !selectedToken) return;
-    //     setTokenHexes({
-    //         ...tokenHexes,
-    //         [selectedToken.id]: {
-    //             ...tokenHexes[selectedToken.id],
-    //             ...selectedToken,
-    //         }
-    //     })
-
-    //     // const fHexes = featureHexes.filter(h => h.id !== selectedToken.id);
-    //     // setFeatureHexes([...fHexes, selectedToken]);
-    // }, [selectedToken])
 
     useEffect(() => {
         const featureTokens = Object.entries(tokenHexes).filter(([k, v]) => {
@@ -207,6 +195,14 @@ export default function Board({ roomId, state, onBoardChange, selectedElement })
         }
     }
 
+    if(!state.board.map || !state.board.map.top || !state.board.map.bottom) {
+        return (
+            <div style={{ display: 'flex' }}>
+                Waiting for players to select board pieces
+            </div>
+        )
+    }
+
     return (
         <div style={{ display: 'flex' }}>
             <div
@@ -219,17 +215,19 @@ export default function Board({ roomId, state, onBoardChange, selectedElement })
                 }}
             >
                 <img
-                    src={`/assets/boards/${state.board.topId}.jpg`}
+                    src={`/assets/boards/${state.board.map.top.id}.jpg`}
                     alt="board"
                     style={{
                         width: baseBoardWidth / scaleDownBy,
                         height: baseBoardHeight / scaleDownBy,
                         position: 'absolute',
                         zIndex: '1',
+                        transformOrigin: 'center center',
+                        transform: `rotate(${state.board.map.top.rotate}deg)`,
                     }}
                 />
                 <img
-                    src={`/assets/boards/${state.board.bottomId}.jpg`}
+                    src={`/assets/boards/${state.board.map.bottom.id}.jpg`}
                     alt="board2"
                     style={{
                         width: baseBoardWidth / scaleDownBy,
@@ -238,6 +236,8 @@ export default function Board({ roomId, state, onBoardChange, selectedElement })
                         zIndex: '1',
                         top: baseBoardHeight / scaleDownBy,
                         left: 0,
+                        transformOrigin: 'center center',
+                        transform: `rotate(${state.board.map.bottom.rotate}deg)`,
                     }}
                 />
                 <div
@@ -250,20 +250,6 @@ export default function Board({ roomId, state, onBoardChange, selectedElement })
                     ref={rootRef}
                     onClick={handleClick}
                 />
-                {/* {currentFeatureToken && (
-                    <img
-                        src={`/assets/tokens/lethal.png`}
-                        style={{
-                            position: 'absolute',
-                            zIndex: 500,
-                            width: pointyTokenBaseWidth * scaleFactor,
-                            top:
-                                currentFeatureToken.top +
-                                (baseSize * scaleFactor) / 2,
-                            left: currentFeatureToken.left,
-                        }}
-                    />
-                )} */}
                 {
                     tokenHexes && Object.entries(tokenHexes).map(([k, hex], index) => {
                         if(k.startsWith('Lethal') && hex.isOnBoard) {
@@ -307,65 +293,41 @@ export default function Board({ roomId, state, onBoardChange, selectedElement })
                     fighters && Object.entries(fighters).map(([k, fighter]) => {
                         if(fighter.isOnBoard) {
                             return (
-                                <img
+                                <div
                                     key={k}
-                                    src={`/assets/fighters/${fighter.icon}-icon.png`}
                                     style={{
                                         position: 'absolute',
+                                        backgroundImage: `url(/assets/fighters/${fighter.icon}-icon.png)`,
+                                        backgroundSize: 'cover',
                                         zIndex: 600,
                                         width: 80 * scaleFactor,
+                                        height: 80 * scaleFactor,
                                         top: fighter.top + ((95 - 80) * scaleFactor) * 2.75 - 2,
                                         left: fighter.left + ((95 - 80) * scaleFactor) / 2 - 2,
                                         border: k.startsWith(myself.uid) ? '3px solid limegreen' : '3px solid red',
                                         borderRadius: 80,
                                         boxShadow: k === selectedTokenId ? k.startsWith(myself.uid) ? '0 0 7px 7px limegreen' : '0 0 7px 7px red' : ''
-                                    }}
-                                />
+                                    }}>
+                                        <div style={{ 
+                                            position: 'absolute', 
+                                            zIndex: 601, 
+                                            width: '1rem', 
+                                            height: '1rem', 
+                                            backgroundColor: 'darkred',
+                                            display: 'flex',
+                                            border: '1px solid white',
+                                            borderRadius: '.5rem',
+                                            top: '-.2rem',
+                                            left: '-.2rem',
+                                            boxSizing: 'boarder-box', verticalAlign: 'middle' }}>
+                                                <Typography style={{ fontSize: '.8rem', margin: 'auto', color: 'white', verticalAlign: 'middle'}}>{fighter.wounds}</Typography>
+                                            </div>
+                                </div>
     
                             )
                         }
                     })
                 }
-                {/* {featureHexes &&
-                    featureHexes.map((hex, index, arr) => {
-                        if (hex.isOnBoard) {
-                            return (
-                                <img
-                                    key={index}
-                                    src={
-                                        !hex.isRevealed
-                                            ? `/assets/tokens/feature_back.png`
-                                            : `/assets/tokens/feature_front_${hex.number}.png`
-                                    }
-                                    style={{
-                                        position: 'absolute',
-                                        zIndex: 500,
-                                        width: pointyTokenBaseWidth * scaleFactor,
-                                        top: hex.top + (baseSize * scaleFactor) / 2,
-                                        left: hex.left,
-                                    }}
-                                />
-                            )
-                        }
-                    })}
-                {lethalHexes &&
-                    lethalHexes.map((hex, index) => {
-                        if(hex.isOnBoard) {
-                            return (
-                                <img
-                                    key={index}
-                                    src={`/assets/tokens/lethal.png`}
-                                    style={{
-                                        position: 'absolute',
-                                        zIndex: 500,
-                                        width: pointyTokenBaseWidth * scaleFactor,
-                                        top: hex.top + (baseSize * scaleFactor) / 2,
-                                        left: hex.left,
-                                    }}
-                                />
-                            );
-                        }
-                    })} */}
             </div>
         </div>
     );

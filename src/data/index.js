@@ -3,6 +3,7 @@ import { beastgraveDB } from './dbs/beastgrave_db';
 import { beastgraveGiftPackDb } from './dbs/beastgrave_giftpack_db';
 import powersUnboundCards from './dbs/powers_unbound_db';
 import { cardsdb } from './dbs/cardsdb';
+import boardsData from './boards';
 
 
 export const factions = {
@@ -40,12 +41,7 @@ export const factions = {
 }
 
 export const boards = {
-    1: {
-        name: 'Mirror Well'
-    },
-    2: {
-        name: `Katophrane's Reliquary`
-    },
+    ...boardsData,
 }
 
 export const cardsDb = {

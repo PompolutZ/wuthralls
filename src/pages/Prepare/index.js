@@ -11,6 +11,7 @@ import UnknownIcon from '@material-ui/icons/Help';
 import { makeStyles } from '@material-ui/core/styles';
 import { factions, cardsIdToFactionIndex, factionIndexes, warbands } from '../../data';
 import { FirebaseContext } from '../../firebase';
+import useKatophrane from '../../components/hooks/useKatophrane';
 
 function shuffle(a) {
     var j, x, i;
@@ -48,9 +49,10 @@ function Prepare() {
     const firebase = useContext(FirebaseContext);
     const history = useHistory();
     const { state } = useLocation();
+    const katophrane = useKatophrane(state);
     const [selectedFaction, setSelectedFaction] = useState(null);
-    const [objectiveCards, setObjectiveCards] = useState('');
-    const [powerCards, setPowerCards] = useState('');
+    const [objectiveCards, setObjectiveCards] = useState(''); //useState(`06270,06281,06099,06100,03340,03373,06103,06104,06106,03302,06107,03319`);
+    const [powerCards, setPowerCards] = useState(''); //useState(`07021,07022,06110,06363,06396,06122,06112,03550,06113,06434,06126,06368,03544,06118,06119,03436,06109,03514,03506,03529`);
     const [playerIsReady, setPlayerIsReady] = useState(false);
 
     useEffect(() => {
@@ -94,9 +96,13 @@ function Prepare() {
             activationsLeft: 4,
         };
 
+        console.log(selectedFaction);
         const myWarband = warbands[selectedFaction].reduce((r, fighter, idx) => ({ ...r, [`${myself.uid}_F${idx}`]: fighter }), {});
         console.log(state.id, myself.uid, playerInfo, {...state.board.fighters, ...myWarband });
         await firebase.addPlayerToRoom(state.id, myself.uid, playerInfo, {...state.board.fighters, ...myWarband });
+
+        katophrane.startNextInteractiveStep(myself.uid);
+
         history.push('/');
     }
 

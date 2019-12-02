@@ -103,10 +103,10 @@ export default function SpawnRoom() {
     const history = useHistory();
     const { state } = useLocation();
     const [selectedFaction, setSelectedFaction] = useState(null);
-    const [objectiveCards, setObjectiveCards] = useState('');
-    const [powerCards, setPowerCards] = useState('');
+    const [objectiveCards, setObjectiveCards] = useState(''); //useState(`04031,03340,03373,03385,04035,03310,03345,03004,03357,03006,03007,03319`);
+    const [powerCards, setPowerCards] = useState(''); //useState(`04050,06350,07021,03471,07014,03451,03551,03012,03023,04046,04003,03499,03389,03027,03446,03557,03504,03449,03506,03529`);
     const [playerIsReady, setPlayerIsReady] = useState(false);
-    const [roomName, setRoomName] = useState('');
+    const [roomName, setRoomName] = useState(''); //useState(`${Math.random()}`);
 
     useEffect(() => {
         console.log(objectiveCards, powerCards);
@@ -142,7 +142,7 @@ export default function SpawnRoom() {
         setRoomName(e.target.value);
     }
 
-    const handleJoinTheRoom = async () => {
+    const createNewRoom = async () => {
         const featureHexTokens = shuffle(featureTokens).reduce((r, token, idx) => ({ ...r, [`Feature_${idx}`]: token }), {});
         const lethalHexes = lethalHexTokens.reduce((r, token, idx) => ({ ...r, [`Lethal_${idx}`]: token }), {});
         const myWarband = warbands[selectedFaction].reduce((r, fighter, idx) => ({ ...r, [`${myself.uid}_F${idx}`]: fighter }), {});
@@ -151,12 +151,9 @@ export default function SpawnRoom() {
             name: roomName,
             createdBy: myself.uid,
             status: {
-                round: 1,
+                round: 0,
             },
             board: {
-                topId: 1,
-                bottomId: 2,
-                orientation: 'pointy',
                 fighters: {
                     ...myWarband,
                 },
@@ -168,7 +165,7 @@ export default function SpawnRoom() {
             players: [myself.uid],
             [myself.uid]: {
                 name: myself.username,
-                faction: 'ironsouls-condemners',
+                faction: selectedFaction,
                 oDeck: shuffle(objectiveCards.split(',')).join(),
                 pDeck: shuffle(powerCards.split(',')).join(),
                 gloryScored: 0,
@@ -248,7 +245,7 @@ export default function SpawnRoom() {
                         onChange={handlePowerCardsChange} />
                 </Grid>
                 <Grid item xs={12}>
-                    <Button variant="contained" color="primary" onClick={handleJoinTheRoom} disabled={!playerIsReady}>Create</Button>
+                    <Button variant="contained" color="primary" onClick={createNewRoom} disabled={!playerIsReady}>Create</Button>
                 </Grid>
             </Grid>
         </div>
