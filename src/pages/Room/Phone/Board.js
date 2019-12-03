@@ -21,6 +21,15 @@ export default function Board({ roomId, state, onBoardChange, selectedElement })
     const [grid, setGrid] = React.useState(null);
     const [tokenHexes, setTokenHexes] = useState(state.board.tokens);
     const [fighters, setFighters] = useState(state.board.fighters);
+    const [scatterToken, setScatterToken] = useState({
+        id: 'SCATTER_TOKEN',
+        type: 'SCATTER_TOKEN',
+        isOnBoard: false,
+        rotationAngle: 0,
+        onBoard: {x: -1, y: -1},
+        top: -10000,
+        left: -10000,
+    })    
     // const [featureHexes, setFeatureHexes] = useState(tokens.filter(t => t.id.startsWith('Feature')));
     // const [lethalHexes, setLethalHexes] = useState(tokens.filter(t => t.id.startsWith('Lethal')));
     // const [selectedToken, setSelectedToken] = useState(null);
@@ -69,7 +78,7 @@ export default function Board({ roomId, state, onBoardChange, selectedElement })
     const Grid = defineGrid(Hex);
 
     useEffect(() => {
-        if(!state.board.map) return;
+        //if(!state.board.map) return;
 
         console.log(state);
         const svg = SVG(rootRef.current);
@@ -97,6 +106,14 @@ export default function Board({ roomId, state, onBoardChange, selectedElement })
 
     useEffect(() => {
         console.log('Board.OnSelectedElementChange', selectedElement);
+
+        if(selectedElement && selectedElement.type === 'SCATTER_TOKEN') {
+            setScatterToken({
+                ...scatterToken,
+                rotationAngle: selectedElement.rotationAngle,
+                isOnBoard: selectedElement.isOnBoard,
+            });
+        }
 
         if(!selectedElement){
             setSelectedTokenId(null);
@@ -141,7 +158,14 @@ export default function Board({ roomId, state, onBoardChange, selectedElement })
             const {x, y} = hex.toPoint();
             console.log(offsetX, offsetY, hex.toPoint(), hexCoordinates)
             if(selectedTokenId) {
-                if(selectedElement.type === 'FIGHTER') {
+                if(selectedElement.type === 'SCATTER_TOKEN') {
+                    setScatterToken({
+                        ...scatterToken,
+                        top: y,
+                        left: x,
+                        onBoard: { x: hexCoordinates.x, y: hexCoordinates.y }
+                    })
+                } else if(selectedElement.type === 'FIGHTER') {
                     const updatedFighter = {
                         ...fighters[selectedTokenId],
                         from: fighters[selectedTokenId].isOnBoard ? fighters[selectedTokenId].onBoard : {x: -1, y: -1 },
@@ -195,13 +219,13 @@ export default function Board({ roomId, state, onBoardChange, selectedElement })
         }
     }
 
-    if(!state.board.map || !state.board.map.top || !state.board.map.bottom) {
-        return (
-            <div style={{ display: 'flex' }}>
-                Waiting for players to select board pieces
-            </div>
-        )
-    }
+    // if(!state.board.map || !state.board.map.top || !state.board.map.bottom) {
+    //     return (
+    //         <div style={{ display: 'flex' }}>
+    //             Waiting for players to select board pieces
+    //         </div>
+    //     )
+    // }
 
     return (
         <div style={{ display: 'flex' }}>
@@ -215,7 +239,8 @@ export default function Board({ roomId, state, onBoardChange, selectedElement })
                 }}
             >
                 <img
-                    src={`/assets/boards/${state.board.map.top.id}.jpg`}
+                    //src={`/assets/boards/${state.board.map.top.id}.jpg`}
+                    src={`/assets/boards/1.jpg`}
                     alt="board"
                     style={{
                         width: baseBoardWidth / scaleDownBy,
@@ -223,11 +248,13 @@ export default function Board({ roomId, state, onBoardChange, selectedElement })
                         position: 'absolute',
                         zIndex: '1',
                         transformOrigin: 'center center',
-                        transform: `rotate(${state.board.map.top.rotate}deg)`,
+                        //transform: `rotate(${state.board.map.top.rotate}deg)`,
+                        transform: `rotate(0deg)`,
                     }}
                 />
                 <img
-                    src={`/assets/boards/${state.board.map.bottom.id}.jpg`}
+                    src={`/assets/boards/10.jpg`}
+                    //src={`/assets/boards/${state.board.map.bottom.id}.jpg`}
                     alt="board2"
                     style={{
                         width: baseBoardWidth / scaleDownBy,
@@ -237,7 +264,8 @@ export default function Board({ roomId, state, onBoardChange, selectedElement })
                         top: baseBoardHeight / scaleDownBy,
                         left: 0,
                         transformOrigin: 'center center',
-                        transform: `rotate(${state.board.map.bottom.rotate}deg)`,
+                        // transform: `rotate(${state.board.map.bottom.rotate}deg)`,
+                        transform: `rotate(0deg)`,
                     }}
                 />
                 <div
@@ -254,38 +282,65 @@ export default function Board({ roomId, state, onBoardChange, selectedElement })
                     tokenHexes && Object.entries(tokenHexes).map(([k, hex], index) => {
                         if(k.startsWith('Lethal') && hex.isOnBoard) {
                             return (
-                                <img
-                                    key={k}
-                                    src={`/assets/tokens/lethal.png`}
-                                    style={{
+                                <div key={k} style={{
+                                    position: 'absolute',
+                                    zIndex: 500,
+                                    width: pointyTokenBaseWidth * scaleFactor,
+                                    top: hex.top + (baseSize * scaleFactor) / 2,
+                                    left: hex.left,
+                                }}>
+                                    <img
+                                        src={`/assets/tokens/lethal.png`}
+                                        style={{
+                                            // position: 'absolute',
+                                            // zIndex: 500,
+                                            width: pointyTokenBaseWidth * scaleFactor,
+                                            // top: hex.top + (baseSize * scaleFactor) / 2,
+                                            // left: hex.left,
+                                        }}
+                                    />
+                                    <div style={{ 
                                         position: 'absolute',
-                                        zIndex: 500,
+                                        zIndex: 501,
                                         width: pointyTokenBaseWidth * scaleFactor,
-                                        top: hex.top + (baseSize * scaleFactor) / 2,
-                                        left: hex.left,
-                                    }}
-                                />
+                                        height: pointyTokenBaseWidth * scaleFactor,
+                                        borderRadius: `${pointyTokenBaseWidth * scaleFactor / 2}px`, 
+                                        top: '5px',
+                                        left: 0,
+                                        boxShadow: k === selectedTokenId ? '0 0 15px 5px magenta' : '',
+                                    }} />
+                                </div>
                             );
                         }
 
                         if(k.startsWith('Feature') && hex.isOnBoard) {
                             return (
-                                <img
-                                    key={k}
-                                    src={
-                                        hex.isLethal
-                                            ? `/assets/tokens/feature_back.png`
-                                            : `/assets/tokens/feature_front_${hex.number}.png`
-                                    }
-                                    style={{
+                                <div key={k} style={{
+                                    position: 'absolute',
+                                    zIndex: 500,
+                                    width: pointyTokenBaseWidth * scaleFactor,
+                                    top: hex.top + (baseSize * scaleFactor) / 2,
+                                    left: hex.left,
+                                    }}>
+                                    <img
+                                            src={
+                                                hex.isLethal
+                                                    ? `/assets/tokens/feature_back.png`
+                                                    : `/assets/tokens/feature_front_${hex.number}.png`
+                                            }
+                                            style={{ width: pointyTokenBaseWidth * scaleFactor, }} />
+                                    <div style={{ 
                                         position: 'absolute',
-                                        zIndex: 500,
+                                        zIndex: 501,
                                         width: pointyTokenBaseWidth * scaleFactor,
-                                        top: hex.top + (baseSize * scaleFactor) / 2,
-                                        left: hex.left,
-                                    }}
-                                />
-                            )
+                                        height: pointyTokenBaseWidth * scaleFactor,
+                                        borderRadius: `${pointyTokenBaseWidth * scaleFactor / 2}px`, 
+                                        top: '5px',
+                                        left: 0,
+                                        boxShadow: k === selectedTokenId ? '0 0 25px 10px OrangeRed' : '',
+                                    }} />
+                                </div>
+                            );
                         }
                     })
                 }
@@ -327,6 +382,22 @@ export default function Board({ roomId, state, onBoardChange, selectedElement })
                             )
                         }
                     })
+                }
+                {
+                    scatterToken && scatterToken.isOnBoard && (
+                        <img
+                            src={`/assets/other/scatter.png`}
+                            style={{
+                                position: 'absolute',
+                                zIndex: 550,
+                                width: pointyTokenBaseWidth * scaleFactor,
+                                top: scatterToken.top + (baseSize * scaleFactor) / 2,
+                                left: scatterToken.left,
+                                transform: `rotate(${scatterToken.rotationAngle}deg)`, 
+                                transformOrigin: 'center center',
+                            }}
+                        />
+                    )
                 }
             </div>
         </div>

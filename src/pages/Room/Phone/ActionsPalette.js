@@ -1,8 +1,11 @@
 import React, { useState, useRef } from 'react';
+import Grid from '@material-ui/core/Grid';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import ButtonBase from '@material-ui/core/ButtonBase';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
+import RotateLeftIcon from '@material-ui/icons/RotateLeft';
+import RotateRightIcon from '@material-ui/icons/RotateRight';
 import MessengerScreenIcon from '@material-ui/icons/QuestionAnswer';
 import BoardScreenIcon from '@material-ui/icons/ViewStream';
 import GameOverviewIcon from '@material-ui/icons/EmojiEvents';
@@ -15,6 +18,7 @@ import { useAuthUser } from '../../../components/Session';
 import HUDOverlay from '../../../components/HUDOverlay';
 import FighterHUD from '../../../components/FighterHUD';
 import GameStatusHUD from './GameStatusHUD';
+import ScatterToken from './ScatterToken';
 
 const actions = [
     {
@@ -32,6 +36,10 @@ const actions = [
     {
         type: 'PLACE_FEATURE_HEX',
         value: 'Feature Hexes',
+    },
+    {
+        type: 'SCATTER',
+        value: 'Scatter',
     },
     // {
     //     type: 'FIGHTERS',
@@ -288,6 +296,11 @@ export default function ActionsPalette({
                     playerInfo={data[myself.uid]}
                 />
             )}
+            {
+                selectedAction === 'SCATTER' && (
+                    <ScatterToken onSelectionChange={onSelectedElementChange} />
+                )
+            }
             {
                 showMainHUD && (
                     <HUDOverlay onCloseOverlayClick={handleCloseOverlay}>

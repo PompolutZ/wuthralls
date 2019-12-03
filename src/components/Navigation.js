@@ -40,8 +40,9 @@ function NavigationAuth({ authUser }) {
                 </li>
             </ul>
             <div>{authUser.username}</div>   
-            <div>ver 0.3.0</div>
-            <p> New: More boards and boards selection. </p> 
+            <div>ver 0.4.0</div>
+            <p> New: Scatter token. </p> 
+            <p> New: Add Thorns of the Briar Queen faction. </p> 
         </div>
     )
 }
