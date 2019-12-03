@@ -78,7 +78,7 @@ export default function Board({ roomId, state, onBoardChange, selectedElement })
     const Grid = defineGrid(Hex);
 
     useEffect(() => {
-        //if(!state.board.map) return;
+        if(!state.board.map) return;
 
         console.log(state);
         const svg = SVG(rootRef.current);
@@ -219,13 +219,13 @@ export default function Board({ roomId, state, onBoardChange, selectedElement })
         }
     }
 
-    // if(!state.board.map || !state.board.map.top || !state.board.map.bottom) {
-    //     return (
-    //         <div style={{ display: 'flex' }}>
-    //             Waiting for players to select board pieces
-    //         </div>
-    //     )
-    // }
+    if(!state.board.map || !state.board.map.top || !state.board.map.bottom) {
+        return (
+            <div style={{ display: 'flex' }}>
+                Waiting for players to select board pieces
+            </div>
+        )
+    }
 
     return (
         <div style={{ display: 'flex' }}>
@@ -239,8 +239,8 @@ export default function Board({ roomId, state, onBoardChange, selectedElement })
                 }}
             >
                 <img
-                    //src={`/assets/boards/${state.board.map.top.id}.jpg`}
-                    src={`/assets/boards/1.jpg`}
+                    src={`/assets/boards/${state.board.map.top.id}.jpg`}
+                    //src={`/assets/boards/1.jpg`}
                     alt="board"
                     style={{
                         width: baseBoardWidth / scaleDownBy,
@@ -248,13 +248,13 @@ export default function Board({ roomId, state, onBoardChange, selectedElement })
                         position: 'absolute',
                         zIndex: '1',
                         transformOrigin: 'center center',
-                        //transform: `rotate(${state.board.map.top.rotate}deg)`,
-                        transform: `rotate(0deg)`,
+                        transform: `rotate(${state.board.map.top.rotate}deg)`,
+                        // transform: `rotate(0deg)`,
                     }}
                 />
                 <img
-                    src={`/assets/boards/10.jpg`}
-                    //src={`/assets/boards/${state.board.map.bottom.id}.jpg`}
+                    //src={`/assets/boards/10.jpg`}
+                    src={`/assets/boards/${state.board.map.bottom.id}.jpg`}
                     alt="board2"
                     style={{
                         width: baseBoardWidth / scaleDownBy,
@@ -264,8 +264,8 @@ export default function Board({ roomId, state, onBoardChange, selectedElement })
                         top: baseBoardHeight / scaleDownBy,
                         left: 0,
                         transformOrigin: 'center center',
-                        // transform: `rotate(${state.board.map.bottom.rotate}deg)`,
-                        transform: `rotate(0deg)`,
+                        transform: `rotate(${state.board.map.bottom.rotate}deg)`,
+                        //transform: `rotate(0deg)`,
                     }}
                 />
                 <div
