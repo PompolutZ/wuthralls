@@ -586,7 +586,7 @@ export const warbands = {
         },    
         {
             type: 'FIGHTER',
-            icon: 'thorns-of-the-briar-queen-4',
+            icon: 'thorns-of-the-briar-queen-6',
             name: 'Chainrasp',
             from: {x: -1, y: -1},
             onBoard: {x: -1, y: -1},
@@ -598,7 +598,7 @@ export const warbands = {
         },    
         {
             type: 'FIGHTER',
-            icon: 'thorns-of-the-briar-queen-5',
+            icon: 'thorns-of-the-briar-queen-7',
             name: 'Chainrasp',
             from: {x: -1, y: -1},
             onBoard: {x: -1, y: -1},
