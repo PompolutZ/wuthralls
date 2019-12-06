@@ -12,6 +12,9 @@ function NavigationAuth({ authUser }) {
                 <li>
                     <Link to={ROUTES.LANDING}>Rooms</Link>
                 </li>
+                <li>
+                    <Link to={`/history`}>History</Link>
+                </li>
                 {/* <li>
                     <Link to={ROUTES.HOME}>Home</Link>
                 </li>

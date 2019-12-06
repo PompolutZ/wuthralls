@@ -93,6 +93,32 @@ class Firebase {
     // -------------------
     // PLAYGROUND
     // -------------------
+    recordGameResult = async (roomId, payload) => {
+        try {
+            console.log('recordGameResult', payload);
+
+            const results = payload.players.map(p => ({
+                glory: payload[p].gloryScored,
+                faction: payload[p].faction,
+                pid: p,
+                name: payload[p].name
+            }));
+            console.log(results);
+
+            await this.fstore.collection('gameResults').add({
+                gameName: payload.name,
+                players: payload.players,
+                result: results,
+                finishied: new Date()
+            });
+
+            await this.fstore.collection('rooms').doc(roomId).delete();
+            await this.fstore.collection('messages').doc(roomId).delete();
+        } catch(error) {
+            console.error('Error in record game result: ', error);
+        }
+    }
+
     addRoom = async payload => {
         try {
             console.log(payload);

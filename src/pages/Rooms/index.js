@@ -6,6 +6,7 @@ import AddIcon from '@material-ui/icons/Add';
 import TextField from '@material-ui/core/TextField';
 import Divider from '@material-ui/core/Divider';
 import Grid from '@material-ui/core/Grid';
+import Paper from '@material-ui/core/Paper';
 import { FirebaseContext } from '../../firebase';
 import { useHistory } from 'react-router-dom';
 import { warbands } from '../../data';
@@ -49,6 +50,8 @@ function Rooms() {
 
         setMyRooms(rooms.filter(r => r.players.includes(myself.uid)));
         setOtherRooms(rooms.filter(r => !r.players.includes(myself.uid)));
+
+        console.log(rooms);
     }, [rooms])
 
     const handleTextChange = name => event => {
@@ -70,6 +73,13 @@ function Rooms() {
 
     const handleJoinRoom = room => () => {
         history.push(`/${'v1'}/room/${room.id}/prepare`, room);
+    }
+
+    const handleFinishAndRecord = room => () => {
+        console.log(room);
+        if(room.status.round >= 3) {
+            firebase.recordGameResult(room.id, room);
+        }
     }
 
     return myself ? (
@@ -99,44 +109,113 @@ function Rooms() {
                     <Grid container spacing={3}>
                         <Grid item xs={12}>
                             <Typography variant="h6">My rooms</Typography>
-                            <Divider />
+                            <Divider style={{ marginBottom: '1rem' }} />
                             {
-                                myRooms.map(r => (
-                                    <Grid container key={r.id}>
-                                        <Grid item xs={12}>
-                                            <Typography>{r.name}</Typography>
-                                        </Grid>
-                                        <Grid item xs={12}>
-                                            <Button onClick={handleGetInRoom(r)}>Get In</Button>
-                                            {
-                                                (r.createdBy === myself.uid || (myself.roles && myself.roles['ADMIN'])) && (
-                                                    <Button style={{ color: 'red' }} onClick={handleDeleteRoom(r.id)}>Delete</Button>
-                                                )
-                                            }
-                                        </Grid>
-                                    </Grid>
-                                ))
+                                myRooms.map(r => {
+                                    const participants = r.players.map(pid => r[pid]);
+
+                                    return (
+                                        <Paper key={r.id} style={{ marginBottom: '1rem', padding: '.5rem' }}>
+                                            <Grid container>
+                                                <Grid item xs={12}>
+                                                    <Typography variant="h6" style={{ marginTop: '1rem'}}>{r.name}</Typography>
+                                                    <Grid container alignItems="center" style={{ margin: '1rem auto'}}>
+                                                        <Grid item xs={4}>
+                                                            <Grid container direction="column" alignItems="center">
+                                                                <img src={`/assets/factions/${participants[0].faction}-icon.png`} style={{ width: '2rem' }} />
+                                                                <Typography variant="body1">{participants[0].name}</Typography>
+                                                            </Grid>
+                                                        </Grid>
+                                                        <Grid item xs={4} container justify="center">
+                                                            <Typography variant="h5">{`VS`}</Typography>
+                                                        </Grid>
+                                                        <Grid item xs={4}>
+                                                            {
+                                                                participants.length === 1 && (
+                                                                    <Grid container direction="column" alignItems="center">
+                                                                        <Typography variant="body1">{`Awating opponent...`}</Typography>
+                                                                    </Grid>
+                                                                )
+                                                            }
+                                                            {
+                                                                participants.length > 1 && (
+                                                                    <Grid container direction="column" alignItems="center">
+                                                                        <img src={`/assets/factions/${participants[1].faction}-icon.png`} style={{ width: '2rem' }} />
+                                                                        <Typography variant="body1">{participants[1].name}</Typography>
+                                                                    </Grid>
+                                                                )
+                                                            }
+                                                        </Grid>
+                                                    </Grid>
+                                                </Grid>
+                                                <Grid item xs={12}>
+                                                    <Button onClick={handleGetInRoom(r)} variant="contained" color="primary">Get In</Button>
+                                                    {
+                                                        (r.createdBy === myself.uid || (myself.roles && myself.roles['ADMIN'])) && (
+                                                            <Button style={{ color: 'red', margin: 'auto .5rem' }} onClick={handleDeleteRoom(r.id)} variant="outlined">Delete</Button>
+                                                        )
+                                                    }
+                                                    <Button onClick={handleFinishAndRecord(r)} variant="outlined" color="secondary" disabled={r.status.round < 3}>Finish</Button>
+                                                </Grid>
+                                            </Grid>
+                                        </Paper>
+                                    )
+                                })
                             }
                         </Grid>
                         <Grid item xs={12}>
                             <Typography variant="h6">Other rooms</Typography>
                             <Divider />
                             {
-                                otherRooms.map((r, i) => (
-                                    <Grid container key={r.id}>
-                                        <Grid item xs={12}>
-                                            <Typography>{r.name}</Typography>
-                                        </Grid>
-                                        <Grid item xs={12}>
-                                            <Button onClick={handleJoinRoom(r)} disabled={!(r.players.length < 2)}>Join</Button>
-                                            {
-                                                myself.roles && myself.roles['ADMIN'] && (
-                                                    <Button style={{ color: 'red' }} onClick={handleDeleteRoom(r.id)}>Delete</Button>
-                                                )
-                                            }
-                                        </Grid>
-                                    </Grid>
-                                ))
+                                otherRooms.map((r, i) => {
+                                    const participants = r.players.map(pid => r[pid]);
+
+                                    return (
+                                        <Paper key={r.id} style={{ marginBottom: '1rem', padding: '.5rem' }}>
+                                            <Grid container>
+                                                <Grid item xs={12}>
+                                                    <Typography variant="h6" style={{ marginTop: '1rem'}}>{r.name}</Typography>
+                                                    <Grid container alignItems="center" style={{ margin: '1rem auto'}}>
+                                                        <Grid item xs={4}>
+                                                            <Grid container direction="column" alignItems="center">
+                                                                <img src={`/assets/factions/${participants[0].faction}-icon.png`} style={{ width: '2rem' }} />
+                                                                <Typography variant="body1">{participants[0].name}</Typography>
+                                                            </Grid>
+                                                        </Grid>
+                                                        <Grid item xs={4} container justify="center">
+                                                            <Typography variant="h5">{`VS`}</Typography>
+                                                        </Grid>
+                                                        <Grid item xs={4}>
+                                                            {
+                                                                participants.length === 1 && (
+                                                                    <Grid container direction="column" alignItems="center">
+                                                                        <Typography variant="body1">{`Awating opponent...`}</Typography>
+                                                                    </Grid>
+                                                                )
+                                                            }
+                                                            {
+                                                                participants.length > 1 && (
+                                                                    <Grid container direction="column" alignItems="center">
+                                                                        <img src={`/assets/factions/${participants[1].faction}-icon.png`} style={{ width: '2rem' }} />
+                                                                        <Typography variant="body1">{participants[1].name}</Typography>
+                                                                    </Grid>
+                                                                )
+                                                            }
+                                                        </Grid>
+                                                    </Grid>
+                                                </Grid>
+                                                <Grid item xs={12}>
+                                                    <Button onClick={handleJoinRoom(r)} disabled={!(r.players.length < 2)} variant="contained" color="primary">Join</Button>
+                                                    {
+                                                        myself.roles && myself.roles['ADMIN'] && (
+                                                            <Button style={{ color: 'red' }} onClick={handleDeleteRoom(r.id)}>Delete</Button>
+                                                        )
+                                                    }
+                                                </Grid>
+                                            </Grid>
+                                        </Paper>
+                                    )
+                                })
                             }
                         </Grid>
                     </Grid>
