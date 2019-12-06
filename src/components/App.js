@@ -23,7 +23,7 @@ import History from '../pages/History'
 function App() {
     return (
         <Router>
-            <div>
+            <div style={{ width: '100%', height: '100%' }}>
                 <Navigation />
 
                 <Route exact path={ROUTES.LANDING} component={Rooms} />
@@ -33,7 +33,6 @@ function App() {
                     path={ROUTES.PASSWORD_FORGET}
                     component={PasswordForget}
                 />
-                {/* <Route path={ROUTES.HOME} component={Home} /> */}
                 <Route path={ROUTES.ACCOUNT} component={Account} />
                 <Route path={ROUTES.ADMIN} component={Admin} />
                 <Route exact path="/:version/room/:roomId/prepare" component={Prepare} />

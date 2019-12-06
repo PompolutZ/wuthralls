@@ -194,8 +194,8 @@ export default function SpawnRoom() {
 
     return (
         <div className={classes.root}>
-            <Grid container spacing={3}>
-                <Grid item xs={12}>
+            <Grid container spacing={3} justify="center">
+                <Grid item xs={12} lg={4}>
                     <TextField 
                         fullWidth 
                         type="text"
@@ -205,10 +205,10 @@ export default function SpawnRoom() {
                         variant="outlined"
                         onChange={handleRoomNameChange} />
                 </Grid>
-                <Grid item xs={12}>
+                <Grid item xs={12} lg={4}>
                     <Typography variant="body2">Copy paste your objective and power decks. Faction will be determined automatically.</Typography>
                 </Grid>
-                <Grid item xs={12} container alignItems="center" direction="column">
+                <Grid item xs={12} container alignItems="center" direction="column" lg={4}>
                     <Typography variant="h6">Faction</Typography>
                     {
                         selectedFaction 
@@ -224,7 +224,7 @@ export default function SpawnRoom() {
                     }
                     </div>
                 </Grid>
-                <Grid item xs={12}>
+                <Grid item xs={12} lg={4}>
                     <Typography variant="h6">Objective cards pile</Typography>
                     <Divider />
                     <TextField 
@@ -234,7 +234,7 @@ export default function SpawnRoom() {
                         value={objectiveCards}
                         onChange={handleObjectiveCardsChange} />
                 </Grid>
-                <Grid item xs={12}>
+                <Grid item xs={12} lg={4}>
                     <Typography variant="h6">Power cards pile</Typography>
                     <Divider />
                     <TextField 
@@ -244,7 +244,7 @@ export default function SpawnRoom() {
                         value={powerCards}
                         onChange={handlePowerCardsChange} />
                 </Grid>
-                <Grid item xs={12}>
+                <Grid item xs={12} lg={4}>
                     <Button variant="contained" color="primary" onClick={createNewRoom} disabled={!playerIsReady}>Create</Button>
                 </Grid>
             </Grid>

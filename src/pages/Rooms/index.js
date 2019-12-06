@@ -84,7 +84,7 @@ function Rooms() {
 
     return myself ? (
         <div style={{ margin: '1rem' }}>
-            <div style={{ display: 'flex', }}>
+            <div style={{ display: 'flex', justifyContent: "center" }}>
                 {/* <TextField style={{ flex: '1' }}
                 margin="dense"
                 id="roomName"
@@ -106,8 +106,8 @@ function Rooms() {
             <br />
             {
                 rooms && (
-                    <Grid container spacing={3}>
-                        <Grid item xs={12}>
+                    <Grid container spacing={3} justify="center">
+                        <Grid item xs={12} lg={4}>
                             <Typography variant="h6">My rooms</Typography>
                             <Divider style={{ marginBottom: '1rem' }} />
                             {
@@ -163,7 +163,7 @@ function Rooms() {
                                 })
                             }
                         </Grid>
-                        <Grid item xs={12}>
+                        <Grid item xs={12} lg={4}>
                             <Typography variant="h6">Other rooms</Typography>
                             <Divider />
                             {

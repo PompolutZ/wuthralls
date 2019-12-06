@@ -1,59 +1,264 @@
-import React, { useContext, useState } from 'react';
-import Grid from '@material-ui/core/Grid';
-import Button from '@material-ui/core/Button';
-import { useAuthUser } from '../../../components/Session';
-import { FirebaseContext } from '../../../firebase';
+import React, { useEffect, useContext, useState, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
+import { useTheme } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
+import { FirebaseContext } from '../../../firebase';
+import Grid from '@material-ui/core/Grid';
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
+import Messenger from './Messager';
+import ActionsPalette from './ActionsPalette';
 import Board from './Board';
-import InteractiveBoard from './InteractiveBoard';
+import { useAuthUser } from '../../../components/Session';
+import { cardsDb } from '../../../data/index';
+import CardsHUD from './CardsHUD';
+import useKatophrane from '../../../components/hooks/useKatophrane';
+import MyPanel from './MyPanel';
+import OpponentPanel from './OpponentPanel';
+
+const propertyToCards = (source, property) => {
+    return (
+        source &&
+        source[property] &&
+        source[property]
+            .split(',')
+            .map(cardId => ({ ...cardsDb[cardId], id: cardId }))
+    );
+};
+
+const useStyles = makeStyles(theme => ({
+    tabs: {
+        width: '100%',
+    },
+}));
 
 export default function DesktopRoom() {
+    const classes = useStyles();
     const myself = useAuthUser();
     const firebase = useContext(FirebaseContext);
     const { state } = useLocation();
-
-    const [data, setData] = useState(state);
+    const katophrane = useKatophrane(state);
+    const theme = useTheme();
+    const isMd = useMediaQuery(theme.breakpoints.up('md'));
+    const [tabIndex, setTabIndex] = React.useState(0);
     const [selectedElement, setSelectedElement] = useState(null);
-    const [orientation, setOrientation] = useState('pointy');
-    const [scaleFactor, setScaleFactor] = useState(1);
+    const [data, setData] = useState(state);
+    const navigationRef = useRef(null);
+    const [stickHeader, setStickHeader] = useState(false);
+    const [actionsPanelOffsetHeight, setActionsPanelOffsetHeight] = useState(
+        4 * 16
+    );
+    const [isHUDOpen, setIsHUDOpen] = useState(false);
+    const [hand, setHand] = useState(propertyToCards(data[myself.uid], 'hand'));
+    // const [enemyHand, setEnemyHand] = useState(
+    //     propertyToCards(data[data.players.find(p => p !== myself.uid)], 'hand')
+    // );
 
-    const changeOrientation = () => {
-        setOrientation(prev => prev === 'pointy' ? 'flat' : 'pointy');
-    }
+    // const [objectiveDrawPile, setObjectiveDrawPile] = useState(
+    //     propertyToCards(data[myself.uid], 'oDeck')
+    // );
+    // const [powersDrawPile, setPowersDrawPile] = useState(
+    //     propertyToCards(data[myself.uid], 'pDeck')
+    // );
 
-    const scale = mod => () => {
-        setScaleFactor(scaleFactor + mod);
+    // const [scoredObjectivesPile, setScoredObjectivesPile] = useState(
+    //     propertyToCards(data[myself.uid], 'sObjs')
+    // );
+    // const [objectivesDiscardPile, setObjectivesDiscardPile] = useState(
+    //     propertyToCards(data[myself.uid], 'dObjs')
+    // );
+    // const [powersDiscardPile, setPowersDiscardPile] = useState(
+    //     propertyToCards(data[myself.uid], 'dPws')
+    // );
+
+    // const [enemyScoredObjectivesPile, setEnemyScoredObjectivesPile] = useState(
+    //     propertyToCards(data[data.players.find(p => p !== myself.uid)], 'sObjs')
+    // );
+    // const [
+    //     enemyObjectivesDiscardPile,
+    //     setEnemyObjectivesDiscardPile,
+    // ] = useState(
+    //     propertyToCards(data[data.players.find(p => p !== myself.uid)], 'dObjs')
+    // );
+    // const [enemyPowersDiscardPile, setEnemyPowersDiscardPile] = useState(
+    //     propertyToCards(data[data.players.find(p => p !== myself.uid)], 'dPws')
+    // );
+
+    useEffect(() => {
+        const unsubscribe = firebase.setRoomListener(state.id, snapshot => {
+            if (snapshot.exists) {
+                setData({ ...snapshot.data(), id: snapshot.id });
+            }
+        });
+
+        return () => unsubscribe();
+    }, []);
+
+    useEffect(() => {
+        console.log('KATO', katophrane);
+    }, [katophrane]);
+
+    useEffect(() => {
+        console.log('Room.OnDataUpdated', data);
+        // const serverHand = data[myself.uid].hand;
+        // console.log(
+        //     'My Current Hand',
+        //     serverHand,
+        //     objectiveDrawPile,
+        //     powersDrawPile
+        // );
+        // setHand(propertyToCards(data[myself.uid], 'hand'));
+
+        // // my drawing piles
+        // setObjectiveDrawPile(propertyToCards(data[myself.uid], 'oDeck'));
+        // setPowersDrawPile(propertyToCards(data[myself.uid], 'pDeck'));
+
+        // // my stuff
+        // setScoredObjectivesPile(propertyToCards(data[myself.uid], 'sObjs'));
+        // setObjectivesDiscardPile(propertyToCards(data[myself.uid], 'dObjs'));
+        // setPowersDiscardPile(propertyToCards(data[myself.uid], 'dPws'));
+
+        // // enemy stuff
+        // setEnemyHand(
+        //     propertyToCards(
+        //         data[data.players.find(p => p !== myself.uid)],
+        //         'hand'
+        //     )
+        // );
+        // setEnemyScoredObjectivesPile(
+        //     propertyToCards(
+        //         data[data.players.find(p => p !== myself.uid)],
+        //         'sObjs'
+        //     )
+        // );
+        // setEnemyObjectivesDiscardPile(
+        //     propertyToCards(
+        //         data[data.players.find(p => p !== myself.uid)],
+        //         'dObjs'
+        //     )
+        // );
+        // setEnemyPowersDiscardPile(
+        //     propertyToCards(
+        //         data[data.players.find(p => p !== myself.uid)],
+        //         'dPws'
+        //     )
+        // );
+    }, [data]);
+
+    useEffect(() => {
+        console.log('Room.onSelectedElementChange', selectedElement);
+    }, [selectedElement]);
+
+    const handleActionTypeChange = offsetHeight => {
+        setActionsPanelOffsetHeight(offsetHeight);
+    };
+
+    const changeOpenDeckHUD = () => {
+        setIsHUDOpen(true);
+    };
+
+    const handleTabIndexChange = (e, index) => {
+        setTabIndex(index);
     }
 
     return (
-        <Grid container style={{ }}>
-            <Grid item xs={3}>
-                <div style={{ width: '100%', backgroundColor: 'orange' }} />
-            </Grid>
-            <Grid item xs={6} style={{ display: 'flex', flexFlow: 'column nowrap' }}>
-                <Grid container>
-                    <Grid item xs={2}>
-                        <Button onClick={changeOrientation}>
-                            {orientation}
-                        </Button>
+        <div
+            style={{
+                width: '100%',
+                flex: 1,
+                display: 'flex',
+                flexDirection: 'column',
+                height: '100%',
+            }}
+        >
+            <div
+                style={{
+                    filter: isHUDOpen ? 'blur(3px)' : '',
+                    flex: 1,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    height: '100%',
+                }}
+            >
+                <Grid
+                    container
+                    spacing={3}
+                    style={{ height: 'calc(100% - 1rem)', marginTop: '1rem' }}
+                >
+                    <Grid
+                        item
+                        xs={3}
+                        style={{ display: 'flex', flexFlow: 'column' }}
+                    >
+                        <MyPanel data={data[myself.uid]} roomId={data.id} onClose={setIsHUDOpen}  />
                     </Grid>
-                    <Grid item xs={2}>
-                        <Button onClick={scale(-.2)}>
-                            Scale Down
-                        </Button>
+                    <Grid
+                        item
+                        xs={6}
+                        style={{
+                            display: 'flex',
+                            flexFlow: 'column',
+                            flex: 1,
+                            height: '100%',
+                        }}
+                    >
+                        <Tabs
+                            value={tabIndex}
+                            onChange={handleTabIndexChange}
+                            indicatorColor="primary"
+                            textColor="primary"
+                            variant="fullWidth"
+                            aria-label="full width tabs example"
+                        >
+                            <Tab label="Log" />
+                            <Tab label="Board" />
+                        </Tabs>
+                        <div style={{ flex: 1 }}>
+                            {
+                                tabIndex === 0 && (
+                                    <Messenger roomId={state.id} state={data} />
+                                )
+                            }
+                            {
+                                tabIndex === 1 && (
+                                    <Board roomId={state.id} state={data} selectedElement={selectedElement} />
+                                )
+                            }
+                        </div>
+                        <ActionsPalette onActionTypeChange={handleActionTypeChange} 
+                            data={data} 
+                            onSelectedElementChange={setSelectedElement}
+                            onOpenDeckHUD={changeOpenDeckHUD}
+                            visibleScreenType={tabIndex}
+                            onSetScreenTabIndex={setTabIndex} />
                     </Grid>
-                    <Grid item xs={2}>
-                        <Button onClick={scale(.2)}>
-                            Scale Up
-                        </Button>
+                    <Grid
+                        item
+                        xs={3}
+                        style={{ display: 'flex', flexFlow: 'column' }}
+                    >
+                        <OpponentPanel data={data[data.players.find(p => p !== myself.uid)]} onClose={setIsHUDOpen} /> 
                     </Grid>
                 </Grid>
-                <InteractiveBoard orientation={orientation} scaleFactor={scaleFactor} />
-                {/* <Board roomId={state.id} state={data} selectedElement={selectedElement} orientation={orientation} /> */}
-            </Grid>
-            <Grid item xs={3}>
-                <div style={{ width: '100%', backgroundColor: 'orange' }} />                
-            </Grid>
-        </Grid>
-    )
+            </div>
+{/* 
+            {isHUDOpen && (
+                <CardsHUD
+                    roomId={data.id}
+                    objectivesPile={objectiveDrawPile}
+                    powerCardsPile={powersDrawPile}
+                    serverHand={hand}
+                    enemyHand={enemyHand}
+                    scoredObjectivesPile={scoredObjectivesPile}
+                    objectivesDiscardPile={objectivesDiscardPile}
+                    powersDiscardPile={powersDiscardPile}
+                    enemyScoredObjectivesPile={enemyScoredObjectivesPile}
+                    enemyObjectivesDiscardPile={enemyObjectivesDiscardPile}
+                    enemyPowersDiscardPile={enemyPowersDiscardPile}
+                    onClose={setIsHUDOpen}
+                />
+            )} */}
+        </div>
+    );
 }
