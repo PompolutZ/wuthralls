@@ -228,14 +228,14 @@ export default function Board({ roomId, state, onBoardChange, selectedElement })
     }
 
     return (
-        <div style={{ display: 'flex' }}>
+        <div style={{ display: 'flex', overflow: 'scroll', width: '100%', height: '100%'
+            }}>
             <div
                 style={{
                     position: 'relative',
                     width: baseBoardWidth / scaleDownBy,
                     height: (baseBoardHeight / scaleDownBy) * 2,
-                    margin: '1rem 1rem 5rem 1rem',
-                    overflow: 'scroll',
+                    margin: 'auto 5rem 10rem auto',
                 }}
             >
                 <img

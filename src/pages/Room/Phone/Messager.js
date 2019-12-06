@@ -636,6 +636,7 @@ function Messenger({ roomId, state }) {
                 className={classes.root}
                 style={{ filter: showMainHUD ? 'blur(3px)' : '' }}
             >
+                <div style={{ width: '100%', height: '100%', overflowY: 'scroll', marginBottom: '10rem' }}>
                 {messages.length > 0 &&
                     messages.map((m, i, arr) => {
                         if (m.type === 'INTERACTIVE') {
@@ -724,6 +725,7 @@ function Messenger({ roomId, state }) {
                             );
                         }
                     })}
+                </div>
             </Grid>
             {
                 showMainHUD && (
