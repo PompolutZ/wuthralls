@@ -13,7 +13,7 @@ export default function History() {
             .then(snapshot => {
                 const data = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
                 console.log(data);
-                setGamesPlayed(data);
+                setGamesPlayed(data.sort((a, b) => b.finishied.seconds - a.finishied.seconds));
             })
             .catch(e => console.log(e))
     }, []);
@@ -24,7 +24,8 @@ export default function History() {
             <Grid container spacing={3} style={{ margin: '1rem auto'}}>
             { 
                 gamesPlayed && gamesPlayed.map(r => {
-                    const finished = new Date();
+                    const finished = new Date(0);
+                    console.log(r);
                     finished.setSeconds(r.finishied.seconds);
 
                     return (
