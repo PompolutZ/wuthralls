@@ -17,6 +17,7 @@ import ButtonBase from '@material-ui/core/ButtonBase';
 import MoveNextIcon from '@material-ui/icons/LabelImportant';
 import FlipIcon from '@material-ui/icons/RotateRight';
 import useKatophrane from '../../../components/hooks/useKatophrane';
+import Markdown from 'react-markdown';
 
 const useStyles = makeStyles(theme => ({
     item: {
@@ -240,7 +241,7 @@ function ChatMessageItem({
                         hour12: false,
                     })}`}</Typography>
             </div>
-            <Typography>{value}</Typography>
+            <Markdown source={value} />
         </Grid>
     );
 }

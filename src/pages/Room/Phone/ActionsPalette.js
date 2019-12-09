@@ -1,8 +1,9 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useContext } from 'react';
 import Grid from '@material-ui/core/Grid';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import ButtonBase from '@material-ui/core/ButtonBase';
+import Divider from '@material-ui/core/Divider';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
 import RotateLeftIcon from '@material-ui/icons/RotateLeft';
 import RotateRightIcon from '@material-ui/icons/RotateRight';
@@ -19,6 +20,7 @@ import HUDOverlay from '../../../components/HUDOverlay';
 import FighterHUD from '../../../components/FighterHUD';
 import GameStatusHUD from './GameStatusHUD';
 import ScatterToken from './ScatterToken';
+import { FirebaseContext } from '../../../firebase';
 
 const actions = [
     {
@@ -41,6 +43,12 @@ const actions = [
         type: 'SCATTER',
         value: 'Scatter',
     },
+    {
+        type: 'PASS_POWER',
+        subtype: 'MESSAGE',
+        value: 'Pass power',
+        say: (str, playerName) => playerName + str[1],
+    }
     // {
     //     type: 'FIGHTERS',
     //     value: 'Fighters',
@@ -60,6 +68,7 @@ export default function ActionsPalette({
     onSetScreenTabIndex
 }) {
     const myself = useAuthUser();
+    const firebase = useContext(FirebaseContext);
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [selectedAction, setSelectedAction] = useState(actions[0].type);
     const actionsRootRef = useRef(null);
@@ -80,6 +89,15 @@ export default function ActionsPalette({
         console.log('HERE', actionsRootRef.current.offsetHeight);
         onActionTypeChange(actionsRootRef.current.offsetHeight);
     };
+
+    const handleMessageMenuItemClick = action => async () => {
+        setAnchorEl(null);
+        console.log('Message action', action, data);
+        await firebase.addMessage(data.id, {
+            uid: myself.uid,
+            value: action.say`${myself.username} will **pass on power**.`,
+        });
+    }
 
     const handleClose = () => {
         setAnchorEl(null);
@@ -252,7 +270,18 @@ export default function ActionsPalette({
                 open={Boolean(anchorEl)}
                 onClose={handleClose}
             >
-                {actions.map(action => (
+                {
+                    actions.filter(action => action.subtype && action.subtype === 'MESSAGE').map(action => (
+                        <MenuItem
+                            key={action.type}
+                            onClick={handleMessageMenuItemClick(action)}
+                        >
+                            {action.value}
+                        </MenuItem>
+                    ))
+                }
+                <Divider />
+                {actions.filter(action => !action.subtype).map(action => (
                     <MenuItem
                         key={action.type}
                         onClick={handleItemSelect(action.type)}
