@@ -29,6 +29,7 @@ export default function SendMessageAction({ roomId, }) {
         <div style={{ 
             width: '100%', 
             display: 'flex',
+            alignSelf: 'flex-end',
             alignItems: 'flex-end',
             marginBottom: '.5rem'}}>
                         <TextField 

@@ -115,11 +115,11 @@ export default function ActionsPalette({
             style={{
                 position: 'fixed',
                 display: 'flex',
-                alignItems: 'flex-end',
+                alignItems: 'center',
                 bottom: 0,
                 right: 0,
                 width: '100%',
-                minHeight: 95 * 1.2,
+                minHeight: 120 * 1.2,
                 zIndex: 10000,
                 backgroundColor: 'rgba(192,192,192, .8)',
             }}
@@ -134,7 +134,7 @@ export default function ActionsPalette({
                     right: 0,
                     borderRadius: '1.5rem',
                     position: 'absolute',
-                    top: '-1.8rem',
+                    top: '-2rem',
                     transform: anchorEl ? 'rotate(45deg)' : 'rotate(0deg)',
                     transition: 'transform .2s ease-in-out',
                 }}
@@ -154,7 +154,7 @@ export default function ActionsPalette({
                     right: '4rem',
                     borderRadius: '1.5rem',
                     position: 'absolute',
-                    top: '-1.8rem',
+                    top: '-2rem',
                     boxSizing: 'border-box',
                     boxShadow: '0 0 5px 5px darkgrey'
                 }}
@@ -183,7 +183,7 @@ export default function ActionsPalette({
                     right: '8rem',
                     borderRadius: '1.5rem',
                     position: 'absolute',
-                    top: '-1.8rem',
+                    top: '-2rem',
                     boxSizing: 'border-box',
                     boxShadow: '0 0 5px 5px darkgrey',
                     color: 'white'
@@ -212,7 +212,7 @@ export default function ActionsPalette({
                     marginLeft: '.3rem',
                     borderRadius: '1.5rem',
                     position: 'absolute',
-                    top: '-1.8rem',
+                    top: '-2rem',
                     boxSizing: 'border-box',
                     boxShadow: '0 0 5px 5px darkgrey',
                     color: 'white'
@@ -232,7 +232,7 @@ export default function ActionsPalette({
                     marginLeft: '4rem',
                     borderRadius: '1.5rem',
                     position: 'absolute',
-                    top: '-1.8rem',
+                    top: '-2rem',
                     boxSizing: 'border-box',
                     boxShadow: '0 0 5px 5px darkgrey',
                     color: 'white'

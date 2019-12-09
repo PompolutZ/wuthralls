@@ -10,12 +10,13 @@ export default function Board({ roomId, state, onBoardChange, selectedElement })
     const baseBoardHeight = 495;
     const baseSize = 55;
     const pointyTokenBaseWidth = 95;
-    const scaleFactor = 1;
 
     const myself = useAuthUser();
     const firebase = useContext(FirebaseContext);
     const rootRef = useRef(null);
+    const mainContainer = useRef(null);
     // const [selectedBoardElement, setSelectedBoardElement] = useState(selectedElement);
+    const [scaleFactor, setScaleFactor] = useState(1);
     const [svg, setSvg] = React.useState(null);
     const [grid, setGrid] = React.useState(null);
     const [tokenHexes, setTokenHexes] = useState(state.board.tokens);
@@ -74,10 +75,64 @@ export default function Board({ roomId, state, onBoardChange, selectedElement })
     useEffect(() => {
         if(!state.board.map) return;
 
-        console.log(state);
-        const svg = SVG(rootRef.current);
-        setSvg(svg);
-        const initGrid = Grid(
+        redraw();
+
+        // console.log(state);
+        // const svg = SVG(rootRef.current);
+        // setSvg(svg);
+        // const initGrid = Grid(
+        //     // first territory
+        //     [0, 0], [1, 0], [2, 0], [3,0], [4,0], [5,0], [6,0], [7,0], 
+        //     [0, 1], [1, 1], [2, 1], [3,1], [4,1], [5,1], [6,1],
+        //     [0, 2], [1, 2], [2, 2], [3,2], [4,2], [5,2], [6,2], [7,2],
+        //     [0, 3], [1, 3], [2, 3], [3,3], [4,3], [5,3], [6,3],
+        //     [0, 4], [1, 4], [2, 4], [3,4], [4,4], [5,4], [6,4], [7,4],
+        //     // no one territory
+        //     [0, 5], [1, 5], [2, 5], [3,5], [4,5], [5,5], [6,5],
+        //     //second territory
+        //     [0, 6], [1, 6], [2, 6], [3,6], [4,6], [5,6], [6,6], [7,6], 
+        //     [0, 7], [1, 7], [2, 7], [3,7], [4,7], [5,7], [6,7],
+        //     [0, 8], [1, 8], [2, 8], [3,8], [4,8], [5,8], [6,8], [7,8],
+        //     [0, 9], [1, 9], [2, 9], [3,9], [4,9], [5,9], [6,9],
+        //     [0, 10], [1, 10], [2, 10], [3,10], [4,10], [5,10], [6,10], [7,10],            
+        // );
+        
+        // initGrid.forEach(hex => hex.render(svg, 'rgba(192,192,192,.7)'));
+        // setGrid(initGrid);
+    }, []);
+
+    const redraw = () => {
+        const currentSvg = svg || SVG(rootRef.current);
+        currentSvg.clear();
+
+        console.log(mainContainer.current.offsetWidth, mainContainer.current.offsetHeight);
+        let sf;
+        if(mainContainer.current.offsetHeight < mainContainer.current.offsetWidth) {
+            sf = (mainContainer.current.offsetHeight / ((baseBoardHeight * 2))) * .8;
+        } else {
+            sf = (mainContainer.current.offsetWidth / baseBoardWidth) * .8;
+        }
+
+        setScaleFactor(sf);
+
+        const hexProto = {
+            // orientation: orientation,
+            size: 55 * sf,
+            origin: [0, -55 / 2 * sf],
+            render(draw) {
+                const { x, y } = this.toPoint();
+                const corners = this.corners();
+                this.draw = draw
+                    .polygon(corners.map(({ x, y }) => `${x},${y}`))
+                    .fill('rgba(192,192,192, 0)')
+                    .stroke({ width: 1, color: 'magenta' })
+                    .translate(x, y);
+            }
+        };
+
+        const Hex = extendHex(hexProto);
+        const GridFactory = defineGrid(Hex);
+        const hexoGrid = GridFactory(
             // first territory
             [0, 0], [1, 0], [2, 0], [3,0], [4,0], [5,0], [6,0], [7,0], 
             [0, 1], [1, 1], [2, 1], [3,1], [4,1], [5,1], [6,1],
@@ -93,10 +148,11 @@ export default function Board({ roomId, state, onBoardChange, selectedElement })
             [0, 9], [1, 9], [2, 9], [3,9], [4,9], [5,9], [6,9],
             [0, 10], [1, 10], [2, 10], [3,10], [4,10], [5,10], [6,10], [7,10],            
         );
-        
-        initGrid.forEach(hex => hex.render(svg, 'rgba(192,192,192,.7)'));
-        setGrid(initGrid);
-    }, []);
+
+        hexoGrid.forEach(hex => hex.render(currentSvg, 'teal'));
+        setGrid(hexoGrid);
+        setSvg(currentSvg);
+    }
 
     useEffect(() => {
         console.log('Board.OnSelectedElementChange', selectedElement);
@@ -215,7 +271,7 @@ export default function Board({ roomId, state, onBoardChange, selectedElement })
     }
 
     return (
-        <div style={{ display: 'flex', overflow: 'scroll', }}>
+        <div ref={mainContainer} style={{ display: 'flex', overflow: 'scroll', backgroundColor: 'magenta', width: '100%', height: '100%', marginBottom: '1rem' }}>
             <div
                 style={{
                     position: 'relative',

@@ -157,7 +157,9 @@ export default function FighterHUD({ data }) {
     const [upgradePickerOpen, setUpgradePickerOpen] = useState(false);
     const [isInspired, setIsInspired] = useState(data.isInspired);
     const [addTokenAnchor, setAddTokenAnchor] = useState(null);
+    const [addCounterAnchor, setAddCounterAnchor] = useState(null);
     const [tokens, setTokens] = useState(Boolean(data.tokens) ? data.tokens.split(',') : []);
+    const [counters, setCounters] = useState(Boolean(data.counters) ? data.counters.split(',') : []);
 
     useEffect(() => {
         // setUpgrades(Object.keys(data.upgrades));
@@ -180,8 +182,16 @@ export default function FighterHUD({ data }) {
         setAddTokenAnchor(e.currentTarget);
     }
 
+    const handleOpenAddCounterMenu = e => {
+        setAddCounterAnchor(e.currentTarget);
+    }
+
     const handleCloseAddTokenMenu = () => {
         setAddTokenAnchor(null);
+    }
+
+    const handleCloseAddCounterMenu = () => {
+        setAddCounterAnchor(null);
     }
 
     const handleAddTokenAndCloseMenu = token => () => {
@@ -204,6 +214,26 @@ export default function FighterHUD({ data }) {
         });
     }
 
+    const handleAddCounterAndCloseMenu = counter => () => {
+        setAddCounterAnchor(null);
+        const updatedCounters = [...counters, counter];
+        setCounters(updatedCounters);
+
+        firebase.updateBoardProperty(
+            roomId,
+            `board.fighters.${data.id}.counters`,
+            updatedCounters.join(),
+        );
+
+        firebase.addGenericMessage(roomId, {
+            author: 'Katophrane',
+            type: 'INFO',
+            subtype: 'ADD_COUNTER',
+            cardId: counter,
+            value: `${playerInfo.name} gives ${data.name} ${counter} counter.`,
+        });
+    }
+
     const handleRemoveTokenAt = index => () => {
         const tokenToRemove = tokens[index];
         if(!tokenToRemove) return;
@@ -222,7 +252,29 @@ export default function FighterHUD({ data }) {
             type: 'INFO',
             subtype: 'REMOVE_TOKEN',
             cardId: tokenToRemove,
-            value: `${playerInfo.name} gives ${data.name} ${tokenToRemove} token.`,
+            value: `${playerInfo.name} removes ${tokenToRemove} token from ${data.name}.`,
+        });
+    }
+
+    const handleRemoveCounterAt = index => () => {
+        const counterToRemove = counters[index];
+        if(!counterToRemove) return;
+
+        const updatedCounters = [...counters.slice(0, index), ...counters.slice(index + 1)];
+        setCounters(updatedCounters);
+
+        firebase.updateBoardProperty(
+            roomId,
+            `board.fighters.${data.id}.counters`,
+            updatedCounters.join(),
+        );
+
+        firebase.addGenericMessage(roomId, {
+            author: 'Katophrane',
+            type: 'INFO',
+            subtype: 'REMOVE_COUNTER',
+            cardId: counterToRemove,
+            value: `${playerInfo.name} removes ${counterToRemove} counter from ${data.name}.`,
         });
     }
 
@@ -362,15 +414,40 @@ export default function FighterHUD({ data }) {
                                 <AddIcon style={{ width: '1rem', height: '1rem', color: 'teal' }} />
                                 <Typography style={{ fontSize: '1rem', color: 'teal', textDecoration: 'underline' }}>Add Token</Typography>
                             </div>
+                            {
+                                data.counterTypes && (
+                                    <div style={{ display: 'flex', alignItems: 'center', marginTop: '.5rem', alignSelf: 'flex-end' }} onClick={handleOpenAddCounterMenu}>
+                                        <AddIcon style={{ width: '1rem', height: '1rem', color: 'teal' }} />
+                                        <Typography style={{ fontSize: '1rem', color: 'teal', textDecoration: 'underline' }}>Add Counter</Typography>
+                                    </div>
+                                )
+                            }
                             <Menu id="tokensMenu"
                                 anchorEl={addTokenAnchor}
                                 keepMounted
                                 open={Boolean(addTokenAnchor)}
                                 onClose={handleCloseAddTokenMenu}
                                 style={{ zIndex: 10000 }}>
-                                <MenuItem onClick={handleAddTokenAndCloseMenu('M')}>Move Token</MenuItem>
-                                <MenuItem onClick={handleAddTokenAndCloseMenu('C')}>Charge Token</MenuItem>
-                                <MenuItem onClick={handleAddTokenAndCloseMenu('G')}>Guard Token</MenuItem>
+                                <MenuItem onClick={handleAddTokenAndCloseMenu('Move')}>Move Token</MenuItem>
+                                <MenuItem onClick={handleAddTokenAndCloseMenu('Charge')}>Charge Token</MenuItem>
+                                <MenuItem onClick={handleAddTokenAndCloseMenu('Guard')}>Guard Token</MenuItem>
+                                {
+                                    data.extraTokens && data.extraTokens.split(',').map(token => (
+                                    <MenuItem key={token} onClick={handleAddTokenAndCloseMenu(token)}>{`${token} Token`}</MenuItem>
+                                    ))
+                                }
+                            </Menu>
+                            <Menu id="countersMenu"
+                                anchorEl={addCounterAnchor}
+                                keepMounted
+                                open={Boolean(addCounterAnchor)}
+                                onClose={handleCloseAddCounterMenu}
+                                style={{ zIndex: 10000 }}>
+                                {
+                                    data.counterTypes && data.counterTypes.split(',').map(counter => (
+                                    <MenuItem key={counter} onClick={handleAddCounterAndCloseMenu(counter)}>{`${counter} Counter`}</MenuItem>
+                                    ))
+                                }
                             </Menu>
                             <WoundsCounter wounds={data.wounds} onWoundsCounterChange={handleUpdateWounds} />
                             <ButtonBase style={{ 
@@ -392,28 +469,43 @@ export default function FighterHUD({ data }) {
                                     isInspired ? <UninspireIcon style={{ width: '2rem', height: '2rem' }} /> : <InspireIcon style={{ width: '2rem', height: '2rem' }} />
                                 }
                             </ButtonBase>
-                            {
-                                tokens && tokens.length > 0 && (
-                                    <div style={{ display: 'flex', flexFlow: 'column nowrap', position: 'absolute', top: '1rem', right: 0, marginRight: '-3rem' }}>
-                                        {
+                            <div style={{ display: 'flex', flexFlow: 'column nowrap', position: 'absolute', top: '1rem', right: 0, marginRight: '-3rem' }}>
+                                {
+                                    tokens && tokens.length > 0 && 
                                             tokens.map((token, idx) => (
-                                                <div style={{ 
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    marginBottom: '1rem',
-                                                }}
-                                                key={idx}>
-                                                    <img src={`/assets/other/${token}.png`} style={{ width: '3rem', height: '3rem', boxSizing: 'border-box', border: '2px solid white' }} />
-                                                    <div style={{ width: '1.5rem', height: '1.5rem', backgroundColor: 'red', marginLeft: '-.7rem', border: '2px solid white' }}
-                                                        onClick={handleRemoveTokenAt(idx)}>
-                                                        <AddIcon style={{ color: 'white', width: '1.5rem', height: '1.5rem', transform: 'rotate(45deg)' }} />
+                                                    <div style={{ 
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        marginBottom: '1rem',
+                                                    }}
+                                                    key={idx}>
+                                                        <img src={`/assets/other/${token}.png`} style={{ width: '3rem', height: '3rem', boxSizing: 'border-box', border: '2px solid white' }} />
+                                                        <div style={{ width: '1.5rem', height: '1.5rem', backgroundColor: 'red', marginLeft: '-.7rem', border: '2px solid white' }}
+                                                            onClick={handleRemoveTokenAt(idx)}>
+                                                            <AddIcon style={{ color: 'white', width: '1.5rem', height: '1.5rem', transform: 'rotate(45deg)' }} />
+                                                        </div>
                                                     </div>
+                                                )
+                                            )
+                                }
+                                {
+                                    counters && counters.length > 0 && counters.map((counter, idx) => (
+                                            <div style={{ 
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                marginBottom: '1rem',
+                                            }}
+                                            key={idx}>
+                                                <img src={`/assets/other/${counter}.png`} style={{ width: '3rem', height: '3rem', boxSizing: 'border-box', border: '2px solid white', borderRadius: '1.5rem', }} />
+                                                <div style={{ width: '1.5rem', height: '1.5rem', backgroundColor: 'red', marginLeft: '-.7rem', border: '2px solid white' }}
+                                                    onClick={handleRemoveCounterAt(idx)}>
+                                                    <AddIcon style={{ color: 'white', width: '1.5rem', height: '1.5rem', transform: 'rotate(45deg)' }} />
                                                 </div>
-                                            ))
-                                        }
-                                    </div>
-                                )
-                            }
+                                            </div>
+                                        ))
+                                }
+                                }
+                            </div>
                         </div>
                     </Grid>
                 </Grid>

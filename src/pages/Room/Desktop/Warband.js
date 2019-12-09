@@ -62,18 +62,18 @@ export default function Warband({ roomId, myfighters, enemyFighters, onSelectedF
                         flexFlow: 'column nowrap',
                         alignItems: 'center',
                     }} onClick={handleFighterClicked(fighter)}>
-                        {
-                            Boolean(fighter.tokens) && (
-                                <div style={{ display: 'flex' }}>
-                                    {
-                                        fighter.tokens.split(',').map((token, idx) => (
-                                            <img key={idx} src={`/assets/other/${token}.png`} style={{ width: '1rem', height: '1rem', marginRight: '.1rem' }} />
-                                        ))
-                                    }
-                                </div>
-                            )
-                        }
-
+                        <div style={{ display: 'flex' }}>
+                            {
+                                Boolean(fighter.tokens) && fighter.tokens.split(',').map((token, idx) => (
+                                    <img key={idx} src={`/assets/other/${token}.png`} style={{ width: '1rem', height: '1rem', marginRight: '.1rem' }} />
+                                ))
+                            }
+                            {
+                                Boolean(fighter.counters) && fighter.counters.split(',').map((counter, idx) => (
+                                    <img key={idx} src={`/assets/other/${counter}.png`} style={{ width: '1rem', height: '1rem', marginRight: '.1rem' }} />
+                                ))
+                            }
+                        </div>
                         <div style={{ position: 'relative' }}>
                             <img src={`/assets/fighters/${fighter.icon}-icon.png`} style={{ 
                                 width: selectedFighter && selectedFighter.id === fighter.id ? pointyTokenBaseWidth * 1.2 : pointyTokenBaseWidth,

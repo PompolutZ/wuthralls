@@ -43,10 +43,9 @@ function NavigationAuth({ authUser }) {
                 </li>
             </ul>
             <div>{authUser.username}</div>   
-            <div>ver 0.5.0</div>
-            <p> New: Games History. </p> 
-            <p> New: Desktop View 0.1 - super alpha, looks like, well, not that great yet. </p> 
-            <p> New: Added Garrek's Reavers faction. </p> 
+            <div>ver 0.6.0</div>
+            <p> UI twiks. </p> 
+            <p> New: Skaeth and Grymwatch warbands. </p> 
         </div>
     )
 }
