@@ -43,9 +43,8 @@ function NavigationAuth({ authUser }) {
                 </li>
             </ul>
             <div>{authUser.username}</div>   
-            <div>ver 0.6.0</div>
-            <p> UI twiks. </p> 
-            <p> New: Skaeth and Grymwatch warbands. </p> 
+            <div>ver 0.7.0</div>
+            <p> New: Dice converted to SVGs. </p> 
         </div>
     )
 }

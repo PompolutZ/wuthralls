@@ -18,6 +18,10 @@ import MoveNextIcon from '@material-ui/icons/LabelImportant';
 import FlipIcon from '@material-ui/icons/RotateRight';
 import useKatophrane from '../../../components/hooks/useKatophrane';
 import Markdown from 'react-markdown';
+import AttackDie from '../../../components/AttackDie';
+import DefenceDie from '../../../components/DefenceDie';
+import MagicDie from '../../../components/MagicDie';
+import { warbandColors } from '../../../data';
 
 const useStyles = makeStyles(theme => ({
     item: {
@@ -31,7 +35,7 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-function DiceRollMessage({ id, author, value, type, timestamp }) {
+function DiceRollMessage({ id, author, value, type, timestamp, authorFaction }) {
     const classes = useStyles();
     const [created, setCreated] = useState(null);
 
@@ -60,33 +64,27 @@ function DiceRollMessage({ id, author, value, type, timestamp }) {
                 created.toLocaleString('en-US', {
                     hour12: false,
                 })}`}</Typography>
-            <div>
-                {value.split(',').map((x, i) => {
-                    return type === 'INITIATIVE' ? (
-                        <Die
-                            key={i}
-                            side={x}
-                            type={type}
-                            prefix={i % 2 === 0 ? 'D' : 'A'}
-                            style={{
-                                width: '2rem',
-                                height: '2rem',
-                                marginRight: '.2rem',
-                            }}
-                        />
-                    ) : (
-                        <Die
-                            key={i}
-                            side={x}
-                            type={type}
-                            style={{
-                                width: '2rem',
-                                height: '2rem',
-                                marginRight: '.2rem',
-                            }}
-                        />
-                    );
-                })}
+            <div style={{ display: 'flex'}}>
+                {value.split(',').map((x, i) => (
+                    <div key={i} style={{ width: 36, height: 36, marginRight: '.2rem', backgroundColor: 'white', borderRadius: 36 * .2 }}>
+                        {
+                            type === 'ATTACK' && <AttackDie accentColorHex={warbandColors[authorFaction]} size={36} side={x} />
+                        }
+                        {
+                            type === 'DEFENCE' && <DefenceDie accentColorHex={warbandColors[authorFaction]} size={36} side={x} />
+                        }
+                        {
+                            type === 'MAGIC' && <MagicDie size={36} side={x} />
+                        }
+                        {
+                            type === 'INITIATIVE' && i % 2 === 0 && <DefenceDie accentColorHex={warbandColors[authorFaction]} size={36} side={x} />
+                        }
+                        {
+                            type === 'INITIATIVE' && i % 2 !== 0 && <AttackDie accentColorHex={warbandColors[authorFaction]} size={36} side={x} />
+                        }
+                    </div>
+                )
+                )}
             </div>
         </Grid>
     );
@@ -720,6 +718,7 @@ function Messenger({ roomId, state }) {
                                             ? state[m.author].name
                                             : m.author
                                     }:`}
+                                    authorFaction={state[m.author].faction}
                                     value={m.value}
                                     type={m.subtype}
                                 />

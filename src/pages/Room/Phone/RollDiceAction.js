@@ -11,8 +11,12 @@ import Grid from '@material-ui/core/Grid';
 import SendIcon from '@material-ui/icons/Send';
 import Die from '../../../components/Die';
 import { getDieRollResult } from '../../../common/function';
+import AttackDie from '../../../components/AttackDie';
+import DefenceDie from '../../../components/DefenceDie';
+import MagicDie from '../../../components/MagicDie';
+import { warbandColors } from '../../../data';
 
-export default function RollDiceAction({ roomId, rollResult, defaultAmount }) {
+export default function RollDiceAction({ roomId, rollResult, defaultAmount, myFaction }) {
     const myself = useAuthUser();
     const firebase = useContext(FirebaseContext);
     const [canReduce, setCanReduce] = useState(false);
@@ -171,16 +175,33 @@ export default function RollDiceAction({ roomId, rollResult, defaultAmount }) {
 
                 {values.length > 0 &&
                     values.map((x, i) => (
-                        <Die
-                            key={i}
-                            side={x}
-                            type={selectedType}
-                            style={{
-                                width: '3rem',
-                                height: '3rem',
-                                marginRight: '.2rem',
-                            }}
-                        />
+                        <div key={i} style={{ width: 36, height: 36, marginRight: '.2rem', backgroundColor: 'white', borderRadius: 36 * .2 }}>
+                            {
+                                selectedType === 'ATTACK' && <AttackDie accentColorHex={warbandColors[myFaction]} size={36} side={x} />
+                            }
+                            {
+                                selectedType === 'DEFENCE' && <DefenceDie accentColorHex={warbandColors[myFaction]} size={36} side={x} />
+                            }
+                            {
+                                selectedType === 'MAGIC' && <MagicDie size={36} side={x} />
+                            }
+                            {
+                                selectedType === 'INITIATIVE' && i % 2 === 0 && <DefenceDie accentColorHex={warbandColors[myFaction]} size={36} side={x} />
+                            }
+                            {
+                                selectedType === 'INITIATIVE' && i % 2 !== 0 && <AttackDie accentColorHex={warbandColors[myFaction]} size={36} side={x} />
+                            }
+                        </div>
+                        // <Die
+                        //     key={i}
+                        //     side={x}
+                        //     type={selectedType}
+                        //     style={{
+                        //         width: '3rem',
+                        //         height: '3rem',
+                        //         marginRight: '.2rem',
+                        //     }}
+                        // />
                     ))}
                 {canIncrease && (
                     <ButtonBase

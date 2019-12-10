@@ -294,7 +294,7 @@ export default function ActionsPalette({
                 <SendMessageAction roomId={data.id} />
             )}
             {selectedAction === 'ROLL_DICE' && (
-                <RollDiceAction roomId={data.id} defaultAmount={4} />
+                <RollDiceAction roomId={data.id} defaultAmount={4} myFaction={data[myself.uid].faction} />
             )}
             {selectedAction === 'PLACE_LETHAL_HEX' && (
                 <LethalHexesPile roomId={data.id}

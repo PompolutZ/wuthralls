@@ -87,6 +87,22 @@ export const factionIndexes = [
     "rippas-snarlfangs", // 22
 ]
 
+export const warbandColors = {
+    'ironsouls-condemners': '#00008B', // darkblue
+    'rippas-snarlfangs': '#FF0000', // red
+    'stormsires-cursebreakers': '#000080', // navy
+    'yltharis-guardians': '#008000', //green
+    'the-chosen-axes': '#FF8C00', //dark orange
+    'ironskulls-boyz': '#006400', // darkgreen
+    'magores-fiends': '#8B0000', // dark red
+    'mollogs-mob': '#9370DB', // medium purple
+    'thundriks-profiteers': '#4B0082', // indigo
+    'garreks-reavers': '#DC143C', // crimson
+    'skaeths-wild-hunt': '#FF4500', // orange red
+    'thorns-of-the-briar-queen': '#008B8B', // dark cyan
+    'the-grymwatch': '#808000', // olive
+}
+
 export const warbands = {
     'ironsouls-condemners': [
         {
