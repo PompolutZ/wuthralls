@@ -43,8 +43,8 @@ function NavigationAuth({ authUser }) {
                 </li>
             </ul>
             <div>{authUser.username}</div>   
-            <div>ver 0.7.0</div>
-            <p> New: Dice converted to SVGs. </p> 
+            <div>ver 0.8.0</div>
+            <p> New: Changed behavior of Game Stats screen. </p> 
         </div>
     )
 }

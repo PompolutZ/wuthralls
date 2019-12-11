@@ -74,6 +74,8 @@ export default function ActionsPalette({
     const actionsRootRef = useRef(null);
     const [showMainHUD, setShowMainHUD] = useState(null);
     const [mainHUDPayload, setMainHUDPayload] = useState(null);
+    const [mainHUDWasModified, setMainHUDWasModified] = useState(false);
+    const [mainHUDModifications, setMainHUDModifications] = useState(null);
 
     const handleClick = event => {
         if(anchorEl) {
@@ -117,14 +119,26 @@ export default function ActionsPalette({
     }
 
     const handleCloseOverlay = e => {
+        e.preventDefault();
+        if(mainHUDWasModified) {
+            mainHUDModifications.save();
+            console.log('Save HUD changes', );
+        }
+
+        setMainHUDModifications(null);
+        setMainHUDWasModified(false);
         setShowMainHUD(null);
         setMainHUDPayload(null);
-        
-        e.preventDefault();
     }
 
     const handleSwitchScreen = () => {
         onSetScreenTabIndex(Number(!Boolean(visibleScreenType)));
+    }
+
+    const onGameStatusHUDModified = value => {
+        setMainHUDWasModified(true);
+        console.log(value);
+        setMainHUDModifications(value);
     }
 
     return (
@@ -332,7 +346,7 @@ export default function ActionsPalette({
             }
             {
                 showMainHUD && (
-                    <HUDOverlay onCloseOverlayClick={handleCloseOverlay}>
+                    <HUDOverlay onCloseOverlayClick={handleCloseOverlay} modified={mainHUDWasModified}>
                         {
                             showMainHUD === 'FIGHTER_INFO' && (
                                 <FighterHUD data={mainHUDPayload} />
@@ -340,7 +354,7 @@ export default function ActionsPalette({
                         }
                         {
                             showMainHUD === 'GAME_STATUS_INFO' && (
-                                <GameStatusHUD data={data} />
+                                <GameStatusHUD data={data} onModified={onGameStatusHUDModified} />
                             )
                         }
                     </HUDOverlay>

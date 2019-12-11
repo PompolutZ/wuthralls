@@ -160,6 +160,15 @@ class Firebase {
         }
     }
 
+    updateRoom = async (roomId, payload) => {
+        try {
+            const roomRef = await this.fstore.collection("rooms").doc(roomId);
+            await roomRef.update(payload);
+        } catch(error) {
+            console.log('updateBoardProperty', error);
+        }
+    }
+
     updateInteractiveMessage = async (roomId, path, payload) => {
         try {
             const roomRef = await this.fstore.collection("messages").doc(roomId);

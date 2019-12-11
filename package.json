@@ -1,12 +1,14 @@
 {
   "name": "react-firebase-auth",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "private": true,
   "dependencies": {
     "@material-ui/core": "^4.6.0",
     "@material-ui/icons": "^4.5.1",
+    "@react-hook/throttle": "^1.0.9",
     "firebase": "7.2.1",
     "honeycomb-grid": "^3.1.0",
+    "lodash": "^4.17.15",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-markdown": "^4.2.2",
