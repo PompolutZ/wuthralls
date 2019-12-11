@@ -98,9 +98,10 @@ export const warbandColors = {
     'mollogs-mob': '#9370DB', // medium purple
     'thundriks-profiteers': '#4B0082', // indigo
     'garreks-reavers': '#DC143C', // crimson
-    'skaeths-wild-hunt': '#FF4500', // orange red
+    'skaeths-wild-hunt': '#FF730D', // orange red
     'thorns-of-the-briar-queen': '#008B8B', // dark cyan
     'the-grymwatch': '#808000', // olive
+    'sepulchral-guard': '#800080', // purple
 }
 
 export const warbands = {
