@@ -15,6 +15,9 @@ function NavigationAuth({ authUser }) {
                 <li>
                     <Link to={`/history`}>History</Link>
                 </li>
+                <li>
+                    <Link to={`/future`}>Upcoming changes</Link>
+                </li>
                 {/* <li>
                     <Link to={ROUTES.HOME}>Home</Link>
                 </li>

@@ -19,6 +19,7 @@ import Playground from '../pages/Playground'
 import RoomSizePicker from '../pages/Room/RoomSizePicker'
 import SpawnRoom from '../pages/SpawnRoom'
 import History from '../pages/History'
+import Future from '../pages/Future'
 
 function App() {
     return (
@@ -41,6 +42,7 @@ function App() {
                 <Route path="/playground" component={Playground} />
                 <Route exact path="/:version/room/:roomId" component={RoomSizePicker} />
                 <Route exact path="/history" component={History} />
+                <Route exact path="/future" component={Future} />
                 
             </div>
         </Router>
