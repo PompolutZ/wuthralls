@@ -300,6 +300,7 @@ export default function FighterHUD({ data }) {
             ...playerInfo,
             hand: playerInfo.hand.split(',').filter(cardId => cardId !== card.id).join(),
             glorySpent: playerInfo.glorySpent + 1,
+            gloryScored: playerInfo.gloryScored - 1,
         }
 
         setPlayerInfo(updatedPlayerInfo);
@@ -343,6 +344,7 @@ export default function FighterHUD({ data }) {
         const updatedPlayerInfo = {
             ...playerInfo,
             glorySpent: playerInfo.glorySpent - 1,
+            gloryScored: playerInfo.gloryScored + 1,
             hand: Boolean(playerInfo.hand) ? [...playerInfo.hand.split(','), cardId].join() : [cardId].join(),
         }
 
@@ -530,14 +532,10 @@ export default function FighterHUD({ data }) {
                                 onClick={handleBringToFront(u)} />
                             ))
                         }
-                        {
-                            playerInfo.gloryScored - playerInfo.glorySpent > 0 && (
-                                <div style={{ flexShrink: 0, width: cardImageWidth *.25, height: cardImageHeight *.25, border: '3px dashed black', boxSizing: 'border-box', borderRadius: '.5rem', display: 'flex'}}
-                                    onClick={openUpgradePicker}>
-                                    <AddIcon style={{ margin: 'auto' }} />
-                                </div>
-                            )
-                        }
+                        <div style={{ flexShrink: 0, width: cardImageWidth *.25, height: cardImageHeight *.25, border: '3px dashed black', boxSizing: 'border-box', borderRadius: '.5rem', display: 'flex'}}
+                            onClick={openUpgradePicker}>
+                            <AddIcon style={{ margin: 'auto' }} />
+                        </div>
                     </div>
                 </Grid>
             </Grid>
