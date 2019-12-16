@@ -102,6 +102,7 @@ export const warbandColors = {
     'thorns-of-the-briar-queen': '#008B8B', // dark cyan
     'the-grymwatch': '#808000', // olive
     'sepulchral-guard': '#800080', // purple
+    'lady-harrows-mournflight': '#20B2AA', // light sea green
 }
 
 export const warbands = {
