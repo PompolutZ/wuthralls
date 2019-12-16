@@ -21,12 +21,14 @@ export default function useKatophrane(room) {
     useEffect(() => {
         const unsubscribe = firebase.setRoomListener(room.id, snapshot => {
             const data = snapshot.data();
+            if(!data) return;
             setRoomState({ ...data, id: snapshot.id });
             setCurrentRound(data.status.round);
             setRoundTitle(rounds[data.status.round]);
         });
 
         const unsubscribeFromMessages = firebase.setMessagesListener(room.id, snapshot => {
+            if(!snapshot.data()) return;
             const interactiveMessages = Object.entries(snapshot.data()).filter(([k, v]) => v.type === 'INTERACTIVE').map(([k, v]) => ({ ...v, id: k }));
             setInteractiveMessages(interactiveMessages);
         });

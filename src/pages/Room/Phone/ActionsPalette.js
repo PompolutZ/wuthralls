@@ -145,14 +145,13 @@ export default function ActionsPalette({
         <div
             ref={actionsRootRef}
             style={{
-                position: 'fixed',
                 display: 'flex',
                 alignItems: 'center',
+                position: 'relative',
                 bottom: 0,
                 right: 0,
                 width: '100%',
                 minHeight: 120 * 1.2,
-                zIndex: 10000,
                 backgroundColor: 'rgba(192,192,192, .8)',
             }}
         >

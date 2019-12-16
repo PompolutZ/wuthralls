@@ -50,6 +50,7 @@ export default function PhoneRoom() {
     const [enemyScoredObjectivesPile, setEnemyScoredObjectivesPile] = useState(propertyToCards(data[data.players.find(p => p !== myself.uid)], 'sObjs')); 
     const [enemyObjectivesDiscardPile, setEnemyObjectivesDiscardPile] = useState(propertyToCards(data[data.players.find(p => p !== myself.uid)], 'dObjs')); 
     const [enemyPowersDiscardPile, setEnemyPowersDiscardPile] = useState(propertyToCards(data[data.players.find(p => p !== myself.uid)], 'dPws')); 
+    const messengerRef = useRef(null);
 
 
     useEffect(() => {
@@ -101,9 +102,9 @@ export default function PhoneRoom() {
     }
 
     return (
-        <div>
-            <div style={{ filter: isHUDOpen ? 'blur(3px)' : '' }}>
-                <div style={{ marginBottom: isHUDOpen ? 0 : 140 }}>
+        <div style={{ width: '100%', height: '100%' }}>
+            <div style={{ filter: isHUDOpen ? 'blur(3px)' : '', width: '100%', height: '100%', display: 'flex', flexDirection: 'column', backgroundColor: 'orangered' }}>
+                <div style={{ width: '100%', height: `100%`, flex: 1, overflowY: 'scroll', backgroudColor: 'magenta' }}>
                 {
                     tabIndex === 0 && (
                         <Messenger roomId={state.id} state={data} />
