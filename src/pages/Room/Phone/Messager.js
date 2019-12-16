@@ -633,9 +633,9 @@ function Messenger({ roomId, state }) {
                 container
                 spacing={0}
                 className={classes.root}
-                style={{ filter: showMainHUD ? 'blur(3px)' : '', backgroundColor: 'green' }}
+                style={{ filter: showMainHUD ? 'blur(3px)' : '', backgroundColor: 'white' }}
             >
-                <div style={{ width: '100%', height: '100%', marginBottom: '2.5rem', backgroundColor: 'magenta' }}>
+                <div style={{ width: '100%', height: '100%', marginBottom: '2.5rem', backgroundColor: 'white' }}>
                 {messages.length > 0 &&
                     messages.map((m, i, arr) => {
                         if (m.type === 'INTERACTIVE') {

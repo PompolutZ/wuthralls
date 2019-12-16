@@ -98,7 +98,7 @@ class Firebase {
             console.log('recordGameResult', payload);
 
             const results = payload.players.map(p => ({
-                glory: payload[p].gloryScored,
+                glory: payload[p].gloryScored + payload[p].glorySpent,
                 faction: payload[p].faction,
                 pid: p,
                 name: payload[p].name

@@ -246,7 +246,7 @@ export default function Board({ roomId, state, onBoardChange, selectedElement })
     const { x: scatterTokenX, y: scatterTokenY } = scatterTokenHex ? scatterTokenHex.toPoint() : { x: -10, y: -10};
 
     return (
-        <div id="mainContainer" style={{ display: 'flex', overflow: 'scroll', width: '100%', height: '100%', backgroundColor: 'orange' }}>
+        <div id="mainContainer" style={{ display: 'flex', overflow: 'scroll', width: '100%', height: '100%' }}>
             <div
                 style={{
                     position: 'relative',

@@ -103,8 +103,8 @@ export default function PhoneRoom() {
 
     return (
         <div style={{ width: '100%', height: '100%' }}>
-            <div style={{ filter: isHUDOpen ? 'blur(3px)' : '', width: '100%', height: '100%', display: 'flex', flexDirection: 'column', backgroundColor: 'orangered' }}>
-                <div style={{ width: '100%', height: `100%`, flex: 1, overflowY: 'scroll', backgroudColor: 'magenta' }}>
+            <div style={{ filter: isHUDOpen ? 'blur(3px)' : '', width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
+                <div style={{ width: '100%', height: `100%`, flex: 1, overflowY: 'scroll' }}>
                 {
                     tabIndex === 0 && (
                         <Messenger roomId={state.id} state={data} />
