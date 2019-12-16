@@ -150,6 +150,7 @@ export default function ActionsPalette({
                 position: 'relative',
                 bottom: 0,
                 right: 0,
+                zIndex: 1000,
                 width: '100%',
                 minHeight: 120 * 1.2,
                 backgroundColor: 'rgba(192,192,192, .8)',

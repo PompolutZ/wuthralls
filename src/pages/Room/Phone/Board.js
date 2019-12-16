@@ -114,13 +114,15 @@ export default function Board({ roomId, state, onBoardChange, selectedElement })
     })    
     const [selectedTokenId, setSelectedTokenId] = useState(null);
     const [scaleFactor, setScaleFactor] = useState(.5);
+    const [myData, setMyData] = useState(state[myself.uid]);
+    const [opponentData, setOpponentData] = useState(state.players.length > 1 ? state[state.players.find(p => p !== myself.uid)] : null)
 
     useEffect(() => {
         if(!state.board.map) return;
 
         const mainContainer = document.getElementById('mainContainer');
         
-        const nextScaleFactor = mainContainer ? (mainContainer.offsetHeight / (baseBoardHeight * 2)) * .9 : scaleFactor;
+        const nextScaleFactor = mainContainer ? (mainContainer.offsetHeight / (baseBoardHeight * 2)) * .95 : scaleFactor;
         setScaleFactor(nextScaleFactor);
         console.log('RECALC SIZE', mainContainer.offsetHeight, nextScaleFactor);
         console.log(state);
@@ -246,13 +248,34 @@ export default function Board({ roomId, state, onBoardChange, selectedElement })
     const { x: scatterTokenX, y: scatterTokenY } = scatterTokenHex ? scatterTokenHex.toPoint() : { x: -10, y: -10};
 
     return (
-        <div id="mainContainer" style={{ display: 'flex', overflow: 'scroll', width: '100%', height: '100%' }}>
+        <div id="mainContainer" style={{ display: 'flex', overflow: 'scroll', width: '100%', height: '100%', flexFlow: 'row wrap' }}>
+            <div style={{ flex: '0 0 100%', display: 'flex', borderBottom: '1px solid lighgray', paddingBottom: '.2rem', marginBottom: '.2rem', alignItems: 'center' }}>
+                {
+                    myData && (
+                        <div style={{ display: 'flex', flexDirection: 'row-reverse', flex: 1, borderRight: '1px solid gray', paddingRight: '.2rem' }}>
+                            <img src={`/assets/factions/${myData.faction}-icon.png`} style={{ width: '1.5rem', height: '1.5rem' }} />
+                        </div>
+                    )
+                }
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', margin: 'auto .5rem auto .5rem' }}>
+                    <Typography style={{ fontSize: '.7rem'}}>{state.status.round}</Typography>
+                    <Typography style={{ fontSize: '.5rem'}}>round</Typography>
+                </div>
+                {
+                    opponentData && (
+                        <div style={{ display: 'flex', flex: 1 }}>
+                            <img src={`/assets/factions/${opponentData.faction}-icon.png`} style={{ width: '1.5rem', height: '1.5rem', borderLeft: '1px solid gray', paddingLeft: '.2rem' }} />
+                        </div>
+                    )
+                }
+            </div>
             <div
                 style={{
+                    flex: '1 0 100%',
                     position: 'relative',
                     width: baseBoardWidth * scaleFactor,
                     height: (baseBoardHeight * scaleFactor) * 2,
-                    margin: 'auto',
+                    margin: 'auto auto 3rem auto',
                 }}
             >
                 <img
@@ -297,8 +320,9 @@ export default function Board({ roomId, state, onBoardChange, selectedElement })
                 />
                 {
                     tokenHexes && Object.entries(tokenHexes).map(([k, hex], index) => {
-                        const {x, y} = getGrid(scaleFactor).get(hex.onBoard).toPoint();
+                        
                         if(k.startsWith('Lethal') && hex.isOnBoard) {
+                            const {x, y} = getGrid(scaleFactor).get(hex.onBoard).toPoint();
                             return (
                                 <div key={k} style={{
                                     position: 'absolute',
@@ -328,6 +352,7 @@ export default function Board({ roomId, state, onBoardChange, selectedElement })
                         }
 
                         if(k.startsWith('Feature') && hex.isOnBoard) {
+                            const {x, y} = getGrid(scaleFactor).get(hex.onBoard).toPoint();
                             return (
                                 <div key={k} style={{
                                     position: 'absolute',

@@ -103,6 +103,8 @@ export const warbandColors = {
     'the-grymwatch': '#808000', // olive
     'sepulchral-guard': '#800080', // purple
     'lady-harrows-mournflight': '#20B2AA', // light sea green
+    'spiteclaws-swarm': '#800000', //maroon
+
 }
 
 export const warbands = {
