@@ -429,7 +429,7 @@ export default function FighterHUD({ data }) {
                                 keepMounted
                                 open={Boolean(addTokenAnchor)}
                                 onClose={handleCloseAddTokenMenu}
-                                style={{ zIndex: 10000 }}>
+                                style={{ zIndex: 20000 }}>
                                 <MenuItem onClick={handleAddTokenAndCloseMenu('Move')}>Move Token</MenuItem>
                                 <MenuItem onClick={handleAddTokenAndCloseMenu('Charge')}>Charge Token</MenuItem>
                                 <MenuItem onClick={handleAddTokenAndCloseMenu('Guard')}>Guard Token</MenuItem>
@@ -444,7 +444,7 @@ export default function FighterHUD({ data }) {
                                 keepMounted
                                 open={Boolean(addCounterAnchor)}
                                 onClose={handleCloseAddCounterMenu}
-                                style={{ zIndex: 10000 }}>
+                                style={{ zIndex: 20000 }}>
                                 {
                                     data.counterTypes && data.counterTypes.split(',').map(counter => (
                                     <MenuItem key={counter} onClick={handleAddCounterAndCloseMenu(counter)}>{`${counter} Counter`}</MenuItem>
