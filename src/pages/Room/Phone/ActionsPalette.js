@@ -7,6 +7,10 @@ import Divider from '@material-ui/core/Divider';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
 import RotateLeftIcon from '@material-ui/icons/RotateLeft';
 import RotateRightIcon from '@material-ui/icons/RotateRight';
+import FitWidthIcon from '@material-ui/icons/AspectRatio';
+import ZoomInIcon from '@material-ui/icons/ZoomIn';
+import ZoomOutIcon from '@material-ui/icons/ZoomOut';
+
 import MessengerScreenIcon from '@material-ui/icons/QuestionAnswer';
 import BoardScreenIcon from '@material-ui/icons/ViewStream';
 import GameOverviewIcon from '@material-ui/icons/EmojiEvents';

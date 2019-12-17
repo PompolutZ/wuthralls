@@ -4,6 +4,7 @@ import * as SVG from 'svg.js';
 import { FirebaseContext } from '../../../firebase';
 import { useAuthUser } from '../../../components/Session';
 import { Typography } from '@material-ui/core';
+import { cardsDb } from '../../../data';
 
 const baseSize = 55;
 
@@ -122,7 +123,7 @@ export default function Board({ roomId, state, onBoardChange, selectedElement })
 
         const mainContainer = document.getElementById('mainContainer');
         
-        const nextScaleFactor = mainContainer ? (mainContainer.offsetHeight / (baseBoardHeight * 2)) * .95 : scaleFactor;
+        const nextScaleFactor = mainContainer ? (mainContainer.offsetHeight / (baseBoardHeight * 2)) * 1.2 : scaleFactor;
         setScaleFactor(nextScaleFactor);
         console.log('RECALC SIZE', mainContainer.offsetHeight, nextScaleFactor);
         console.log(state);
@@ -246,202 +247,236 @@ export default function Board({ roomId, state, onBoardChange, selectedElement })
 
     const scatterTokenHex = scatterToken && scatterToken.isOnBoard ? getGrid(scaleFactor).get(scatterToken.onBoard) : null;
     const { x: scatterTokenX, y: scatterTokenY } = scatterTokenHex ? scatterTokenHex.toPoint() : { x: -10, y: -10};
+    const myHand = myData && myData.hand ? myData.hand.split(',').map(cardId => ({ ...cardsDb[cardId], id: cardId })) : [];
+    const opponentHand = opponentData && opponentData.hand ? opponentData.hand.split(',').map(cardId => ({ ...cardsDb[cardId], id: cardId })) : [];
 
     return (
         <div id="mainContainer" style={{ display: 'flex', overflow: 'scroll', width: '100%', height: '100%', flexFlow: 'row wrap' }}>
             <div style={{ flex: '0 0 100%', display: 'flex', borderBottom: '1px solid lighgray', paddingBottom: '.2rem', marginBottom: '.2rem', alignItems: 'center' }}>
                 {
                     myData && (
-                        <div style={{ display: 'flex', flexDirection: 'row-reverse', flex: 1, borderRight: '1px solid gray', paddingRight: '.2rem' }}>
+                        <div style={{ display: 'flex', flexDirection: 'row-reverse', flex: 1, borderRight: '1px solid gray', paddingRight: '.2rem', alignItems: 'center' }}>
                             <img src={`/assets/factions/${myData.faction}-icon.png`} style={{ width: '1.5rem', height: '1.5rem' }} />
+                            <div style={{ marginRight: '.2rem', width: '1.2rem', height: '1.2rem', backgroundColor: 'goldenrod', borderRadius: '1rem', color: 'white', display: 'flex' }}>
+                                <Typography style={{ margin: 'auto', fontSize: '.7rem' }}>{myData.gloryScored}</Typography>
+                            </div>
+                            <div style={{ marginRight: '.2rem', width: '1.2rem', height: '1.2rem', backgroundColor: 'darkgray', borderRadius: '1rem', color: 'white', display: 'flex' }}>
+                                <Typography style={{ margin: 'auto', fontSize: '.7rem' }}>{myData.glorySpent}</Typography>
+                            </div>
+                            <div style={{ marginRight: '.2rem', width: '1.2rem', height: '1.2rem', backgroundColor: 'teal', borderRadius: '1rem', color: 'white', display: 'flex' }}>
+                                <Typography style={{ margin: 'auto', fontSize: '.7rem' }}>{myData.activationsLeft}</Typography>
+                            </div>
+                            <div style={{ marginRight: '.2rem', width: '1rem', height: '1.5rem', backgroundColor: 'goldenrod', borderRadius: '.2rem', color: 'white', display: 'flex' }}>
+                                <Typography style={{ margin: 'auto', fontSize: '.7rem' }}>{myHand.filter(c => c.type === 0).length}</Typography>
+                            </div>
+                            <div style={{ marginRight: '.2rem', width: '1rem', height: '1.5rem', backgroundColor: 'teal', borderRadius: '.2rem', color: 'white', display: 'flex' }}>
+                                <Typography style={{ margin: 'auto', fontSize: '.7rem' }}>{myHand.filter(c => c.type !== 0).length}</Typography>
+                            </div>
                         </div>
                     )
                 }
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', margin: 'auto .5rem auto .5rem' }}>
                     <Typography style={{ fontSize: '.7rem'}}>{state.status.round}</Typography>
-                    <Typography style={{ fontSize: '.5rem'}}>round</Typography>
+            <Typography style={{ fontSize: '.5rem'}}>round</Typography>
                 </div>
                 {
                     opponentData && (
-                        <div style={{ display: 'flex', flex: 1 }}>
+                        <div style={{ display: 'flex', flex: 1, alignItems: 'center' }}>
                             <img src={`/assets/factions/${opponentData.faction}-icon.png`} style={{ width: '1.5rem', height: '1.5rem', borderLeft: '1px solid gray', paddingLeft: '.2rem' }} />
+                            <div style={{ marginLeft: '.2rem', width: '1.2rem', height: '1.2rem', backgroundColor: 'goldenrod', borderRadius: '1rem', color: 'white', display: 'flex' }}>
+                                <Typography style={{ margin: 'auto', fontSize: '.7rem' }}>{opponentData.gloryScored}</Typography>
+                            </div>
+                            <div style={{ marginLeft: '.2rem', width: '1.2rem', height: '1.2rem', backgroundColor: 'darkgray', borderRadius: '1rem', color: 'white', display: 'flex' }}>
+                                <Typography style={{ margin: 'auto', fontSize: '.7rem' }}>{opponentData.glorySpent}</Typography>
+                            </div>
+                            <div style={{ marginLeft: '.2rem', width: '1.2rem', height: '1.2rem', backgroundColor: 'teal', borderRadius: '1rem', color: 'white', display: 'flex' }}>
+                                <Typography style={{ margin: 'auto', fontSize: '.7rem' }}>{opponentData.activationsLeft}</Typography>
+                            </div>
+                            <div style={{ marginLeft: '.2rem', width: '1rem', height: '1.5rem', backgroundColor: 'goldenrod', borderRadius: '.2rem', color: 'white', display: 'flex' }}>
+                                <Typography style={{ margin: 'auto', fontSize: '.7rem' }}>{opponentHand.filter(c => c.type === 0).length}</Typography>
+                            </div>
+                            <div style={{ marginLeft: '.2rem', width: '1rem', height: '1.5rem', backgroundColor: 'teal', borderRadius: '.2rem', color: 'white', display: 'flex' }}>
+                                <Typography style={{ margin: 'auto', fontSize: '.7rem' }}>{opponentHand.filter(c => c.type !== 0).length}</Typography>
+                            </div>
                         </div>
                     )
                 }
             </div>
-            <div
-                style={{
-                    flex: '1 0 100%',
-                    position: 'relative',
-                    width: baseBoardWidth * scaleFactor,
-                    height: (baseBoardHeight * scaleFactor) * 2,
-                    margin: 'auto auto 3rem auto',
-                }}
-            >
-                <img
-                    src={`/assets/boards/${state.board.map.top.id}.jpg`}
-                    //src={`/assets/boards/1.jpg`}
-                    alt="board"
-                    style={{
-                        width: baseBoardWidth * scaleFactor,
-                        height: baseBoardHeight * scaleFactor,
-                        position: 'absolute',
-                        zIndex: '1',
-                        transformOrigin: 'center center',
-                        transform: `rotate(${state.board.map.top.rotate}deg)`,
-                        // transform: `rotate(0deg)`,
-                    }}
-                />
-                <img
-                    //src={`/assets/boards/10.jpg`}
-                    src={`/assets/boards/${state.board.map.bottom.id}.jpg`}
-                    alt="board2"
-                    style={{
-                        width: baseBoardWidth * scaleFactor,
-                        height: baseBoardHeight * scaleFactor,
-                        position: 'absolute',
-                        zIndex: '1',
-                        top: baseBoardHeight * scaleFactor,
-                        left: 0,
-                        transformOrigin: 'center center',
-                        transform: `rotate(${state.board.map.bottom.rotate}deg)`,
-                        //transform: `rotate(0deg)`,
-                    }}
-                />
+            <div style={{ display: 'flex', flex: '1 0 100%', backgroundColor: 'magenta', marginBottom: '3rem' }}>
                 <div
                     style={{
-                        position: 'absolute',
+                        backgroundColor: 'white',
+                        position: 'relative',
                         width: baseBoardWidth * scaleFactor,
                         height: (baseBoardHeight * scaleFactor) * 2,
-                        zIndex: 600,
+                        margin: 'auto',
                     }}
-                    ref={rootRef}
-                    onClick={handleClick}
-                />
-                {
-                    tokenHexes && Object.entries(tokenHexes).map(([k, hex], index) => {
-                        
-                        if(k.startsWith('Lethal') && hex.isOnBoard) {
-                            const {x, y} = getGrid(scaleFactor).get(hex.onBoard).toPoint();
-                            return (
-                                <div key={k} style={{
-                                    position: 'absolute',
-                                    zIndex: 500,
-                                    width: pointyTokenBaseWidth * scaleFactor,
-                                    top: y + (baseSize * scaleFactor) / 2,
-                                    left: x,
-                                }}>
-                                    <img
-                                        src={`/assets/tokens/lethal.png`}
-                                        style={{
-                                            width: pointyTokenBaseWidth * scaleFactor,
-                                        }}
-                                    />
-                                    <div style={{ 
+                >
+                    <img
+                        src={`/assets/boards/${state.board.map.top.id}.jpg`}
+                        //src={`/assets/boards/1.jpg`}
+                        alt="board"
+                        style={{
+                            width: baseBoardWidth * scaleFactor,
+                            height: baseBoardHeight * scaleFactor,
+                            position: 'absolute',
+                            zIndex: '1',
+                            transformOrigin: 'center center',
+                            transform: `rotate(${state.board.map.top.rotate}deg)`,
+                            // transform: `rotate(0deg)`,
+                        }}
+                    />
+                    <img
+                        //src={`/assets/boards/10.jpg`}
+                        src={`/assets/boards/${state.board.map.bottom.id}.jpg`}
+                        alt="board2"
+                        style={{
+                            width: baseBoardWidth * scaleFactor,
+                            height: baseBoardHeight * scaleFactor,
+                            position: 'absolute',
+                            zIndex: '1',
+                            top: baseBoardHeight * scaleFactor,
+                            left: 0,
+                            transformOrigin: 'center center',
+                            transform: `rotate(${state.board.map.bottom.rotate}deg)`,
+                            //transform: `rotate(0deg)`,
+                        }}
+                    />
+                    <div
+                        style={{
+                            position: 'absolute',
+                            width: baseBoardWidth * scaleFactor,
+                            height: (baseBoardHeight * scaleFactor) * 2,
+                            zIndex: 600,
+                        }}
+                        ref={rootRef}
+                        onClick={handleClick}
+                    />
+                    {
+                        tokenHexes && Object.entries(tokenHexes).map(([k, hex], index) => {
+                            
+                            if(k.startsWith('Lethal') && hex.isOnBoard) {
+                                const {x, y} = getGrid(scaleFactor).get(hex.onBoard).toPoint();
+                                return (
+                                    <div key={k} style={{
                                         position: 'absolute',
-                                        zIndex: 501,
+                                        zIndex: 500,
                                         width: pointyTokenBaseWidth * scaleFactor,
-                                        height: pointyTokenBaseWidth * scaleFactor,
-                                        borderRadius: `${pointyTokenBaseWidth * scaleFactor / 2}px`, 
-                                        top: '5px',
-                                        left: 0,
-                                        boxShadow: k === selectedTokenId ? '0 0 35px 13px rgba(255,0,0, .7)' : '0 0 12.5px 5px rgba(255,0,0, .7)',
-                                    }} />
-                                </div>
-                            );
-                        }
-
-                        if(k.startsWith('Feature') && hex.isOnBoard) {
-                            const {x, y} = getGrid(scaleFactor).get(hex.onBoard).toPoint();
-                            return (
-                                <div key={k} style={{
-                                    position: 'absolute',
-                                    zIndex: 500,
-                                    width: pointyTokenBaseWidth * scaleFactor,
-                                    top: y + (baseSize * scaleFactor) / 2,
-                                    left: x,
+                                        top: y + (baseSize * scaleFactor) / 2,
+                                        left: x,
                                     }}>
-                                    <img
-                                            src={
-                                                hex.isLethal
-                                                    ? `/assets/tokens/feature_back.png`
-                                                    : `/assets/tokens/feature_front_${hex.number}.png`
-                                            }
-                                            style={{ width: pointyTokenBaseWidth * scaleFactor, }} />
-                                    <div style={{ 
-                                        position: 'absolute',
-                                        zIndex: 501,
-                                        width: pointyTokenBaseWidth * scaleFactor,
-                                        height: pointyTokenBaseWidth * scaleFactor,
-                                        borderRadius: `${pointyTokenBaseWidth * scaleFactor / 2}px`, 
-                                        top: '5px',
-                                        left: 0,
-                                        boxShadow: k === selectedTokenId ? `0 0 35px 13px ${hex.isLethal ? 'rgba(255,0,0, .7)' : 'rgba(255,215,0, .7)'}` : `0 0 12.5px 5px ${hex.isLethal ? 'rgba(255,0,0, .7)' : 'rgba(255,215,0, .7)'}`,
-                                    }} />
-                                </div>
-                            );
-                        }
-                    })
-                }
-                {
-                    fighters && Object.entries(fighters).map(([k, fighter]) => {
-                        if(fighter.isOnBoard) {
-                            const { x, y } = getGrid(scaleFactor).get(fighter.onBoard).toPoint();
-
-                            return (
-                                <div
-                                    key={k}
-                                    style={{
-                                        position: 'absolute',
-                                        backgroundImage: `url(/assets/fighters/${fighter.icon}-icon.png)`,
-                                        backgroundSize: 'cover',
-                                        zIndex: 600,
-                                        width: 80 * scaleFactor,
-                                        height: 80 * scaleFactor,
-                                        top: y + ((95 - 80) * scaleFactor) * 2.75 - 2,
-                                        left: x + ((95 - 80) * scaleFactor) / 2 - 2,
-                                        border: k.startsWith(myself.uid) ? '3px solid limegreen' : '3px solid red',
-                                        borderRadius: 80,
-                                        boxShadow: k === selectedTokenId ? k.startsWith(myself.uid) ? '0 0 7px 7px limegreen' : '0 0 7px 7px red' : ''
-                                    }}>
+                                        <img
+                                            src={`/assets/tokens/lethal.png`}
+                                            style={{
+                                                width: pointyTokenBaseWidth * scaleFactor,
+                                            }}
+                                        />
                                         <div style={{ 
-                                            position: 'absolute', 
-                                            zIndex: 601, 
-                                            width: '2rem', 
-                                            height: '2rem', 
-                                            backgroundColor: 'darkred',
-                                            display: 'flex',
-                                            border: '1px solid white',
-                                            borderRadius: '1rem',
-                                            top: '-.5rem',
-                                            left: '-.5rem',
-                                            transformOrigin: 'center center',
-                                            transform: `scale(${scaleFactor})`,
-                                            boxSizing: 'boarder-box', verticalAlign: 'middle' }}>
-                                                <Typography style={{ fontSize: '1.5rem', margin: 'auto', color: 'white', verticalAlign: 'middle'}}>{fighter.wounds}</Typography>
-                                            </div>
-                                </div>
-    
-                            )
-                        }
-                    })
-                }
-                {
-                    scatterToken && scatterToken.isOnBoard && (
-                        <img
-                            src={`/assets/other/scatter.png`}
-                            style={{
-                                position: 'absolute',
-                                zIndex: 550,
-                                width: pointyTokenBaseWidth * scaleFactor,
-                                top: scatterTokenY < 0 ? -10000 : scatterTokenY + (baseSize * scaleFactor) / 2,
-                                left: scatterTokenX < 0 ? -10000 : scatterTokenX,
-                                transform: `rotate(${scatterToken.rotationAngle}deg)`, 
-                                transformOrigin: 'center center',
-                            }}
-                        />
-                    )
-                }
+                                            position: 'absolute',
+                                            zIndex: 501,
+                                            width: pointyTokenBaseWidth * scaleFactor,
+                                            height: pointyTokenBaseWidth * scaleFactor,
+                                            borderRadius: `${pointyTokenBaseWidth * scaleFactor / 2}px`, 
+                                            top: '5px',
+                                            left: 0,
+                                            boxShadow: k === selectedTokenId ? '0 0 35px 13px rgba(255,0,0, .7)' : '0 0 12.5px 5px rgba(255,0,0, .7)',
+                                        }} />
+                                    </div>
+                                );
+                            }
+
+                            if(k.startsWith('Feature') && hex.isOnBoard) {
+                                const {x, y} = getGrid(scaleFactor).get(hex.onBoard).toPoint();
+                                return (
+                                    <div key={k} style={{
+                                        position: 'absolute',
+                                        zIndex: 500,
+                                        width: pointyTokenBaseWidth * scaleFactor,
+                                        top: y + (baseSize * scaleFactor) / 2,
+                                        left: x,
+                                        }}>
+                                        <img
+                                                src={
+                                                    hex.isLethal
+                                                        ? `/assets/tokens/feature_back.png`
+                                                        : `/assets/tokens/feature_front_${hex.number}.png`
+                                                }
+                                                style={{ width: pointyTokenBaseWidth * scaleFactor, }} />
+                                        <div style={{ 
+                                            position: 'absolute',
+                                            zIndex: 501,
+                                            width: pointyTokenBaseWidth * scaleFactor,
+                                            height: pointyTokenBaseWidth * scaleFactor,
+                                            borderRadius: `${pointyTokenBaseWidth * scaleFactor / 2}px`, 
+                                            top: '5px',
+                                            left: 0,
+                                            boxShadow: k === selectedTokenId ? `0 0 35px 13px ${hex.isLethal ? 'rgba(255,0,0, .7)' : 'rgba(255,215,0, .7)'}` : `0 0 12.5px 5px ${hex.isLethal ? 'rgba(255,0,0, .7)' : 'rgba(255,215,0, .7)'}`,
+                                        }} />
+                                    </div>
+                                );
+                            }
+                        })
+                    }
+                    {
+                        fighters && Object.entries(fighters).map(([k, fighter]) => {
+                            if(fighter.isOnBoard) {
+                                const { x, y } = getGrid(scaleFactor).get(fighter.onBoard).toPoint();
+
+                                return (
+                                    <div
+                                        key={k}
+                                        style={{
+                                            position: 'absolute',
+                                            backgroundImage: `url(/assets/fighters/${fighter.icon}-icon.png)`,
+                                            backgroundSize: 'cover',
+                                            zIndex: 600,
+                                            width: 80 * scaleFactor,
+                                            height: 80 * scaleFactor,
+                                            top: y + ((95 - 80) * scaleFactor) * 2.75 - 2,
+                                            left: x + ((95 - 80) * scaleFactor) / 2 - 2,
+                                            border: k.startsWith(myself.uid) ? '3px solid limegreen' : '3px solid red',
+                                            borderRadius: 80,
+                                            boxShadow: k === selectedTokenId ? k.startsWith(myself.uid) ? '0 0 7px 7px limegreen' : '0 0 7px 7px red' : ''
+                                        }}>
+                                            <div style={{ 
+                                                position: 'absolute', 
+                                                zIndex: 601, 
+                                                width: '2rem', 
+                                                height: '2rem', 
+                                                backgroundColor: 'darkred',
+                                                display: 'flex',
+                                                border: '1px solid white',
+                                                borderRadius: '1rem',
+                                                top: '-.5rem',
+                                                left: '-.5rem',
+                                                transformOrigin: 'center center',
+                                                transform: `scale(${scaleFactor})`,
+                                                boxSizing: 'boarder-box', verticalAlign: 'middle' }}>
+                                                    <Typography style={{ fontSize: '1.5rem', margin: 'auto', color: 'white', verticalAlign: 'middle'}}>{fighter.wounds}</Typography>
+                                                </div>
+                                    </div>
+        
+                                )
+                            }
+                        })
+                    }
+                    {
+                        scatterToken && scatterToken.isOnBoard && (
+                            <img
+                                src={`/assets/other/scatter.png`}
+                                style={{
+                                    position: 'absolute',
+                                    zIndex: 550,
+                                    width: pointyTokenBaseWidth * scaleFactor,
+                                    top: scatterTokenY < 0 ? -10000 : scatterTokenY + (baseSize * scaleFactor) / 2,
+                                    left: scatterTokenX < 0 ? -10000 : scatterTokenX,
+                                    transform: `rotate(${scatterToken.rotationAngle}deg)`, 
+                                    transformOrigin: 'center center',
+                                }}
+                            />
+                        )
+                    }
+                </div>
             </div>
         </div>
     );

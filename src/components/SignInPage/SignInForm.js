@@ -88,10 +88,10 @@ function SignInForm({ history }) {
                     </Grid>
                 </Grid>
                 <Grid item xs={12}>
-                    <Button color="primary" variant="contained" onClick={handleAnonSignIn}>
+                    {/* <Button color="primary" variant="contained" onClick={handleAnonSignIn}>
                         Sign In anonymously
-                    </Button>
-                    <Typography variant="body2">Note! This option is best only for trying this website. IF you want to access your rooms you need to sign in with some email and password (or sign up).</Typography>
+                    </Button> */}
+                    <Typography variant="body2">Note! Anon sign in has been removed for now because of bugs with it. I recommend you to sign up and if you afraid that I would steal your bank account info you are welcome to use fake email address. Just remember that in case of using fake email Google won't be able to send you password recovery email.</Typography>
                 </Grid>
                 <Grid item xs={12}>
                     {error && <p>{error.message}</p>}
