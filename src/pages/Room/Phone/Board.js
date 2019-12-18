@@ -5,6 +5,9 @@ import { FirebaseContext } from '../../../firebase';
 import { useAuthUser } from '../../../components/Session';
 import { Typography } from '@material-ui/core';
 import { cardsDb } from '../../../data';
+import ZoomInIcon from '@material-ui/icons/ZoomIn';
+import ZoomOutIcon from '@material-ui/icons/ZoomOut';
+import ButtonBase from '@material-ui/core/ButtonBase';
 
 const baseSize = 55;
 
@@ -115,6 +118,7 @@ export default function Board({ roomId, state, onBoardChange, selectedElement })
     })    
     const [selectedTokenId, setSelectedTokenId] = useState(null);
     const [scaleFactor, setScaleFactor] = useState(.5);
+    const [scaleFactorModifier, setScaleFactorModifier] = useState(1);
     const [myData, setMyData] = useState(state[myself.uid]);
     const [opponentData, setOpponentData] = useState(state.players.length > 1 ? state[state.players.find(p => p !== myself.uid)] : null)
 
@@ -123,19 +127,23 @@ export default function Board({ roomId, state, onBoardChange, selectedElement })
 
         const mainContainer = document.getElementById('mainContainer');
         
-        const nextScaleFactor = mainContainer ? (mainContainer.offsetHeight / (baseBoardHeight * 2)) * 1.2 : scaleFactor;
+        const nextScaleFactor = (mainContainer ? (mainContainer.offsetHeight / (baseBoardHeight * 2)) * 1.2 : scaleFactor) * scaleFactorModifier;
         setScaleFactor(nextScaleFactor);
         console.log('RECALC SIZE', mainContainer.offsetHeight, nextScaleFactor);
         console.log(state);
+    }, []);
+
+    useEffect(() => {
         const currentSvg = svg ? svg : SVG(rootRef.current);
+        currentSvg.clear();
         setSvg(currentSvg);
-        const initGrid = getGrid(nextScaleFactor);
+        const initGrid = getGrid(scaleFactor);
         console.log(initGrid.get([3, 5]).toPoint())
         initGrid.forEach(hex => {
             renderHex(hex, currentSvg, 'rgba(211,211,211, .5)');
         })
         setGrid(initGrid);
-    }, []);
+    }, [scaleFactor])
 
     useEffect(() => {
         console.log('Board.OnSelectedElementChange', selectedElement);
@@ -181,6 +189,22 @@ export default function Board({ roomId, state, onBoardChange, selectedElement })
             value: `All feature hexes has been revealed.`,
         })
     }, [tokenHexes]);
+
+    const handleIncreazeScaleFactor = () => {
+        const nextScaleFactorMod = scaleFactorModifier + 0.2;
+        setScaleFactorModifier(nextScaleFactorMod);
+        const mainContainer = document.getElementById('mainContainer');
+        const nextScaleFactor = (mainContainer ? (mainContainer.offsetHeight / (baseBoardHeight * 2)) * 1.2 : scaleFactor) * nextScaleFactorMod;
+        setScaleFactor(nextScaleFactor);
+    }
+
+    const handleDecreaseScaleFactor = () => {
+        const nextScaleFactorMod = scaleFactorModifier - 0.2;
+        setScaleFactorModifier(nextScaleFactorMod);
+        const mainContainer = document.getElementById('mainContainer');
+        const nextScaleFactor = (mainContainer ? (mainContainer.offsetHeight / (baseBoardHeight * 2)) * 1.2 : scaleFactor) * nextScaleFactorMod;
+        setScaleFactor(nextScaleFactor);
+    }
 
     const handleClick = e => {
         const { offsetX, offsetY } = e.nativeEvent;
@@ -272,6 +296,9 @@ export default function Board({ roomId, state, onBoardChange, selectedElement })
                             <div style={{ marginRight: '.2rem', width: '1rem', height: '1.5rem', backgroundColor: 'teal', borderRadius: '.2rem', color: 'white', display: 'flex' }}>
                                 <Typography style={{ margin: 'auto', fontSize: '.7rem' }}>{myHand.filter(c => c.type !== 0).length}</Typography>
                             </div>
+                            <ButtonBase onClick={handleIncreazeScaleFactor}>
+                                <ZoomInIcon />
+                            </ButtonBase>
                         </div>
                     )
                 }
@@ -298,6 +325,9 @@ export default function Board({ roomId, state, onBoardChange, selectedElement })
                             <div style={{ marginLeft: '.2rem', width: '1rem', height: '1.5rem', backgroundColor: 'teal', borderRadius: '.2rem', color: 'white', display: 'flex' }}>
                                 <Typography style={{ margin: 'auto', fontSize: '.7rem' }}>{opponentHand.filter(c => c.type !== 0).length}</Typography>
                             </div>
+                            <ButtonBase onClick={handleDecreaseScaleFactor}>
+                                <ZoomOutIcon />
+                            </ButtonBase>
                         </div>
                     )
                 }
