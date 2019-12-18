@@ -11,6 +11,23 @@ import ButtonBase from '@material-ui/core/ButtonBase';
 
 const baseSize = 55;
 
+const boardHexesArray = [
+    // first territory
+    [0, 0], [1, 0], [2, 0], [3,0], [4,0], [5,0], [6,0], [7,0], 
+    [0, 1], [1, 1], [2, 1], [3,1], [4,1], [5,1], [6,1],
+    [0, 2], [1, 2], [2, 2], [3,2], [4,2], [5,2], [6,2], [7,2],
+    [0, 3], [1, 3], [2, 3], [3,3], [4,3], [5,3], [6,3],
+    [0, 4], [1, 4], [2, 4], [3,4], [4,4], [5,4], [6,4], [7,4],
+    // no one territory
+    [0, 5], [1, 5], [2, 5], [3,5], [4,5], [5,5], [6,5],
+    //second territory
+    [0, 6], [1, 6], [2, 6], [3,6], [4,6], [5,6], [6,6], [7,6], 
+    [0, 7], [1, 7], [2, 7], [3,7], [4,7], [5,7], [6,7],
+    [0, 8], [1, 8], [2, 8], [3,8], [4,8], [5,8], [6,8], [7,8],
+    [0, 9], [1, 9], [2, 9], [3,9], [4,9], [5,9], [6,9],
+    [0, 10], [1, 10], [2, 10], [3,10], [4,10], [5,10], [6,10], [7,10],     
+];
+
 const renderHex = (hex, svg, color) => {
             // render(draw, color) {
     const { x, y } = hex.toPoint();
@@ -74,23 +91,7 @@ const getGrid = scaleFactor =>  {
     const Hex = extendHex(hexProto);
     const Grid = defineGrid(Hex);
 
-    return Grid
-    (
-        // first territory
-        [0, 0], [1, 0], [2, 0], [3,0], [4,0], [5,0], [6,0], [7,0], 
-        [0, 1], [1, 1], [2, 1], [3,1], [4,1], [5,1], [6,1],
-        [0, 2], [1, 2], [2, 2], [3,2], [4,2], [5,2], [6,2], [7,2],
-        [0, 3], [1, 3], [2, 3], [3,3], [4,3], [5,3], [6,3],
-        [0, 4], [1, 4], [2, 4], [3,4], [4,4], [5,4], [6,4], [7,4],
-        // no one territory
-        [0, 5], [1, 5], [2, 5], [3,5], [4,5], [5,5], [6,5],
-        //second territory
-        [0, 6], [1, 6], [2, 6], [3,6], [4,6], [5,6], [6,6], [7,6], 
-        [0, 7], [1, 7], [2, 7], [3,7], [4,7], [5,7], [6,7],
-        [0, 8], [1, 8], [2, 8], [3,8], [4,8], [5,8], [6,8], [7,8],
-        [0, 9], [1, 9], [2, 9], [3,9], [4,9], [5,9], [6,9],
-        [0, 10], [1, 10], [2, 10], [3,10], [4,10], [5,10], [6,10], [7,10],            
-    );
+    return Grid(boardHexesArray);
 }
 
 export default function Board({ roomId, state, onBoardChange, selectedElement }) {
@@ -210,6 +211,8 @@ export default function Board({ roomId, state, onBoardChange, selectedElement })
         const { offsetX, offsetY } = e.nativeEvent;
         const hex = getGridFactory(scaleFactor).pointToHex([offsetX, offsetY]);
         console.log(hex);
+        const isHexOnBoard = boardHexesArray.find(([x, y]) => hex.x === x && hex.y === y);
+        if(!isHexOnBoard) return;
         if(hex) {
             highlightHex(hex, svg);
             if(selectedTokenId) {
@@ -332,7 +335,7 @@ export default function Board({ roomId, state, onBoardChange, selectedElement })
                     )
                 }
             </div>
-            <div style={{ display: 'flex', flex: '1 0 100%', backgroundColor: 'magenta', marginBottom: '3rem' }}>
+            <div style={{ display: 'flex', flex: '1 0 100%', backgroundColor: 'white', }}>
                 <div
                     style={{
                         backgroundColor: 'white',
@@ -507,6 +510,9 @@ export default function Board({ roomId, state, onBoardChange, selectedElement })
                         )
                     }
                 </div>
+            </div>
+            <div style={{ flex: '0 0 100%', height: '3rem'}}>
+
             </div>
         </div>
     );
