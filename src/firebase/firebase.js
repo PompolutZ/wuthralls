@@ -112,10 +112,10 @@ class Firebase {
                 finishied: new Date()
             });
 
-            await this.fstore.collection("rooms").doc(id).delete();
-            const allDocs = await this.fstore.collection(`${id}_messages`).get();
+            await this.fstore.collection("rooms").doc(roomId).delete();
+            const allDocs = await this.fstore.collection(`${roomId}_messages`).get();
             const allMessagesIds = allDocs.docs.map(doc => doc.id);
-            allMessagesIds.forEach(async messageId => await this.fstore.collection(`${id}_messages`).doc(messageId).delete());
+            allMessagesIds.forEach(async messageId => await this.fstore.collection(`${roomId}_messages`).doc(messageId).delete());
         } catch(error) {
             console.error('Error in record game result: ', error);
         }
