@@ -151,7 +151,7 @@ export default function SpawnRoom() {
             name: roomName,
             createdBy: myself.uid,
             status: {
-                round: 0,
+                round: 1,
             },
             board: {
                 fighters: {

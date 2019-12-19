@@ -30,6 +30,7 @@ import { useAuthUser } from '../../../components/Session';
 import { Typography } from '@material-ui/core';
 import { cardsDb } from '../../../data/index';
 import { shuffle } from '../../../common/function';
+import Glory from '../../../components/CommonSVGs/Glory';
 
 const cardDefaultWidth = 300;
 const cardDefaultHeight = 420;
@@ -45,6 +46,7 @@ const ENEMY_CARDS_GROUP = 'ENEMY_CARDS_GROUP';
 
 export default function CardsHUD({
     roomId,
+    myData,
     objectivesPile,
     powerCardsPile,
     serverHand,
@@ -69,6 +71,7 @@ export default function CardsHUD({
     const [highlightFromSource, setHighlightFromSource] = useState(null);
     const [selectedGroup, setSelectedGroup] = useState(MY_CARDS_GROUP); 
     const [modified, setModified] = useState(false);
+    const [gloryScored, setGloryScored] = useState(myData ? myData.gloryScored : 0);
 
     const selectGroup = groupName => () => {
         setSelectedGroup(groupName)
@@ -112,6 +115,7 @@ export default function CardsHUD({
 
     const handleSaveAndClose = () => {
         onClose(false);
+        
         firebase.updateRoom(roomId, {
             [`${myself.uid}.hand`]: hand ? hand.map(x => x.id).join() : '',
             [`${myself.uid}.oDeck`]: objectiveDrawPile.map(x => x.id).join(),
@@ -119,6 +123,7 @@ export default function CardsHUD({
             [`${myself.uid}.sObjs`]: scoredObjectives ? scoredObjectives.map(x => x.id).join() : '',
             [`${myself.uid}.dObjs`]: discardedObjectives ? discardedObjectives.map(x => x.id).join() : '',
             [`${myself.uid}.dPws`]: discardedPowers ? discardedPowers.map(x => x.id).join() : '',
+            [`${myself.uid}.gloryScored`]: gloryScored,
         });
         setModified(false);
     }
@@ -132,6 +137,8 @@ export default function CardsHUD({
             } else {
                 setScoredObjectives(prev => [...prev, card]);
             }
+
+            setGloryScored(Number(gloryScored) + Number(card.glory));
 
             firebase.addGenericMessage2(roomId, {
                 author: 'Katophrane',
@@ -1102,8 +1109,7 @@ export default function CardsHUD({
                             onClick={handleStopHighlighting}
                         >
                             {
-                                (highlightFromSource === OBJECTIVES_HAND ||
-                                highlightFromSource === POWERS_HAND) &&
+                                highlightFromSource === OBJECTIVES_HAND &&
                                 selectedGroup === MY_CARDS_GROUP && (
                                     <ButtonBase
                                         style={{
@@ -1111,22 +1117,74 @@ export default function CardsHUD({
                                             bottom: '0%',
                                             left: '0%',
                                             marginLeft: '-1.5rem',
-                                            backgroundColor: 'teal',
-                                            color: 'white',
-                                            width: '3rem',
-                                            height: '3rem',
-                                            borderRadius: '1.5rem',
+                                            backgroundColor: 'dimgray',
+                                            color: 'gray',
+                                            width: '4rem',
+                                            height: '4rem',
+                                            borderRadius: '2rem',
+                                            boxSizing: 'border-box',
+                                            boxShadow: '0 0 10px 2px darkgoldenrod',
                                         }}
                                         onClick={playCard(highlightCard)}
                                     >
-                                        <PlayIcon
+                                        <div style={{
+                                            position: 'absolute',
+                                            width: '3rem',
+                                            height: '3rem',
+                                            borderRadius: '2rem',
+                                            backgroundColor: 'goldenrod',
+                                            display: 'flex',
+                                        }}>
+                                        </div>
+                                        <Glory
                                             style={{
-                                                width: '2rem',
-                                                height: '2rem',
+                                                // backgroundColor: 'orange',
+                                                color: 'darkgoldenrod',
+                                                width: '4.2rem',
+                                                height: '4.2rem',
+                                                borderRadius: '3rem',
+                                                position: 'absolute',
                                             }}
                                         />
+                                        <div style={{
+                                            position: 'absolute',
+                                            width: '3rem',
+                                            height: '3rem',
+                                            borderRadius: '2rem',
+                                            display: 'flex',
+                                            left: '1rem',
+                                            top: '-.5rem',
+                                        }}>
+                                            <Typography style={{ color: 'white', fontSize: '3rem', fontWeight: 800 }}>{highlightCard.glory}</Typography>
+                                        </div>
                                     </ButtonBase>
                                 )
+                            }
+                            {
+                                 highlightFromSource === POWERS_HAND &&
+                                 selectedGroup === MY_CARDS_GROUP && (
+                                     <ButtonBase
+                                         style={{
+                                             position: 'absolute',
+                                             bottom: '0%',
+                                             left: '0%',
+                                             marginLeft: '-1.5rem',
+                                             backgroundColor: 'teal',
+                                             color: 'white',
+                                             width: '3rem',
+                                             height: '3rem',
+                                             borderRadius: '1.5rem',
+                                         }}
+                                         onClick={playCard(highlightCard)}
+                                     >
+                                         <PlayIcon
+                                             style={{
+                                                 width: '2rem',
+                                                 height: '2rem',
+                                             }}
+                                         />
+                                     </ButtonBase>
+                                 )
                             }
                             {
                                 (highlightFromSource === OBJECTIVES_SCORED ||

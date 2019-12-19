@@ -173,6 +173,7 @@ export default function PhoneRoom() {
                 isHUDOpen && (
                     <CardsHUD 
                         roomId={data.id} 
+                        myData={data[myself.uid]}
                         objectivesPile={objectiveDrawPile} 
                         powerCardsPile={powersDrawPile} 
                         serverHand={hand} 

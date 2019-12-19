@@ -99,7 +99,7 @@ export default function ActionsPalette({
     const handleMessageMenuItemClick = action => async () => {
         setAnchorEl(null);
         console.log('Message action', action, data);
-        await firebase.addMessage(data.id, {
+        await firebase.addMessage2(data.id, {
             uid: myself.uid,
             value: action.say`${myself.username} will **pass on power**.`,
         });
