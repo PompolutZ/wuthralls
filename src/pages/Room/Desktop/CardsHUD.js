@@ -177,7 +177,7 @@ export default function CardsHUD({
                 setScoredObjectives(prev => [...prev, card]);
             }
 
-            firebase.addGenericMessage(roomId, {
+            firebase.addGenericMessage2(roomId, {
                 author: 'Katophrane',
                 type: 'INFO',
                 subtype: 'SCORED_OBJECTIVE_CARD',
@@ -191,7 +191,7 @@ export default function CardsHUD({
                 setDiscardedPowers(prev => [...prev, card]);
             }
 
-            firebase.addGenericMessage(roomId, {
+            firebase.addGenericMessage2(roomId, {
                 author: 'Katophrane',
                 type: 'INFO',
                 subtype: 'PLAYED_POWER_CARD',
@@ -268,7 +268,7 @@ export default function CardsHUD({
                 setDiscardedObjectives(prev => [...prev, card]);
             }
 
-            firebase.addGenericMessage(roomId, {
+            firebase.addGenericMessage2(roomId, {
                 author: 'Katophrane',
                 type: 'INFO',
                 subtype: 'DISCARDED_OBJECTIVE_CARD',
@@ -282,7 +282,7 @@ export default function CardsHUD({
                 setDiscardedPowers(prev => [...prev, card]);
             }
 
-            firebase.addGenericMessage(roomId, {
+            firebase.addGenericMessage2(roomId, {
                 author: 'Katophrane',
                 type: 'INFO',
                 subtype: 'DISCARDED_POWER_CARD',

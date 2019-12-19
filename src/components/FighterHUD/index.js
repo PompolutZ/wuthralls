@@ -205,7 +205,7 @@ export default function FighterHUD({ data }) {
             updatedTokens.join(),
         );
 
-        firebase.addGenericMessage(roomId, {
+        firebase.addGenericMessage2(roomId, {
             author: 'Katophrane',
             type: 'INFO',
             subtype: 'ADD_TOKEN',
@@ -225,7 +225,7 @@ export default function FighterHUD({ data }) {
             updatedCounters.join(),
         );
 
-        firebase.addGenericMessage(roomId, {
+        firebase.addGenericMessage2(roomId, {
             author: 'Katophrane',
             type: 'INFO',
             subtype: 'ADD_COUNTER',
@@ -247,7 +247,7 @@ export default function FighterHUD({ data }) {
             updatedTokens.join(),
         );
 
-        firebase.addGenericMessage(roomId, {
+        firebase.addGenericMessage2(roomId, {
             author: 'Katophrane',
             type: 'INFO',
             subtype: 'REMOVE_TOKEN',
@@ -269,7 +269,7 @@ export default function FighterHUD({ data }) {
             updatedCounters.join(),
         );
 
-        firebase.addGenericMessage(roomId, {
+        firebase.addGenericMessage2(roomId, {
             author: 'Katophrane',
             type: 'INFO',
             subtype: 'REMOVE_COUNTER',
@@ -318,7 +318,7 @@ export default function FighterHUD({ data }) {
         );
 
 
-        firebase.addGenericMessage(roomId, {
+        firebase.addGenericMessage2(roomId, {
             author: 'Katophrane',
             type: 'INFO',
             subtype: 'APPLIED_UPGRADE_CARD',
@@ -365,7 +365,7 @@ export default function FighterHUD({ data }) {
             fightersUpgrades.join(),
         );
 
-        firebase.addGenericMessage(roomId, {
+        firebase.addGenericMessage2(roomId, {
             author: 'Katophrane',
             type: 'INFO',
             value: `${playerInfo.name} returns upgrade ${cardsDb[cardId].name} to his hand and gets 1 glory back.`,
@@ -396,7 +396,7 @@ export default function FighterHUD({ data }) {
             fightersUpgrades.join(),
         );
 
-        firebase.addGenericMessage(roomId, {
+        firebase.addGenericMessage2(roomId, {
             author: 'Katophrane',
             type: 'INFO',
             subtype: 'DISCARDS_UPGRADE_CARD',

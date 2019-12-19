@@ -16,7 +16,7 @@ export default function useKatophrane(room) {
     const [roomState, setRoomState] = useState(room);
     const [currentRound, setCurrentRound] = useState(room.status.round);
     const [roundTitle, setRoundTitle] = useState(rounds[currentRound]);
-    const [interactiveMessages, setInteractiveMessages] = useState(null);
+    //const [interactiveMessages, setInteractiveMessages] = useState(null);
 
     useEffect(() => {
         const unsubscribe = firebase.setRoomListener(room.id, snapshot => {
@@ -27,21 +27,17 @@ export default function useKatophrane(room) {
             setRoundTitle(rounds[data.status.round]);
         });
 
-        const unsubscribeFromMessages = firebase.setMessagesListener(room.id, snapshot => {
-            if(!snapshot.data()) return;
-            const interactiveMessages = Object.entries(snapshot.data()).filter(([k, v]) => v.type === 'INTERACTIVE').map(([k, v]) => ({ ...v, id: k }));
-            setInteractiveMessages(interactiveMessages);
-        });
+        // const unsubscribeFromMessages = firebase.setMessagesListener(room.id, snapshot => {
+        //     if(!snapshot.data()) return;
+        //     const interactiveMessages = Object.entries(snapshot.data()).filter(([k, v]) => v.type === 'INTERACTIVE').map(([k, v]) => ({ ...v, id: k }));
+        //     setInteractiveMessages(interactiveMessages);
+        // });
 
         return () => {
             unsubscribe();
-            unsubscribeFromMessages();
+            // unsubscribeFromMessages();
         };
     }, [])
-
-    useEffect(() => {
-        console.log('KATO', interactiveMessages);
-    }, [interactiveMessages])
 
     const onPlayersReady = secondPlayerId => {
         const payload = {
@@ -53,19 +49,20 @@ export default function useKatophrane(room) {
             waitingReason: 'INITIATIVE_ROLL',
         };
 
-        console.log(payload);
-        firebase.addGenericMessage(roomState.id, payload);
+        console.log('I WILL CRASH NOW');
+        firebase.addGenericMessage2(roomState.id, payload);
     }
 
     const onFirstBoardSelected = ({ boardId, playerId, messageId }) => {
         console.log(boardId);
         const otherPlayerId = room.players.find(p => p !== playerId);
-        firebase.updateInteractiveMessage3(
+        firebase.updateInteractiveMessage32(
             room.id,
+            messageId,
             { 
-                [`${messageId}.${playerId}_board`]: boardId,
-                [`${messageId}.waitingFor`]: [otherPlayerId],
-                [`${messageId}.waitingReason`]: 'SELECT_SECOND_BOARD',
+                [`${playerId}_board`]: boardId,
+                [`waitingFor`]: [otherPlayerId],
+                [`waitingReason`]: 'SELECT_SECOND_BOARD',
             },
         );
 
@@ -74,11 +71,11 @@ export default function useKatophrane(room) {
 
     const onSecondBoardSelected = payload => {
         console.log('KATO_SECOND', payload, `${payload.messageId}.${payload.playerId}_board`);
-        firebase.updateInteractiveMessage2(
+        firebase.updateInteractiveMessage22(
             room.id,
             payload.messageId,
             { 
-                [`${payload.messageId}.${payload.playerId}_board`]: payload.selectedBoardId,
+                [`${payload.playerId}_board`]: payload.selectedBoardId,
             },
             payload.playerId
         );
@@ -90,6 +87,7 @@ export default function useKatophrane(room) {
     }
 
     const onRegisterInitiativeResult = (timestamp, playerId, payload) => {
+        //console.log(timestamp, playerId, payload);
         if(payload.length > 0 && payload.length % 2 === 0) {
             const [left, right] = payload.slice(-2);
             console.log(left, right);
@@ -119,52 +117,56 @@ export default function useKatophrane(room) {
                     return accumulatedInitiativeResult;
                 }, 0);
 
-            const withTimestamp = payload.reduce((r, c) => ({ ...r, [`${timestamp}.${c.id}`]: c.roll }), {});
+            const withTimestamp = payload.reduce((r, c) => ({ ...r, [`${c.id}`]: c.roll }), {});
             if(leftScore === rightScore) {
-                firebase.updateInteractiveMessage3(
+                console.log()
+                firebase.updateInteractiveMessage32(
                     room.id,
+                    timestamp,
                     {
                         ...withTimestamp,
-                        [`${timestamp}.waitingFor`]: roomState.players,
-                        [`${timestamp}.waitingReason`]: 'INITIATIVE_ROLL',
+                        [`waitingFor`]: roomState.players,
+                        [`waitingReason`]: 'INITIATIVE_ROLL',
                     })
             } else if (leftScore > rightScore) {
-                firebase.updateInteractiveMessage3(
+                firebase.updateInteractiveMessage32(
                     room.id,
+                    timestamp,
                     {
                         ...withTimestamp,
-                        [`${timestamp}.waitingFor`]: [left.id.split('_')[0]],
-                        [`${timestamp}.waitingReason`]: 'SELECT_FIRST_BOARD_OR_PASS',
+                        [`waitingFor`]: [left.id.split('_')[0]],
+                        [`waitingReason`]: 'SELECT_FIRST_BOARD_OR_PASS',
                     })
             } else {
-                firebase.updateInteractiveMessage3(
+                firebase.updateInteractiveMessage32(
                     room.id,
+                    timestamp,
                     {
                         ...withTimestamp,
-                        [`${timestamp}.waitingFor`]: [right.id.split('_')[0]],
-                        [`${timestamp}.waitingReason`]: 'SELECT_FIRST_BOARD_OR_PASS',
+                        [`waitingFor`]: [right.id.split('_')[0]],
+                        [`waitingReason`]: 'SELECT_FIRST_BOARD_OR_PASS',
                     })
             }          
 
         } else {
-            const withTimestamp = payload.reduce((r, c) => ({ ...r, [`${timestamp}.${c.id}`]: c.roll }), {});
-            console.log(withTimestamp);
-            firebase.updateInteractiveMessage2(
+            const withTimestamp = payload.reduce((r, c) => ({ ...r, [`${c.id}`]: c.roll }), {});
+            // console.log(payload, withTimestamp);
+            firebase.updateInteractiveMessage22(
                 room.id,
                 timestamp,
                 withTimestamp,
                 myself.uid
             );
-
         }
     }
 
     const onPassFirstBoardSelection = (timestamp, playerId) => {
-        firebase.updateInteractiveMessage3(
+        firebase.updateInteractiveMessage32(
             room.id,
+            timestamp,
             {
-                [`${timestamp}.waitingFor`]: [roomState.players.find(p => p !== playerId)],
-                [`${timestamp}.waitingReason`]: 'SELECT_FIRST_BOARD',
+                [`waitingFor`]: [roomState.players.find(p => p !== playerId)],
+                [`waitingReason`]: 'SELECT_FIRST_BOARD',
             })
     }
 

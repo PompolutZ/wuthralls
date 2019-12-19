@@ -34,7 +34,7 @@ export default function RollDiceAction({ roomId, rollResult, defaultAmount, myFa
         const updated = values.map(_ => getDieRollResult());
         setValues(updated);
 
-        await firebase.addDiceRoll(roomId, {
+        await firebase.addDiceRoll2(roomId, {
             uid: myself.uid,
             type: selectedType,
             value: updated.join(),
@@ -177,19 +177,19 @@ export default function RollDiceAction({ roomId, rollResult, defaultAmount, myFa
                     values.map((x, i) => (
                         <div key={i} style={{ width: 36, height: 36, marginRight: '.2rem', backgroundColor: 'white', borderRadius: 36 * .2 }}>
                             {
-                                selectedType === 'ATTACK' && <AttackDie accentColorHex={warbandColors[myFaction]} size={36} side={x} />
+                                selectedType === 'ATTACK' && <AttackDie accentColorHex={warbandColors[myFaction]} size={36} side={x} useBlackOutline={myFaction === 'zarbags-gitz'} />
                             }
                             {
-                                selectedType === 'DEFENCE' && <DefenceDie accentColorHex={warbandColors[myFaction]} size={36} side={x} />
+                                selectedType === 'DEFENCE' && <DefenceDie accentColorHex={warbandColors[myFaction]} size={36} side={x} useBlackOutline={myFaction === 'zarbags-gitz'} />
                             }
                             {
                                 selectedType === 'MAGIC' && <MagicDie size={36} side={x} />
                             }
                             {
-                                selectedType === 'INITIATIVE' && i % 2 === 0 && <DefenceDie accentColorHex={warbandColors[myFaction]} size={36} side={x} />
+                                selectedType === 'INITIATIVE' && i % 2 === 0 && <DefenceDie accentColorHex={warbandColors[myFaction]} size={36} side={x} useBlackOutline={myFaction === 'zarbags-gitz'} />
                             }
                             {
-                                selectedType === 'INITIATIVE' && i % 2 !== 0 && <AttackDie accentColorHex={warbandColors[myFaction]} size={36} side={x} />
+                                selectedType === 'INITIATIVE' && i % 2 !== 0 && <AttackDie accentColorHex={warbandColors[myFaction]} size={36} side={x} useBlackOutline={myFaction === 'zarbags-gitz'} />
                             }
                         </div>
                         // <Die

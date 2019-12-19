@@ -14,28 +14,27 @@ function hexToRgb(hex) {
     } : null;
   }
 
-export default function AttackDie({ side, accentColorHex, size }) {
+export default function AttackDie({ side, accentColorHex, size, useBlackOutline }) {
     const {r, g, b} = hexToRgb(accentColorHex);
-    console.log(r, g, b);
     return (
-        <div style={{ width: size, height: size, display: 'flex', boxSizing: 'border-box', border: `2px solid ${accentColorHex}`, borderRadius: size * .2, backgroundColor: `rgba(${r},${g},${b}, .1)` }}>
+        <div style={{ width: size, height: size, display: 'flex', boxSizing: 'border-box', border: `2px solid ${useBlackOutline ? 'black' : accentColorHex}`, borderRadius: size * .2, backgroundColor: `rgba(${r},${g},${b}, ${useBlackOutline ? 1 : .1})` }}>
             {
-                Number(side) === 1 && <SingleAssistIcon style={{ margin: 'auto', width: size * .8, height: size * .8, color: accentColorHex }} />
+                Number(side) === 1 && <SingleAssistIcon style={{ margin: 'auto', width: size * .8, height: size * .8, color: useBlackOutline ? 'black' : accentColorHex }} />
             }
             {
-                Number(side) === 2 && <AttackFuryIcon style={{ margin: 'auto', width: size * .8, height: size * .8, color: accentColorHex }} />
+                Number(side) === 2 && <AttackFuryIcon style={{ margin: 'auto', width: size * .8, height: size * .8, color: useBlackOutline ? 'black' : accentColorHex }} />
             }
             {
-                Number(side) === 3 && <AttackSmashIcon style={{ margin: 'auto', width: size * .8, height: size * .8, color: accentColorHex }} />
+                Number(side) === 3 && <AttackSmashIcon style={{ margin: 'auto', width: size * .8, height: size * .8, color: useBlackOutline ? 'black' : accentColorHex }} />
             }
             {
-                Number(side) === 4 && <AttackSmashIcon style={{ margin: 'auto', width: size * .8, height: size * .8, color: accentColorHex }} />
+                Number(side) === 4 && <AttackSmashIcon style={{ margin: 'auto', width: size * .8, height: size * .8, color: useBlackOutline ? 'black' : accentColorHex }} />
             }
             {
-                Number(side) === 5 && <DoubleAssistIcon style={{ margin: 'auto', width: size * .8, height: size * .8, color: accentColorHex }} />
+                Number(side) === 5 && <DoubleAssistIcon style={{ margin: 'auto', width: size * .8, height: size * .8, color: useBlackOutline ? 'black' : accentColorHex }} />
             }
             {
-                Number(side) === 6 && <CritIcon style={{ margin: 'auto', width: size * .8, height: size * .8, color: accentColorHex }} />
+                Number(side) === 6 && <CritIcon style={{ margin: 'auto', width: size * .8, height: size * .8, color: useBlackOutline ? 'black' : accentColorHex }} />
             }
         </div>
     )

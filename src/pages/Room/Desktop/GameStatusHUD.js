@@ -140,12 +140,6 @@ export default function GameStatusHUD({ data }) {
             `${myself.uid}.gloryScored`,
             value,
         );
-
-        // firebase.addGenericMessage(data.id, {
-        //     author: 'Katophrane',
-        //     type: 'INFO',
-        //     value: `${myself.username} changes scored glory value to ${value}.`,
-        // });
     }
 
     const handleUpdateSpentCloryCount = value => {
@@ -154,12 +148,6 @@ export default function GameStatusHUD({ data }) {
             `${myself.uid}.glorySpent`,
             value,
         );
-
-        // firebase.addGenericMessage(data.id, {
-        //     author: 'Katophrane',
-        //     type: 'INFO',
-        //     value: `${myself.username} changes spent glory value to ${value}.`,
-        // });
     }
 
     const handleActivationsLeftChanged = value => {
@@ -169,7 +157,7 @@ export default function GameStatusHUD({ data }) {
             value,
         );
 
-        firebase.addGenericMessage(data.id, {
+        firebase.addGenericMessage2(data.id, {
             author: 'Katophrane',
             type: 'INFO',
             value: `${myself.username} flipped activation token and has ${value} activations left.`,
@@ -199,7 +187,7 @@ export default function GameStatusHUD({ data }) {
             fightersWithoutTokens,
         );
 
-        firebase.addGenericMessage(data.id, {
+        firebase.addGenericMessage2(data.id, {
             author: 'Katophrane',
             type: 'INFO',
             value: `${myself.username} has started round ${value}.`,

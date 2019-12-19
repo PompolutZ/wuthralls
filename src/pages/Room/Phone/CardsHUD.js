@@ -23,6 +23,7 @@ import Button from '@material-ui/core/Button';
 import DrawCardsIcon from '@material-ui/icons/GetApp';
 import PlayIcon from '@material-ui/icons/PlayArrow';
 import DeleteIcon from '@material-ui/icons/Delete';
+import SaveIcon from '@material-ui/icons/Save';
 import ReturnToPileIcon from '@material-ui/icons/Eject';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import { useAuthUser } from '../../../components/Session';
@@ -63,71 +64,11 @@ export default function CardsHUD({
     const [discardedObjectives, setDiscardedObjectives] = useState(objectivesDiscardPile);
     const [discardedPowers, setDiscardedPowers] = useState(powersDiscardPile);
     const [hand, setHand] = useState(serverHand || []);
-    //const [enemyHand, setEnemyHand] = useState(serverHand || []);
     const firebase = useContext(FirebaseContext);
     const [highlightCard, setHighlightCard] = useState(null);
     const [highlightFromSource, setHighlightFromSource] = useState(null);
     const [selectedGroup, setSelectedGroup] = useState(MY_CARDS_GROUP); 
-
-    useEffect(() => {
-        if(!hand) return;
-
-        firebase.updateBoardProperty(
-            roomId,
-            `${myself.uid}.hand`,
-            hand.map(x => x.id).join()
-        );
-    }, [hand]);
-
-    useEffect(() => {
-        if(!objectiveDrawPile) return;
-
-        firebase.updateBoardProperty(
-            roomId,
-            `${myself.uid}.oDeck`,
-            objectiveDrawPile.map(x => x.id).join()
-        );
-    }, [objectiveDrawPile]);
-
-    useEffect(() => {
-        if(!powersDrawPile) return;
-
-        firebase.updateBoardProperty(
-            roomId,
-            `${myself.uid}.pDeck`,
-            powersDrawPile.map(x => x.id).join()
-        );
-    }, [powersDrawPile]);
-
-    useEffect(() => {
-        if(!scoredObjectives) return;
-
-        firebase.updateBoardProperty(
-            roomId,
-            `${myself.uid}.sObjs`,
-            scoredObjectives.map(x => x.id).join()
-        );
-    }, [scoredObjectives]);
-
-    useEffect(() => {
-        if(!discardedObjectives) return;
-
-        firebase.updateBoardProperty(
-            roomId,
-            `${myself.uid}.dObjs`,
-            discardedObjectives.map(x => x.id).join()
-        );
-    }, [discardedObjectives]);
-
-    useEffect(() => {
-        if(!discardedPowers) return;
-
-        firebase.updateBoardProperty(
-            roomId,
-            `${myself.uid}.dPws`,
-            discardedPowers.map(x => x.id).join()
-        );
-    }, [discardedPowers]);
+    const [modified, setModified] = useState(false);
 
     const selectGroup = groupName => () => {
         setSelectedGroup(groupName)
@@ -141,6 +82,7 @@ export default function CardsHUD({
             setHand(prev => [...prev, ...objectives]);
         }
         setObjectiveDrawPile(prev => prev.slice(1));
+        setModified(true);
     };
 
     const drawPowerCard = () => {
@@ -151,6 +93,7 @@ export default function CardsHUD({
             setHand(prev => [...prev, ...powers]);
         }
         setPowersDrawPile(prev => prev.slice(1));
+        setModified(true);
     };
 
     const handleHighlightCard = (card, source) => () => {
@@ -167,6 +110,19 @@ export default function CardsHUD({
         onClose(false);
     }
 
+    const handleSaveAndClose = () => {
+        onClose(false);
+        firebase.updateRoom(roomId, {
+            [`${myself.uid}.hand`]: hand ? hand.map(x => x.id).join() : '',
+            [`${myself.uid}.oDeck`]: objectiveDrawPile.map(x => x.id).join(),
+            [`${myself.uid}.pDeck`]: powersDrawPile.map(x => x.id).join(),
+            [`${myself.uid}.sObjs`]: scoredObjectives ? scoredObjectives.map(x => x.id).join() : '',
+            [`${myself.uid}.dObjs`]: discardedObjectives ? discardedObjectives.map(x => x.id).join() : '',
+            [`${myself.uid}.dPws`]: discardedPowers ? discardedPowers.map(x => x.id).join() : '',
+        });
+        setModified(false);
+    }
+
     const playCard = card => () => {
         setHand(prev => prev.filter(c => c.id !== card.id));
 
@@ -177,7 +133,7 @@ export default function CardsHUD({
                 setScoredObjectives(prev => [...prev, card]);
             }
 
-            firebase.addGenericMessage(roomId, {
+            firebase.addGenericMessage2(roomId, {
                 author: 'Katophrane',
                 type: 'INFO',
                 subtype: 'SCORED_OBJECTIVE_CARD',
@@ -191,7 +147,7 @@ export default function CardsHUD({
                 setDiscardedPowers(prev => [...prev, card]);
             }
 
-            firebase.addGenericMessage(roomId, {
+            firebase.addGenericMessage2(roomId, {
                 author: 'Katophrane',
                 type: 'INFO',
                 subtype: 'PLAYED_POWER_CARD',
@@ -201,6 +157,7 @@ export default function CardsHUD({
         }
 
         setHighlightCard(null);
+        setModified(true);
     }
 
     const returnToHand = (card, source) => () => {
@@ -225,6 +182,7 @@ export default function CardsHUD({
 
         setHighlightCard(null);
         setHighlightFromSource(null);
+        setModified(true);
     }
 
     const returnToPile = (card, source) => () => {
@@ -256,6 +214,7 @@ export default function CardsHUD({
 
         setHighlightCard(null);
         setHighlightFromSource(null);
+        setModified(true);
     }
 
     const discardCard = card => () => {
@@ -268,7 +227,7 @@ export default function CardsHUD({
                 setDiscardedObjectives(prev => [...prev, card]);
             }
 
-            firebase.addGenericMessage(roomId, {
+            firebase.addGenericMessage2(roomId, {
                 author: 'Katophrane',
                 type: 'INFO',
                 subtype: 'DISCARDED_OBJECTIVE_CARD',
@@ -282,7 +241,7 @@ export default function CardsHUD({
                 setDiscardedPowers(prev => [...prev, card]);
             }
 
-            firebase.addGenericMessage(roomId, {
+            firebase.addGenericMessage2(roomId, {
                 author: 'Katophrane',
                 type: 'INFO',
                 subtype: 'DISCARDED_POWER_CARD',
@@ -292,6 +251,7 @@ export default function CardsHUD({
         }
 
         setHighlightCard(null);
+        setModified(true);
     }
 
     const handleStopHighlighting = () => {
@@ -312,33 +272,67 @@ export default function CardsHUD({
             }}
         >
             <div style={{ margin: '1rem'}}>
-            <ButtonBase
-                style={{
-                    position: 'fixed',
-                    bottom: '0%',
-                    right: '0%',
-                    marginRight: '2rem',
-                    marginBottom: '2rem',
-                    backgroundColor: 'red',
-                    color: 'white',
-                    width: '3rem',
-                    height: '3rem',
-                    borderRadius: '1.5rem',
-                    boxShadow: '3px 3px 3px 0px black',
-                    boxSizing: 'border-box',
-                    border: '2px solid white',
-                    borderRadius: '1.5rem',
-                }}
-                onClick={handleClose}
-            >
-                <AddIcon
-                    style={{
-                        width: '2rem',
-                        height: '2rem',
-                        transform: 'rotate(45deg)',
-                    }}
-                />
-            </ButtonBase>
+                {
+                    modified && (
+                        <ButtonBase
+                            style={{
+                                position: 'fixed',
+                                bottom: '0%',
+                                right: '0%',
+                                marginRight: '2rem',
+                                marginBottom: '2rem',
+                                backgroundColor: 'teal',
+                                color: 'white',
+                                width: '3rem',
+                                height: '3rem',
+                                borderRadius: '1.5rem',
+                                boxShadow: '3px 3px 3px 0px black',
+                                boxSizing: 'border-box',
+                                border: '2px solid white',
+                                borderRadius: '1.5rem',
+                            }}
+                            onClick={handleSaveAndClose}
+                        >
+                            <SaveIcon
+                                style={{
+                                    width: '2rem',
+                                    height: '2rem',
+                                }}
+                            />
+                        </ButtonBase>
+                    )
+                }
+                {
+                    !modified && (
+                        <ButtonBase
+                            style={{
+                                position: 'fixed',
+                                bottom: '0%',
+                                right: '0%',
+                                marginRight: '2rem',
+                                marginBottom: '2rem',
+                                backgroundColor: 'red',
+                                color: 'white',
+                                width: '3rem',
+                                height: '3rem',
+                                borderRadius: '1.5rem',
+                                boxShadow: '3px 3px 3px 0px black',
+                                boxSizing: 'border-box',
+                                border: '2px solid white',
+                                borderRadius: '1.5rem',
+                            }}
+                            onClick={handleClose}
+                        >
+                            <AddIcon
+                                style={{
+                                    width: '2rem',
+                                    height: '2rem',
+                                    transform: 'rotate(45deg)',
+                                }}
+                            />
+                        </ButtonBase>
+                    )
+                }
             
             <Grid container style={{ marginTop: '2.5rem' }}>
                 <Grid item xs={12}>

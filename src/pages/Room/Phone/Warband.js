@@ -31,7 +31,7 @@ export default function Warband({ roomId, myfighters, enemyFighters, onSelectedF
         console.log('Request remove fighter', fighter);
         e.preventDefault();
         firebase.updateBoardProperty(roomId, `board.fighters.${fighter.id}`, {...fighter, isOnBoard: false, left: 0, top: 0, onBoard: {x: -1, y: -1}, tokens: '' });
-        firebase.addGenericMessage(roomId, {
+        firebase.addGenericMessage2(roomId, {
             author: 'Katophrane',
             type: 'INFO',
             subtype: 'PLACEMENT',

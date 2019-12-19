@@ -29,7 +29,6 @@ export default function PhoneRoom() {
     const { state } = useLocation();
     const katophrane = useKatophrane(state);
     const theme = useTheme();
-    const isMd = useMediaQuery(theme.breakpoints.up('md'));
     const [tabIndex, setTabIndex] = React.useState(0);
     const [selectedElement, setSelectedElement] = useState(null);
     const [data, setData] = useState(state);
@@ -50,8 +49,7 @@ export default function PhoneRoom() {
     const [enemyScoredObjectivesPile, setEnemyScoredObjectivesPile] = useState(propertyToCards(data[data.players.find(p => p !== myself.uid)], 'sObjs')); 
     const [enemyObjectivesDiscardPile, setEnemyObjectivesDiscardPile] = useState(propertyToCards(data[data.players.find(p => p !== myself.uid)], 'dObjs')); 
     const [enemyPowersDiscardPile, setEnemyPowersDiscardPile] = useState(propertyToCards(data[data.players.find(p => p !== myself.uid)], 'dPws')); 
-    const messengerRef = useRef(null);
-
+    const [messages, setMessages] = useState(null);
 
     useEffect(() => {
         const unsubscribe = firebase.setRoomListener(state.id, snapshot => {
@@ -60,8 +58,55 @@ export default function PhoneRoom() {
             }
         });
 
-        return () => unsubscribe();
+        firebase.fstore.collection(`${state.id}_messages`).orderBy('created')
+            .get()
+            .then(snapshot => {
+                const allMessages = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
+                setMessages(allMessages);
+            });
+
+        return () => {
+            unsubscribe();
+        };
     }, []);
+
+    useEffect(() => {
+        if(!messages) return;
+        const unsubscribe = firebase.fstore.collection(`${state.id}_messages`)
+        .onSnapshot(function(snapshot) {
+            snapshot.docChanges().forEach(function(change) {
+                if (change.type === "added") {
+                    if(!messages.find(m => m.id === change.doc.id)) {
+                        setMessages([...messages, ({ ...change.doc.data(), id: change.doc.id })]);
+                        console.log("New Message: ", ({ ...change.doc.data(), id: change.doc.id }), messages);
+                    }
+                }
+                if (change.type === "modified") {
+                    const elementToChange = messages.find(m => m.id === change.doc.id);
+                    const indexToChange = messages.indexOf(elementToChange);
+                    setMessages([
+                        ...messages.slice(0, indexToChange),
+                        ({ ...change.doc.data(), id: change.doc.id }),
+                        ...messages.slice(indexToChange + 1),
+                    ])
+                    console.log("Modified city: ", change.doc.data());
+                }
+                if (change.type === "removed") {
+                    console.log("Removed city: ", change.doc.data());
+                }
+            });
+        });
+
+        const lastMessage = messages[messages.length - 1];
+        if(lastMessage) {
+            const element = document.getElementById(lastMessage.id);
+            if(element) {
+                element.scrollIntoView();
+            }
+        }
+
+        return () => unsubscribe();
+    }, [messages]);
 
     useEffect(() => {
         console.log('KATO', katophrane);
@@ -107,7 +152,7 @@ export default function PhoneRoom() {
                 <div style={{ width: '100%', height: `100%`, flex: 1, overflowY: 'scroll' }}>
                 {
                     tabIndex === 0 && (
-                        <Messenger roomId={state.id} state={data} />
+                        <Messenger roomId={state.id} state={data} messages={messages} />
                     )
                 }
                 {

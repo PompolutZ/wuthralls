@@ -26,7 +26,7 @@ export default function ObjectiveHexesPile({ roomId, tokens, onSelectedTokenChan
         console.log('Request remove token', token);
         e.preventDefault();
         firebase.updateBoardProperty(roomId, `board.tokens.${token.id}`, {...token, isOnBoard: false, left: 0, top: 0, onBoard: {x: -1, y: -1}});
-        firebase.addGenericMessage(roomId, {
+        firebase.addGenericMessage2(roomId, {
             author: 'Katophrane',
             type: 'INFO',
             subtype: 'PLACEMENT',
@@ -42,7 +42,7 @@ export default function ObjectiveHexesPile({ roomId, tokens, onSelectedTokenChan
         
         e.preventDefault();
         firebase.updateBoardProperty(roomId, `board.tokens.${token.id}`, updated);
-        firebase.addGenericMessage(roomId, {
+        firebase.addGenericMessage2(roomId, {
             author: 'Katophrane',
             type: 'INFO',
             subtype: 'PLACEMENT',

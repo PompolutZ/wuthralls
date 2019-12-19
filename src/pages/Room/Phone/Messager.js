@@ -35,7 +35,9 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-function DiceRollMessage({ id, author, value, type, timestamp, authorFaction }) {
+const DiceRollMessage = React.memo(({
+    id, author, value, type, timestamp, authorFaction
+}) => {
     const classes = useStyles();
     const [created, setCreated] = useState(null);
 
@@ -47,7 +49,7 @@ function DiceRollMessage({ id, author, value, type, timestamp, authorFaction }) 
 
     return (
         <Grid
-            id={id}
+            id={timestamp}
             item
             xs={12}
             className={classes.item}
@@ -68,19 +70,19 @@ function DiceRollMessage({ id, author, value, type, timestamp, authorFaction }) 
                 {value.split(',').map((x, i) => (
                     <div key={i} style={{ width: 36, height: 36, marginRight: '.2rem', backgroundColor: 'white', borderRadius: 36 * .2 }}>
                         {
-                            type === 'ATTACK' && <AttackDie accentColorHex={warbandColors[authorFaction]} size={36} side={x} />
+                            type === 'ATTACK' && <AttackDie accentColorHex={warbandColors[authorFaction]} size={36} side={x} useBlackOutline={authorFaction === 'zarbags-gitz'} />
                         }
                         {
-                            type === 'DEFENCE' && <DefenceDie accentColorHex={warbandColors[authorFaction]} size={36} side={x} />
+                            type === 'DEFENCE' && <DefenceDie accentColorHex={warbandColors[authorFaction]} size={36} side={x} useBlackOutline={authorFaction === 'zarbags-gitz'} />
                         }
                         {
                             type === 'MAGIC' && <MagicDie size={36} side={x} />
                         }
                         {
-                            type === 'INITIATIVE' && i % 2 === 0 && <DefenceDie accentColorHex={warbandColors[authorFaction]} size={36} side={x} />
+                            type === 'INITIATIVE' && i % 2 === 0 && <DefenceDie accentColorHex={warbandColors[authorFaction]} size={36} side={x} useBlackOutline={authorFaction === 'zarbags-gitz'} />
                         }
                         {
-                            type === 'INITIATIVE' && i % 2 !== 0 && <AttackDie accentColorHex={warbandColors[authorFaction]} size={36} side={x} />
+                            type === 'INITIATIVE' && i % 2 !== 0 && <AttackDie accentColorHex={warbandColors[authorFaction]} size={36} side={x} useBlackOutline={authorFaction === 'zarbags-gitz'} />
                         }
                     </div>
                 )
@@ -88,19 +90,19 @@ function DiceRollMessage({ id, author, value, type, timestamp, authorFaction }) 
             </div>
         </Grid>
     );
-}
+});
 
 const cardDefaultWidth = 300;
 const cardDefaultHeight = 420;
 
-function CardMessageItem({
+const CardMessageItem = React.memo(({
     isLastMessage,
     author,
     isMineMessage,
     cardId,
     value,
     timestamp,
-}) {
+}) => {
     const classes = useStyles();
     const [highlight, setHighlight] = useState(false);
     const [created, setCreated] = useState(null);
@@ -117,7 +119,7 @@ function CardMessageItem({
 
     return (
         <Grid
-            id={isLastMessage ? 'lastMessage' : 'message'}
+            id={timestamp}
             item
             xs={12}
             className={classes.item}
@@ -189,15 +191,15 @@ function CardMessageItem({
             )}
         </Grid>
     );
-}
+})
 
-function ChatMessageItem({
+const ChatMessageItem = React.memo(({
     isLastMessage,
     author,
     isMineMessage,
     value,
     timestamp,
-}) {
+}) => {
     const classes = useStyles();
     const [created, setCreated] = useState(null);
 
@@ -209,7 +211,7 @@ function ChatMessageItem({
 
     return (
         <Grid
-            id={isLastMessage ? 'lastMessage' : 'message'}
+            id={timestamp}
             item
             xs={12}
             className={classes.item}
@@ -242,7 +244,7 @@ function ChatMessageItem({
             <Markdown source={value} />
         </Grid>
     );
-}
+})
 
 function PickFirstBoardHUD({ data, onFirstBoardSelected}) {
     const boardsList = Object.entries(boards).map(([k, v]) => ({...v, id: k}));
@@ -570,39 +572,65 @@ function InteractiveMessage({ data, roomId, isLastMessage, timestamp, onShowHUD,
     );
 }
 
-function Messenger({ roomId, state }) {
+function Messenger({ roomId, state, messages }) {
     const classes = useStyles();
     const myself = useAuthUser();
     const containerRef = useRef(null);
     const katophrane = useKatophrane(state);
-    const [messages, setMessages] = useState([]);
+    // const [messages, setMessages] = useState([]);
     const firebase = useContext(FirebaseContext);
     const [showMainHUD, setShowMainHUD] = useState(null);
     const [mainHUDPayload, setMainHUDPayload] = useState(null);
 
-    useEffect(() => {
-        console.log('ONLOADED', state.players);
-        const unsubscribe = firebase.setMessagesListener(roomId, doc => {
-            if (doc.exists) {
-                console.log(doc.data());
-                setMessages(
-                    Object.entries(doc.data()).map(([id, v]) => ({
-                        ...v,
-                        id: id,
-                    }))
-                );
-                const lastMessage = document.getElementById('lastMessage');
-                if (lastMessage) {
-                    lastMessage.scrollIntoView();
-                }
-            }
-        });
+    // useEffect(() => {
+    //     console.log('ONLOADED', state.players);
+    //     let unsubscribe = null;
 
-        return () => {
-            unsubscribe();
-            console.log('UNLOADED');
-        };
-    }, []);
+    //     return () => {
+    //         if(unsubscribe) {
+    //             unsubscribe();
+    //         }
+    //         console.log('UNLOADED');
+    //     };
+    // }, []);
+
+    useEffect(() => {
+        // const unsubscribe = firebase.fstore.collection(`${roomId}_messages`)
+        // .onSnapshot(function(snapshot) {
+        //     snapshot.docChanges().forEach(function(change) {
+        //         if (change.type === "added") {
+        //             if(!messages.find(m => m.id === change.doc.id)) {
+        //                 setMessages([...messages, ({ ...change.doc.data(), id: change.doc.id })])
+        //             }
+        //             //
+        //             console.log("New Message: ");
+        //         }
+        //         if (change.type === "modified") {
+        //             const elementToChange = messages.find(m => m.id === change.doc.id);
+        //             const indexToChange = messages.indexOf(elementToChange);
+        //             setMessages([
+        //                 ...messages.slice(0, indexToChange),
+        //                 ({ ...change.doc.data(), id: change.doc.id }),
+        //                 ...messages.slice(indexToChange + 1),
+        //             ])
+        //             console.log("Modified city: ", change.doc.data());
+        //         }
+        //         if (change.type === "removed") {
+        //             console.log("Removed city: ", change.doc.data());
+        //         }
+        //     });
+        // });
+        if(!messages) return;
+        const lastMessage = messages[messages.length - 1];
+        if(lastMessage) {
+            const element = document.getElementById(lastMessage.id);
+            if(element) {
+                element.scrollIntoView();
+            }
+        }
+
+        // return () => unsubscribe();
+    }, [messages]);
 
     const handleCloseOverlay = e => {
         setShowMainHUD(null);
@@ -636,9 +664,10 @@ function Messenger({ roomId, state }) {
                 style={{ filter: showMainHUD ? 'blur(3px)' : '', backgroundColor: 'white' }}
             >
                 <div style={{ width: '100%', height: '100%', marginBottom: '2.5rem', backgroundColor: 'white' }}>
-                {messages.length > 0 &&
+                {messages && messages.length > 0 &&
                     messages.map((m, i, arr) => {
                         if (m.type === 'INTERACTIVE') {
+                            console.log('Render message ', m.id);
                             return (
                                 <InteractiveMessage
                                     state={state}
@@ -657,6 +686,7 @@ function Messenger({ roomId, state }) {
                             m.subtype &&
                             m.subtype.includes('CARD')
                         ) {
+                            console.log('Render message ', m.id);
                             return (
                                 <CardMessageItem
                                     key={m.id}
@@ -677,6 +707,7 @@ function Messenger({ roomId, state }) {
                         }
 
                         if (m.type === 'CHAT' || m.type === 'INFO') {
+                            console.log('Render message ', m.id);
                             return (
                                 <ChatMessageItem
                                     key={m.id}
@@ -693,15 +724,10 @@ function Messenger({ roomId, state }) {
                                     value={m.value}
                                 />
                             );
-                            // <Grid id={arr.length - 1 === i ? 'lastMessage' : 'message'} item xs={12} key={m.created} className={classes.item} style={{ backgroundColor: m.author === 'Katophrane' ? 'rgba(0, 128, 128, .2)' : m.author === myself.uid ? 'rgba(255, 140, 0, .2)' : 'rgba(138, 43, 226, .2)' }}>
-                            //     <div>
-                            //         <Typography variant="body2">{`${}`}</Typography>
-                            //     </div>
-                            //     <Typography>{m.value}</Typography>
-                            // </Grid>
                         }
 
                         if (m.type === 'DICE_ROLL') {
+                            console.log('Render message ', m.id);
                             return (
                                 <DiceRollMessage
                                     key={m.created}

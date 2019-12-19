@@ -140,7 +140,7 @@ export default function Board({ roomId, state, onBoardChange, selectedElement, o
 
         console.log('TOKEN HEXES', tokenHexes);
         firebase.updateBoardProperty(state.id, 'board.tokens', update);
-        firebase.addGenericMessage(state.id, {
+        firebase.addGenericMessage2(state.id, {
             author: 'Katophrane',
             type: 'INFO',
             value: `All feature hexes has been reveled.`,
@@ -172,7 +172,7 @@ export default function Board({ roomId, state, onBoardChange, selectedElement, o
                     });
 
                     firebase.updateBoardProperty(state.id, `board.fighters.${selectedTokenId}`, updatedFighter);
-                    firebase.addGenericMessage(state.id, {
+                    firebase.addGenericMessage2(state.id, {
                         author: 'Katophrane',
                         type: 'INFO',
                         subtype: 'PLACEMENT',
@@ -188,7 +188,7 @@ export default function Board({ roomId, state, onBoardChange, selectedElement, o
                         left: x,                
                     };
                     firebase.updateBoardProperty(state.id, `board.tokens.${selectedTokenId}`, updatedToken);
-                    firebase.addGenericMessage(state.id, {
+                    firebase.addGenericMessage2(state.id, {
                         author: 'Katophrane',
                         type: 'INFO',
                         subtype: 'PLACEMENT',

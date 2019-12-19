@@ -174,7 +174,7 @@ export default function SpawnRoom() {
             }
         };
 
-        await firebase.addRoom(payload);
+        await firebase.addRoom2(payload);
 
         // const playerInfo = {
         //     name: myself.username,

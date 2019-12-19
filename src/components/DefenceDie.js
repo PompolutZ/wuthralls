@@ -15,28 +15,27 @@ function hexToRgb(hex) {
     } : null;
   }
 
-export default function DefenceDie({ side, accentColorHex, size }) {
+export default function DefenceDie({ side, accentColorHex, size, useBlackOutline }) {
     const {r, g, b} = hexToRgb(accentColorHex);
-    console.log(r, g, b);
     return (
-        <div style={{ width: size, height: size, display: 'flex', boxSizing: 'border-box', border: `2px solid ${accentColorHex}`, borderRadius: size * .2, backgroundColor: `rgba(${r},${g},${b})` }}>
+        <div style={{ width: size, height: size, display: 'flex', boxSizing: 'border-box', border: `2px solid ${useBlackOutline ? 'black' : accentColorHex}`, borderRadius: size * .2, backgroundColor: useBlackOutline ? 'black' : `rgba(${r},${g},${b})` }}>
             {
-                Number(side) === 1 && <SingleAssistIcon style={{ margin: 'auto', width: size * .8, height: size * .8, color: 'white' }} />
+                Number(side) === 1 && <SingleAssistIcon style={{ margin: 'auto', width: size * .8, height: size * .8, color: useBlackOutline ? `rgba(${r},${g},${b})` : 'white' }} />
             }
             {
-                Number(side) === 2 && <DefenceDodgeIcon style={{ margin: 'auto', width: size * .8, height: size * .8, color: 'white' }} />
+                Number(side) === 2 && <DefenceDodgeIcon style={{ margin: 'auto', width: size * .8, height: size * .8, color: useBlackOutline ? `rgba(${r},${g},${b})` : 'white' }} />
             }
             {
-                Number(side) === 3 && <DefenceBlockIcon style={{ margin: 'auto', width: size * .8, height: size * .8, color: 'white' }} />
+                Number(side) === 3 && <DefenceBlockIcon style={{ margin: 'auto', width: size * .8, height: size * .8, color: useBlackOutline ? `rgba(${r},${g},${b})` : 'white' }} />
             }
             {
-                Number(side) === 4 && <DefenceBlockIcon style={{ margin: 'auto', width: size * .8, height: size * .8, color: 'white' }} />
+                Number(side) === 4 && <DefenceBlockIcon style={{ margin: 'auto', width: size * .8, height: size * .8, color: useBlackOutline ? `rgba(${r},${g},${b})` : 'white' }} />
             }
             {
-                Number(side) === 5 && <DoubleAssistIcon style={{ margin: 'auto', width: size * .8, height: size * .8, color: 'white' }} />
+                Number(side) === 5 && <DoubleAssistIcon style={{ margin: 'auto', width: size * .8, height: size * .8, color: useBlackOutline ? `rgba(${r},${g},${b})` : 'white' }} />
             }
             {
-                Number(side) === 6 && <CritIcon style={{ margin: 'auto', width: size * .8, height: size * .8, color: 'white' }} />
+                Number(side) === 6 && <CritIcon style={{ margin: 'auto', width: size * .8, height: size * .8, color: useBlackOutline ? `rgba(${r},${g},${b})` : 'white' }} />
             }
         </div>
     )

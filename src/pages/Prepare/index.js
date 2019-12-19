@@ -99,6 +99,7 @@ function Prepare() {
         console.log(selectedFaction);
         const myWarband = warbands[selectedFaction].reduce((r, fighter, idx) => ({ ...r, [`${myself.uid}_F${idx}`]: fighter }), {});
         console.log(state.id, myself.uid, playerInfo, {...state.board.fighters, ...myWarband });
+        console.log('I WILL CRASH NOW');
         await firebase.addPlayerToRoom(state.id, myself.uid, playerInfo, {...state.board.fighters, ...myWarband });
 
         katophrane.startNextInteractiveStep(myself.uid);

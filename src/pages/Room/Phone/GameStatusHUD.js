@@ -259,7 +259,7 @@ export default function GameStatusHUD({ data, onModified }) {
             activationsLeft: value
         });
 
-        firebase.addGenericMessage(data.id, {
+        firebase.addGenericMessage2(data.id, {
             author: 'Katophrane',
             type: 'INFO',
             value: `${myself.username} flipped activation token and has ${value} activations left.`,
@@ -296,7 +296,7 @@ export default function GameStatusHUD({ data, onModified }) {
             [`board.fighters`]: fightersWithoutTokens,
         })
 
-        firebase.addGenericMessage(data.id, {
+        firebase.addGenericMessage2(data.id, {
             author: 'Katophrane',
             type: 'INFO',
             value: `${myself.username} has started round ${value}.`,

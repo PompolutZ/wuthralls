@@ -140,8 +140,8 @@ function Rooms() {
                                                             {
                                                                 participants.length > 1 && (
                                                                     <Grid container direction="column" alignItems="center">
-                                                                        <img src={`/assets/factions/${participants[1].faction}-icon.png`} style={{ width: '2rem' }} />
-                                                                        <Typography variant="body1">{participants[1].name}</Typography>
+                                                                        <img src={`/assets/factions/${participants[1] ? participants[1].faction : ''}-icon.png`} style={{ width: '2rem' }} />
+                                                                        <Typography variant="body1">{participants[1] ? participants[1].name : ''}</Typography>
                                                                     </Grid>
                                                                 )
                                                             }

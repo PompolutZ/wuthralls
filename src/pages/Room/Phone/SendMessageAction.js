@@ -19,7 +19,7 @@ export default function SendMessageAction({ roomId, }) {
 
         const copy = currentMessage;
         setCurrentMessage('');
-        await firebase.addMessage(roomId, {
+        await firebase.addMessage2(roomId, {
             uid: myself.uid,
             value: copy
         });

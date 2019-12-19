@@ -46,8 +46,9 @@ function NavigationAuth({ authUser }) {
                 </li>
             </ul>
             <div>{authUser.username}</div>   
-            <div>ver 0.8.0</div>
-            <p> New: Changed behavior of Game Stats screen. </p> 
+            <div>ver 0.9.0</div>
+            <p> New: Re-Written Messanges from scratch, so all this shit might not work, coz I had no time to really test. </p> 
+            <p> New: Zarbag Gitz faction. </p> 
         </div>
     )
 }
