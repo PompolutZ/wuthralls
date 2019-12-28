@@ -365,7 +365,6 @@ function PickSecondBoard({ data, onSecondBoardSelected }) {
 }
 
 function InteractiveMessage({ data, roomId, isLastMessage, timestamp, onShowHUD, state }) {
-    console.log(data);
     const myself = useAuthUser();
     const firebase = useContext(FirebaseContext);
     const katophrane = useKatophrane(state);
@@ -582,50 +581,26 @@ function Messenger({ roomId, state, messages }) {
     const [showMainHUD, setShowMainHUD] = useState(null);
     const [mainHUDPayload, setMainHUDPayload] = useState(null);
 
-    // useEffect(() => {
-    //     console.log('ONLOADED', state.players);
-    //     let unsubscribe = null;
-
-    //     return () => {
-    //         if(unsubscribe) {
-    //             unsubscribe();
-    //         }
-    //         console.log('UNLOADED');
-    //     };
-    // }, []);
-
     useEffect(() => {
-        // const unsubscribe = firebase.fstore.collection(`${roomId}_messages`)
-        // .onSnapshot(function(snapshot) {
-        //     snapshot.docChanges().forEach(function(change) {
-        //         if (change.type === "added") {
-        //             if(!messages.find(m => m.id === change.doc.id)) {
-        //                 setMessages([...messages, ({ ...change.doc.data(), id: change.doc.id })])
-        //             }
-        //             //
-        //             console.log("New Message: ");
-        //         }
-        //         if (change.type === "modified") {
-        //             const elementToChange = messages.find(m => m.id === change.doc.id);
-        //             const indexToChange = messages.indexOf(elementToChange);
-        //             setMessages([
-        //                 ...messages.slice(0, indexToChange),
-        //                 ({ ...change.doc.data(), id: change.doc.id }),
-        //                 ...messages.slice(indexToChange + 1),
-        //             ])
-        //             console.log("Modified city: ", change.doc.data());
-        //         }
-        //         if (change.type === "removed") {
-        //             console.log("Removed city: ", change.doc.data());
-        //         }
-        //     });
-        // });
         if(!messages) return;
         const lastMessage = messages[messages.length - 1];
         if(lastMessage) {
             const element = document.getElementById(lastMessage.id);
             if(element) {
                 element.scrollIntoView();
+                console.log('SCROLLING INTO VIEW');
+            }
+        }
+    }, []);
+
+    useEffect(() => {
+        if(!messages) return;
+        const lastMessage = messages[messages.length - 1];
+        if(lastMessage) {
+            const element = document.getElementById(lastMessage.id);
+            if(element) {
+                element.scrollIntoView();
+                console.log('SCROLLING INTO VIEW', lastMessage);
             }
         }
 
@@ -667,7 +642,6 @@ function Messenger({ roomId, state, messages }) {
                 {messages && messages.length > 0 &&
                     messages.map((m, i, arr) => {
                         if (m.type === 'INTERACTIVE') {
-                            console.log('Render message ', m.id);
                             return (
                                 <InteractiveMessage
                                     state={state}
@@ -686,7 +660,6 @@ function Messenger({ roomId, state, messages }) {
                             m.subtype &&
                             m.subtype.includes('CARD')
                         ) {
-                            console.log('Render message ', m.id);
                             return (
                                 <CardMessageItem
                                     key={m.id}
@@ -707,7 +680,6 @@ function Messenger({ roomId, state, messages }) {
                         }
 
                         if (m.type === 'CHAT' || m.type === 'INFO') {
-                            console.log('Render message ', m.id);
                             return (
                                 <ChatMessageItem
                                     key={m.id}
@@ -727,7 +699,6 @@ function Messenger({ roomId, state, messages }) {
                         }
 
                         if (m.type === 'DICE_ROLL') {
-                            console.log('Render message ', m.id);
                             return (
                                 <DiceRollMessage
                                     key={m.created}

@@ -50,7 +50,6 @@ export default function PhoneRoom() {
     const [enemyObjectivesDiscardPile, setEnemyObjectivesDiscardPile] = useState(propertyToCards(data[data.players.find(p => p !== myself.uid)], 'dObjs')); 
     const [enemyPowersDiscardPile, setEnemyPowersDiscardPile] = useState(propertyToCards(data[data.players.find(p => p !== myself.uid)], 'dPws')); 
     const [messages, setMessages] = useState(null);
-
     useEffect(() => {
         const unsubscribe = firebase.setRoomListener(state.id, snapshot => {
             if(snapshot.exists) {
@@ -58,55 +57,24 @@ export default function PhoneRoom() {
             }
         });
 
-        firebase.fstore.collection(`${state.id}_messages`).orderBy('created')
-            .get()
-            .then(snapshot => {
-                const allMessages = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
-                setMessages(allMessages);
-            });
+        const unsubscribeFromMessages = firebase.fstore.collection('messages').doc(state.id).onSnapshot(s => {
+            const msgs = Object.entries(s.data()).map(([key, value]) => ({...value, id: Number(key) }));
+            console.log('MESSAGES', msgs);
+            setMessages(msgs);
+        });
+        // firebase.fstore.collection(`${state.id}_messages`).orderBy('created')
+        //     .get()
+        //     .then(snapshot => {
+        //         const allMessages = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
+        //         setMessages(allMessages);
+        //     });
 
         return () => {
             unsubscribe();
+            unsubscribeFromMessages();
         };
     }, []);
 
-    useEffect(() => {
-        if(!messages) return;
-        const unsubscribe = firebase.fstore.collection(`${state.id}_messages`)
-        .onSnapshot(function(snapshot) {
-            snapshot.docChanges().forEach(function(change) {
-                if (change.type === "added") {
-                    if(!messages.find(m => m.id === change.doc.id)) {
-                        setMessages([...messages, ({ ...change.doc.data(), id: change.doc.id })]);
-                        console.log("New Message: ", ({ ...change.doc.data(), id: change.doc.id }), messages);
-                    }
-                }
-                if (change.type === "modified") {
-                    const elementToChange = messages.find(m => m.id === change.doc.id);
-                    const indexToChange = messages.indexOf(elementToChange);
-                    setMessages([
-                        ...messages.slice(0, indexToChange),
-                        ({ ...change.doc.data(), id: change.doc.id }),
-                        ...messages.slice(indexToChange + 1),
-                    ])
-                    console.log("Modified city: ", change.doc.data());
-                }
-                if (change.type === "removed") {
-                    console.log("Removed city: ", change.doc.data());
-                }
-            });
-        });
-
-        const lastMessage = messages[messages.length - 1];
-        if(lastMessage) {
-            const element = document.getElementById(lastMessage.id);
-            if(element) {
-                element.scrollIntoView();
-            }
-        }
-
-        return () => unsubscribe();
-    }, [messages]);
 
     useEffect(() => {
         console.log('KATO', katophrane);
