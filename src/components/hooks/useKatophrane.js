@@ -149,7 +149,7 @@ export default function useKatophrane(room) {
             }          
 
         } else {
-            const withTimestamp = payload.reduce((r, c) => ({ ...r, [`${c.id}`]: c.roll }), {});
+            const withTimestamp = payload.reduce((r, c) => ({ ...r, [`${timestamp}.${c.id}`]: c.roll }), {});
             // console.log(payload, withTimestamp);
             firebase.updateInteractiveMessage22(
                 room.id,

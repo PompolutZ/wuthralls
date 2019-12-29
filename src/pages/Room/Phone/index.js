@@ -58,6 +58,7 @@ export default function PhoneRoom() {
         });
 
         const unsubscribeFromMessages = firebase.fstore.collection('messages').doc(state.id).onSnapshot(s => {
+            if(!s.data()) return;
             const msgs = Object.entries(s.data()).map(([key, value]) => ({...value, id: Number(key) }));
             console.log('MESSAGES', msgs);
             setMessages(msgs);

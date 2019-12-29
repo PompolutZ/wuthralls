@@ -21,7 +21,9 @@ import Markdown from 'react-markdown';
 import AttackDie from '../../../components/AttackDie';
 import DefenceDie from '../../../components/DefenceDie';
 import MagicDie from '../../../components/MagicDie';
-import { warbandColors } from '../../../data';
+import { 
+    warbandColors,
+    boards as boardsInfo } from '../../../data';
 
 const useStyles = makeStyles(theme => ({
     item: {
@@ -454,20 +456,17 @@ function InteractiveMessage({ data, roomId, isLastMessage, timestamp, onShowHUD,
                     <Grid container direction="column" alignItems="center">
                     {
                         rollResults && rollResults.length > 0 && rollResults.filter(r => r.id.includes(myself.uid)).map(r => (
-                            <div key={r.id}>
+                            <div key={r.id} style={{ display: 'flex' }}>
                                 {
                                     r.roll.split(',').map((x, i) => (
-                                        <Die
-                                            key={i}
-                                            side={x}
-                                            type={'INITIATIVE'}
-                                            prefix={i % 2 === 0 ? 'D' : 'A'}
-                                            style={{
-                                                width: '2rem',
-                                                height: '2rem',
-                                                marginRight: '.2rem',
-                                            }}
-                                        />
+                                        <div key={i} style={{ width: 36, height: 36, marginRight: '.2rem', backgroundColor: 'white', borderRadius: 36 * .2 }}>
+                                            {
+                                                i % 2 === 0 && <DefenceDie accentColorHex={warbandColors[state[myself.uid].faction]} size={36} side={x} useBlackOutline={state[myself.uid].faction === 'zarbags-gitz'} />
+                                            }
+                                            {
+                                                i % 2 !== 0 && <AttackDie accentColorHex={warbandColors[state[myself.uid].faction]} size={36} side={x} useBlackOutline={state[myself.uid].faction === 'zarbags-gitz'} />
+                                            }
+                                        </div>
                                     ))
                                 }
                             </div>
@@ -487,20 +486,17 @@ function InteractiveMessage({ data, roomId, isLastMessage, timestamp, onShowHUD,
                     <Grid container direction="column" alignItems="center">
                     {
                         rollResults && rollResults.length > 0 && rollResults.filter(r => r.id.includes(opponent)).map(r => (
-                            <div key={r.id}>
+                            <div key={r.id} style={{ display: 'flex' }}>
                                 {
                                     r.roll.split(',').map((x, i) => (
-                                        <Die
-                                            key={i}
-                                            side={x}
-                                            type={'INITIATIVE'}
-                                            prefix={i % 2 === 0 ? 'D' : 'A'}
-                                            style={{
-                                                width: '2rem',
-                                                height: '2rem',
-                                                marginRight: '.2rem',
-                                            }}
-                                        />
+                                        <div key={i} style={{ width: 36, height: 36, marginRight: '.2rem', backgroundColor: 'white', borderRadius: 36 * .2 }}>
+                                            {
+                                                i % 2 === 0 && <DefenceDie accentColorHex={warbandColors[state[opponent].faction]} size={36} side={x} useBlackOutline={state[opponent].faction === 'zarbags-gitz'} />
+                                            }
+                                            {
+                                                i % 2 !== 0 && <AttackDie accentColorHex={warbandColors[state[opponent].faction]} size={36} side={x} useBlackOutline={state[opponent].faction === 'zarbags-gitz'} />
+                                            }
+                                        </div>
                                     ))
                                 }
                             </div>
@@ -561,7 +557,7 @@ function InteractiveMessage({ data, roomId, isLastMessage, timestamp, onShowHUD,
                 data.waitingReason === 'SELECT_SECOND_BOARD' && (
                     <Grid container>
                         <Typography>
-                            Your opponent has picked {data[`${actors.find(a => a !== myself.uid)}_board`]} board.
+                            Your opponent has picked board: {boardsInfo[data[`${actors.find(a => a !== myself.uid)}_board`]].name}.
                         </Typography>
                         <Grid item xs={12}>
                             <Button onClick={handlePickSecondBoard}>Pick my board</Button>
