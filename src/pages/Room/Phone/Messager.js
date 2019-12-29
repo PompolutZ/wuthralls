@@ -379,9 +379,11 @@ function InteractiveMessage({ data, roomId, isLastMessage, timestamp, onShowHUD,
         const date = new Date();
         date.setTime(timestamp);
         setCreated(date);
+        console.log('LOADED', data);
     }, []);
 
     useEffect(() => {
+        console.log('CHANGED DATA')
         setRollResults(Object.entries(data).filter(([k, v]) => k.includes('_roll')).map(([k, v]) => ({ roll: v, id: k })));
         setBoards(Object.entries(data).filter(([k, v]) => k.includes('_board')).map(([k, v]) => ({ board: v, id: k })));
     }, [data]);
@@ -417,7 +419,7 @@ function InteractiveMessage({ data, roomId, isLastMessage, timestamp, onShowHUD,
 
     return (
         <Grid
-            id={isLastMessage ? 'lastMessage' : 'message'}
+            id={timestamp}
             item
             xs={12}
             className={classes.item}
@@ -591,6 +593,8 @@ function Messenger({ roomId, state, messages }) {
                 console.log('SCROLLING INTO VIEW');
             }
         }
+
+        console.log('MESSEGER', messages);
     }, []);
 
     useEffect(() => {

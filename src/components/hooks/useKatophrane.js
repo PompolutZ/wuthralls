@@ -60,9 +60,9 @@ export default function useKatophrane(room) {
             room.id,
             messageId,
             { 
-                [`${playerId}_board`]: boardId,
-                [`waitingFor`]: [otherPlayerId],
-                [`waitingReason`]: 'SELECT_SECOND_BOARD',
+                [`${messageId}.${playerId}_board`]: boardId,
+                [`${messageId}.waitingFor`]: [otherPlayerId],
+                [`${messageId}.waitingReason`]: 'SELECT_SECOND_BOARD',
             },
         );
 
@@ -75,7 +75,7 @@ export default function useKatophrane(room) {
             room.id,
             payload.messageId,
             { 
-                [`${payload.playerId}_board`]: payload.selectedBoardId,
+                [`${payload.messageId}.${payload.playerId}_board`]: payload.selectedBoardId,
             },
             payload.playerId
         );
@@ -117,7 +117,7 @@ export default function useKatophrane(room) {
                     return accumulatedInitiativeResult;
                 }, 0);
 
-            const withTimestamp = payload.reduce((r, c) => ({ ...r, [`${c.id}`]: c.roll }), {});
+            const withTimestamp = payload.reduce((r, c) => ({ ...r, [`${timestamp}.${c.id}`]: c.roll }), {});
             if(leftScore === rightScore) {
                 console.log()
                 firebase.updateInteractiveMessage32(
@@ -125,8 +125,8 @@ export default function useKatophrane(room) {
                     timestamp,
                     {
                         ...withTimestamp,
-                        [`waitingFor`]: roomState.players,
-                        [`waitingReason`]: 'INITIATIVE_ROLL',
+                        [`${timestamp}.waitingFor`]: roomState.players,
+                        [`${timestamp}.waitingReason`]: 'INITIATIVE_ROLL',
                     })
             } else if (leftScore > rightScore) {
                 firebase.updateInteractiveMessage32(
@@ -134,8 +134,8 @@ export default function useKatophrane(room) {
                     timestamp,
                     {
                         ...withTimestamp,
-                        [`waitingFor`]: [left.id.split('_')[0]],
-                        [`waitingReason`]: 'SELECT_FIRST_BOARD_OR_PASS',
+                        [`${timestamp}.waitingFor`]: [left.id.split('_')[0]],
+                        [`${timestamp}.waitingReason`]: 'SELECT_FIRST_BOARD_OR_PASS',
                     })
             } else {
                 firebase.updateInteractiveMessage32(
@@ -143,8 +143,8 @@ export default function useKatophrane(room) {
                     timestamp,
                     {
                         ...withTimestamp,
-                        [`waitingFor`]: [right.id.split('_')[0]],
-                        [`waitingReason`]: 'SELECT_FIRST_BOARD_OR_PASS',
+                        [`${timestamp}.waitingFor`]: [right.id.split('_')[0]],
+                        [`${timestamp}.waitingReason`]: 'SELECT_FIRST_BOARD_OR_PASS',
                     })
             }          
 
@@ -165,8 +165,8 @@ export default function useKatophrane(room) {
             room.id,
             timestamp,
             {
-                [`waitingFor`]: [roomState.players.find(p => p !== playerId)],
-                [`waitingReason`]: 'SELECT_FIRST_BOARD',
+                [`${timestamp}.waitingFor`]: [roomState.players.find(p => p !== playerId)],
+                [`${timestamp}.waitingReason`]: 'SELECT_FIRST_BOARD',
             })
     }
 
