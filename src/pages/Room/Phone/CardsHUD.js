@@ -118,8 +118,8 @@ export default function CardsHUD({
         
         firebase.updateRoom(roomId, {
             [`${myself.uid}.hand`]: hand ? hand.map(x => x.id).join() : '',
-            [`${myself.uid}.oDeck`]: objectiveDrawPile.map(x => x.id).join(),
-            [`${myself.uid}.pDeck`]: powersDrawPile.map(x => x.id).join(),
+            [`${myself.uid}.oDeck`]: objectiveDrawPile ? objectiveDrawPile.map(x => x.id).join() : '',
+            [`${myself.uid}.pDeck`]: powersDrawPile ? powersDrawPile.map(x => x.id).join() : '',
             [`${myself.uid}.sObjs`]: scoredObjectives ? scoredObjectives.map(x => x.id).join() : '',
             [`${myself.uid}.dObjs`]: discardedObjectives ? discardedObjectives.map(x => x.id).join() : '',
             [`${myself.uid}.dPws`]: discardedPowers ? discardedPowers.map(x => x.id).join() : '',
