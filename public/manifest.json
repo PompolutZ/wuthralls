@@ -3,13 +3,16 @@
   "name": "WUnderworlds",
   "icons": [
     {
-      "src": "favicon.ico",
-      "sizes": "64x64 32x32 24x24 16x16",
-      "type": "image/x-icon"
+      "src": "/wuc-pwa-192.png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/wuc-pwa-512.png",
+      "sizes": "512x512"
     }
   ],
   "start_url": ".",
   "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ff4500"
+  "theme_color": "#ff4500",
+  "background_color": "#ffffff"
 }
