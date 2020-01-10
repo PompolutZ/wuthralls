@@ -66,6 +66,8 @@ export default function Warband({ roomId, myfighters, enemyFighters, onSelectedF
                             border: fighter.id.startsWith(myself.uid) ? selectedFighter && selectedFighter.id === fighter.id ? '3px dashed green' : '3px solid green' : selectedFighter && selectedFighter.id === fighter.id ? '3px dashed red' : '3px solid red',
                             backgroundImage: `url(/assets/fighters/${fighter.icon}-icon.png)`,
                             backgroundSize: 'cover',
+                            transform: !fighter.id.startsWith(myself.uid) ? 'scaleX(-1)' : '',
+                            filter: fighter.isOnBoard ? '' : 'grayscale(100%)',
                             }}>
                             {/* <img src={`/assets/fighters/${fighter.icon}-icon.png`} style={{ width: '100%' }} /> */}
                             <div style={{
@@ -97,7 +99,7 @@ export default function Warband({ roomId, myfighters, enemyFighters, onSelectedF
                                 boxShadow: fighter.isInspired ? '0 0 35px 15px yellow' : ''
                             }} />    
                             {
-                                selectedFighter && selectedFighter.id === fighter.id && (
+                                selectedFighter && selectedFighter.id === fighter.id && fighter.isOnBoard && (
                                     <ButtonBase
                                         style={{
                                             position: 'absolute',

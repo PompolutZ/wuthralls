@@ -469,7 +469,8 @@ export default function Board({ roomId, state, onBoardChange, selectedElement })
                                             left: x + ((95 - 80) * scaleFactor) / 2 - 2,
                                             border: k.startsWith(myself.uid) ? '3px solid limegreen' : '3px solid red',
                                             borderRadius: 80,
-                                            boxShadow: k === selectedTokenId ? k.startsWith(myself.uid) ? '0 0 7px 7px limegreen' : '0 0 7px 7px red' : ''
+                                            transform: k.startsWith(myself.uid) ? '' : 'scaleX(-1)',
+                                            boxShadow: k === selectedTokenId ? k.startsWith(myself.uid) ? '0 0 7px 7px limegreen' : '0 0 7px 7px red' : '',
                                         }}>
                                             <div style={{ 
                                                 position: 'absolute', 
