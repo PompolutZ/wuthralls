@@ -5,17 +5,39 @@ import App from './components/App';
 import * as serviceWorker from './serviceWorker';
 import Firebase, { FirebaseContext } from './firebase';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
+import { useTheme } from '@material-ui/core/styles';
 
-const theme = createMuiTheme({
 
-})
+
+function Root() {
+    const defaultTheme = useTheme();
+    const theme = createMuiTheme({
+        ...defaultTheme,
+        palette: {
+            ...defaultTheme.palette,
+            success: {
+                main: "#4caf50", 
+            },
+            info: {
+                main: "#2196f3",
+            },
+            warning: {
+                main: "#ff9800",
+            }
+        }
+    });
+
+    return (
+        <FirebaseContext.Provider value={new Firebase()}>
+            <ThemeProvider theme={theme}>
+                <App />
+            </ThemeProvider>
+        </FirebaseContext.Provider>
+    )
+}
 
 ReactDOM.render(
-    <FirebaseContext.Provider value={new Firebase()}>
-        <ThemeProvider theme={theme}>
-            <App />
-        </ThemeProvider>
-    </FirebaseContext.Provider>, 
+    <Root />, 
     document.getElementById('root'));
 
 // If you want your app to work offline and load faster, you can change
