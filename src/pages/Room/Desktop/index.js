@@ -24,6 +24,11 @@ import ReturnToPileIcon from '@material-ui/icons/Eject';
 import Glory from '../../../components/CommonSVGs/Glory';
 import { shuffle } from '../../../common/function';
 import __isEqual from 'lodash/isEqual';
+import RollDice from '../../../components/CommonSVGs/RollDice';
+import SendIcon from '@material-ui/icons/Send';
+import SendMessageAction from '../Phone/SendMessageAction';
+import RollDiceAction from '../Phone/RollDiceAction';
+import Overlay from './Overlay';
 
 const propertyToCards = (source, property) => {
     return (
@@ -72,7 +77,7 @@ const ObjectivesInHand = React.memo(({ objectives, onHighlight }) => (
     </>
 ));
 
-function Cards({ data }) {
+function Cards({ data, onHighlightCard }) {
     const [hand, setHand] = useState(null);
     const [objectivesDrawPile, setObjectivesDrawPile] = useState(null);
     const [powersDrawPile, setPowersDrawPile] = useState(null);
@@ -101,9 +106,8 @@ function Cards({ data }) {
     }
 
     const hightlightCard = card => () => {
-        if(objectiveToHightlight) return;
-
-        setObjectiveToHightlight(card);
+        console.log(card);
+        onHighlightCard(card, 'OBJECTIVE_HIGHLIGHT');
     }
 
     const hideHightlightedObjective = () => {
@@ -195,18 +199,11 @@ function Cards({ data }) {
                         <img src={`/assets/cards/objectives_back.png`} 
                             style={{ width: '4rem', filter: `drop-shadow(2px 2px 5px black) ${objectivesDrawPile && objectivesDrawPile.length <= 0 ? 'grayscale(100%) saturate(50%)' : '' }` }} />
                     </div>
-                    <div style={{ display: 'flex', flex: 1, flexDirection: 'row', justifyContent: 'flex-end', backgroundColor: 'orange', alignItems: 'center', marginRight: '1rem', filter: objectiveToHightlight ? 'blur(3px)' : '' }}>
+                    <div style={{ display: 'flex', flex: 1, flexDirection: 'row', justifyContent: 'flex-end', backgroundColor: 'orange', alignItems: 'center', marginRight: '1rem', }}>
                         <ObjectivesInHand objectives={objectivesInHand} onHighlight={hightlightCard} />
-                        {/* {
-                            objectivesInHand && objectivesInHand.map(card => (
-                                <div key={card.id} onClick={hightlightCard(card)}>
-                                    <img src={`/assets/cards/${card.id}.png`} style={{ maxHeight: '10rem', margin: 'auto .5rem auto auto', flex: '0 0 auto'}} />                                     
-                                </div>
-                            ))
-                        } */}
                     </div>
 
-                    {
+                    {/* {
                         // HIGHLIGHTED CARD
                         objectiveToHightlight && (
                             <div style={{ position: 'absolute', top: '-175%', left: '20%', filter: 'drop-shadow(5px 5px 10px black)' }} onClick={hideHightlightedObjective}>
@@ -304,7 +301,7 @@ function Cards({ data }) {
 
                             </div>
                         )
-                    }
+                    } */}
                 </div>
             </div>
             <div style={{ flex: '0 0', backgroundColor: 'teal' }}>
@@ -337,6 +334,8 @@ export default function DesktopRoom() {
     const { state } = useLocation();
     const [data, setData] = useState(state);
     const [messages, setMessages] = useState(null);
+    const [overlay, setOverlay] = useState(null);
+    const [overlayPayload, setOverlayPayload] = useState(null);
 
     useEffect(() => {
             const unsubscribe = firebase.setRoomListener(state.id, snapshot => {
@@ -357,19 +356,65 @@ export default function DesktopRoom() {
                 
                 setMessages(msgs);
             });
+
+            document.addEventListener("keydown", onKeyPress, false);
     
             return () => {
                 unsubscribe();
                 unsubscribeFromMessages();
+                document.removeEventListener("keydown", onKeyPress, false);
             };
     }, []);
+
+    const onKeyPress = e => {
+        if(e.code === 'Escape') {
+            setOverlay(null);
+            setOverlayPayload(null)
+        }
+    }
+
+    const handleClick = (type, payload) => () => {
+        setOverlay(type);
+        setOverlayPayload(payload);
+    }
+
+    const handleHighlightCard = (card, type) => {
+        console.log(card, type);
+        setOverlay(type);
+        setOverlayPayload(card);
+    }
 
     return (
         <div className={classes.root}>
             <div style={{ height: '100px', backgroundColor: 'magenta', flex: '0 0 auto'}}>navigation and general info</div>
-            <div style={{ backgroundColor: 'orange', flex: 2}}>main content</div>
+            <div style={{ backgroundColor: 'orange', flex: 2, display: 'flex' }}>
+                <div style={{ backgroundColor: 'mediumpurple', flex: 1 }}></div>
+                <div style={{ backgroundColor: 'Maroon', flex: 2, position: 'relative', display: 'flex' }}>
+                    <div style={{ filter: overlay ? 'blur(3px)' : '', margin: 'auto', color: 'white', fontSize: '2rem' }}>MAIN CONTENT</div>
+                    {
+                        overlay && (
+                            <Overlay type={overlay} data={data} roomId={state.id} payload={overlayPayload} />
+                        )
+                    }
+                </div>
+                <div style={{ backgroundColor: 'DarkTurquoise', flex: 1, display: 'flex', flexDirection: 'column'  }}>
+                    <div style={{ flexGrow: 1, position: 'relative' }}>
+                        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'green', display: 'flex', flexDirection: 'column' }}>
+                            <Messenger roomId={state.id} state={data} messages={messages} />
+                        </div>
+                    </div>
+                    <div style={{ backgroundColor: 'magenta', padding: '.5rem' }}>
+                        <ButtonBase onClick={handleClick('ROLL_DICE')} style={{ width: '3rem', height: '3rem', backgroundColor: 'teal', color: 'white', borderRadius: '1.5rem', filter: 'drop-shadow(2px 2px 5px black)', boxSizing: 'border-box', border: '2px solid white' }}>
+                            <RollDice style={{ width: '1.5rem', height: '1.5rem' }} />
+                        </ButtonBase>
+                        <ButtonBase onClick={handleClick('SEND_MESSAGE')} style={{ width: '3rem', height: '3rem', backgroundColor: 'teal', color: 'white', borderRadius: '1.5rem', filter: 'drop-shadow(2px 2px 5px black)', boxSizing: 'border-box', border: '2px solid white' }}>
+                            <SendIcon style={{ width: '1.5rem', height: '1.5rem' }} />
+                        </ButtonBase>
+                    </div>
+                </div>
+            </div>
             
-            <Cards data={data[myself.uid]} />
+            <Cards data={data[myself.uid]} onHighlightCard={handleHighlightCard} />
         </div>
     );
 }

@@ -17,6 +17,13 @@ import ButtonBase from '@material-ui/core/ButtonBase';
 import MoveNextIcon from '@material-ui/icons/LabelImportant';
 import FlipIcon from '@material-ui/icons/RotateRight';
 import useKatophrane from '../../../components/hooks/useKatophrane';
+import Markdown from 'react-markdown';
+import AttackDie from '../../../components/AttackDie';
+import DefenceDie from '../../../components/DefenceDie';
+import MagicDie from '../../../components/MagicDie';
+import { 
+    warbandColors,
+    boards as boardsInfo } from '../../../data';
 
 const useStyles = makeStyles(theme => ({
     item: {
@@ -27,11 +34,13 @@ const useStyles = makeStyles(theme => ({
 
     root: {
         flexGrow: 1,
-        height: '80vh',
+        overflow: 'auto',
     },
 }));
 
-function DiceRollMessage({ id, author, value, type, timestamp }) {
+const DiceRollMessage = React.memo(({
+    id, author, value, type, timestamp, authorFaction
+}) => {
     const classes = useStyles();
     const [created, setCreated] = useState(null);
 
@@ -43,7 +52,7 @@ function DiceRollMessage({ id, author, value, type, timestamp }) {
 
     return (
         <Grid
-            id={id}
+            id={timestamp}
             item
             xs={12}
             className={classes.item}
@@ -60,49 +69,43 @@ function DiceRollMessage({ id, author, value, type, timestamp }) {
                 created.toLocaleString('en-US', {
                     hour12: false,
                 })}`}</Typography>
-            <div>
-                {value.split(',').map((x, i) => {
-                    return type === 'INITIATIVE' ? (
-                        <Die
-                            key={i}
-                            side={x}
-                            type={type}
-                            prefix={i % 2 === 0 ? 'D' : 'A'}
-                            style={{
-                                width: '2rem',
-                                height: '2rem',
-                                marginRight: '.2rem',
-                            }}
-                        />
-                    ) : (
-                        <Die
-                            key={i}
-                            side={x}
-                            type={type}
-                            style={{
-                                width: '2rem',
-                                height: '2rem',
-                                marginRight: '.2rem',
-                            }}
-                        />
-                    );
-                })}
+            <div style={{ display: 'flex'}}>
+                {value.split(',').map((x, i) => (
+                    <div key={i} style={{ width: 24, height: 24, marginRight: '.2rem', backgroundColor: 'white', borderRadius: 24 * .2 }}>
+                        {
+                            type === 'ATTACK' && <AttackDie accentColorHex={warbandColors[authorFaction]} size={24} side={x} useBlackOutline={authorFaction === 'zarbags-gitz'} />
+                        }
+                        {
+                            type === 'DEFENCE' && <DefenceDie accentColorHex={warbandColors[authorFaction]} size={24} side={x} useBlackOutline={authorFaction === 'zarbags-gitz'} />
+                        }
+                        {
+                            type === 'MAGIC' && <MagicDie size={24} side={x} />
+                        }
+                        {
+                            type === 'INITIATIVE' && i % 2 === 0 && <DefenceDie accentColorHex={warbandColors[authorFaction]} size={24} side={x} useBlackOutline={authorFaction === 'zarbags-gitz'} />
+                        }
+                        {
+                            type === 'INITIATIVE' && i % 2 !== 0 && <AttackDie accentColorHex={warbandColors[authorFaction]} size={24} side={x} useBlackOutline={authorFaction === 'zarbags-gitz'} />
+                        }
+                    </div>
+                )
+                )}
             </div>
         </Grid>
     );
-}
+});
 
 const cardDefaultWidth = 300;
 const cardDefaultHeight = 420;
 
-function CardMessageItem({
+const CardMessageItem = React.memo(({
     isLastMessage,
     author,
     isMineMessage,
     cardId,
     value,
     timestamp,
-}) {
+}) => {
     const classes = useStyles();
     const [highlight, setHighlight] = useState(false);
     const [created, setCreated] = useState(null);
@@ -119,7 +122,7 @@ function CardMessageItem({
 
     return (
         <Grid
-            id={isLastMessage ? 'lastMessage' : 'message'}
+            id={timestamp}
             item
             xs={12}
             className={classes.item}
@@ -191,15 +194,15 @@ function CardMessageItem({
             )}
         </Grid>
     );
-}
+})
 
-function ChatMessageItem({
+const ChatMessageItem = React.memo(({
     isLastMessage,
     author,
     isMineMessage,
     value,
     timestamp,
-}) {
+}) => {
     const classes = useStyles();
     const [created, setCreated] = useState(null);
 
@@ -211,7 +214,7 @@ function ChatMessageItem({
 
     return (
         <Grid
-            id={isLastMessage ? 'lastMessage' : 'message'}
+            id={timestamp}
             item
             xs={12}
             className={classes.item}
@@ -241,10 +244,12 @@ function ChatMessageItem({
                         hour12: false,
                     })}`}</Typography>
             </div>
-            <Typography>{value}</Typography>
+            <div style={{ fontSize: '.8rem' }}>
+                <Markdown source={value} />                
+            </div>
         </Grid>
     );
-}
+})
 
 function PickFirstBoardHUD({ data, onFirstBoardSelected}) {
     const boardsList = Object.entries(boards).map(([k, v]) => ({...v, id: k}));
@@ -284,13 +289,9 @@ function PickFirstBoardHUD({ data, onFirstBoardSelected}) {
     )
 }
 
-const baseHeight = 495;
-const baseWidth = 757;
-
 function PickSecondBoard({ data, onSecondBoardSelected }) {
     const boardsList = Object.entries(boards).map(([k, v]) => ({...v, id: k}));
     const [currentIndex, setCurrentIndex] = useState(0);
-    const [scaleFactor, setScaleFactor] = useState(1);
     const [values, setValues] = useState({
         top: {
             rotate: 0
@@ -298,15 +299,7 @@ function PickSecondBoard({ data, onSecondBoardSelected }) {
         bottom: {
             rotate: 0,
         }
-    });
-
-    useEffect(() => {
-        if(window.screen.height < window.screen.width) {
-            const scaleFactor = window.innerHeight / ((baseHeight * 2) + 32);
-            console.log(window.innerHeight);
-            setScaleFactor(scaleFactor * .6); 
-        }
-    }, [])
+    })
 
     useEffect(() => {
         console.log(values);
@@ -343,17 +336,17 @@ function PickSecondBoard({ data, onSecondBoardSelected }) {
     console.log('SECOND BOARD LOADED', data);
 
     return (
-        <div style={{ width: `calc(${window.screen.width}px - 1rem)`, height: `calc(${window.screen.height}px - 1rem)`, boxSizing: 'border-box', padding: '1rem', display: 'flex', overflowY: 'scroll' }}>
-            <div style={{ margin: '1rem auto', display: 'flex', flexFlow: 'column nowrap', alignItems: 'center' }}>
+        <div style={{ width: `calc(${window.screen.width}px - 1rem)`, height: `calc(${window.screen.height}px - 1rem)`, boxSizing: 'border-box', padding: '1rem', display: 'flex' }}>
+            <div style={{ margin: 'auto', display: 'flex', flexFlow: 'column nowrap', alignItems: 'center' }}>
                 <div style={{ position: 'relative' }}>
-                    <img src={`/assets/boards/${boardsList[data.opponentBoard - 1].id}.jpg`} style={{ width: baseWidth * scaleFactor, transform: `rotate(${values.top.rotate}deg)`, transformOrigin: 'center center' }} alt={boardsList[data.opponentBoard - 1].name} />                    
+                    <img src={`/assets/boards/${boardsList[data.opponentBoard - 1].id}.jpg`} style={{ width: window.screen.width * .7, transform: `rotate(${values.top.rotate}deg)`, transformOrigin: 'center center' }} alt={boardsList[data.opponentBoard - 1].name} />                    
                     <ButtonBase style={{ backgroundColor: 'teal', color: 'white', width: '2rem', height: '2rem', boxSizing: 'boarder-box', border: '2px solid white', borderRadius: '2rem', position: 'absolute', top: '50%', left: 0, marginTop: '-1rem', marginLeft: '-1rem' }}
                         onClick={flipBoard('top')}>
                         <FlipIcon style={{ transform: 'rotate(180deg)'}} />
                     </ButtonBase>
                 </div>
                 <div style={{ position: 'relative' }}>
-                    <img src={`/assets/boards/${boardsList[currentIndex].id}.jpg`} style={{ width: baseWidth * scaleFactor, transform: `rotate(${values.bottom.rotate}deg)`, transformOrigin: 'center center' }} alt={boardsList[currentIndex].name} />
+                    <img src={`/assets/boards/${boardsList[currentIndex].id}.jpg`} style={{ width: window.screen.width * .7, transform: `rotate(${values.bottom.rotate}deg)`, transformOrigin: 'center center' }} alt={boardsList[currentIndex].name} />
                     <ButtonBase style={{ backgroundColor: 'teal', color: 'white', width: '2rem', height: '2rem', boxSizing: 'boarder-box', border: '2px solid white', borderRadius: '2rem', position: 'absolute', top: '50%', left: 0, marginTop: '-1rem', marginLeft: '-1rem' }}
                         onClick={handleMoveBy(-1)}>
                         <MoveNextIcon style={{ transform: 'rotate(180deg)'}} />
@@ -377,7 +370,6 @@ function PickSecondBoard({ data, onSecondBoardSelected }) {
 }
 
 function InteractiveMessage({ data, roomId, isLastMessage, timestamp, onShowHUD, state }) {
-    console.log(data);
     const myself = useAuthUser();
     const firebase = useContext(FirebaseContext);
     const katophrane = useKatophrane(state);
@@ -392,9 +384,11 @@ function InteractiveMessage({ data, roomId, isLastMessage, timestamp, onShowHUD,
         const date = new Date();
         date.setTime(timestamp);
         setCreated(date);
+        console.log('LOADED', data);
     }, []);
 
     useEffect(() => {
+        console.log('CHANGED DATA')
         setRollResults(Object.entries(data).filter(([k, v]) => k.includes('_roll')).map(([k, v]) => ({ roll: v, id: k })));
         setBoards(Object.entries(data).filter(([k, v]) => k.includes('_board')).map(([k, v]) => ({ board: v, id: k })));
     }, [data]);
@@ -430,7 +424,7 @@ function InteractiveMessage({ data, roomId, isLastMessage, timestamp, onShowHUD,
 
     return (
         <Grid
-            id={isLastMessage ? 'lastMessage' : 'message'}
+            id={timestamp}
             item
             xs={12}
             className={classes.item}
@@ -465,20 +459,17 @@ function InteractiveMessage({ data, roomId, isLastMessage, timestamp, onShowHUD,
                     <Grid container direction="column" alignItems="center">
                     {
                         rollResults && rollResults.length > 0 && rollResults.filter(r => r.id.includes(myself.uid)).map(r => (
-                            <div key={r.id}>
+                            <div key={r.id} style={{ display: 'flex' }}>
                                 {
                                     r.roll.split(',').map((x, i) => (
-                                        <Die
-                                            key={i}
-                                            side={x}
-                                            type={'INITIATIVE'}
-                                            prefix={i % 2 === 0 ? 'D' : 'A'}
-                                            style={{
-                                                width: '2rem',
-                                                height: '2rem',
-                                                marginRight: '.2rem',
-                                            }}
-                                        />
+                                        <div key={i} style={{ width: 24, height: 24, marginRight: '.2rem', backgroundColor: 'white', borderRadius: 24 * .2 }}>
+                                            {
+                                                i % 2 === 0 && <DefenceDie accentColorHex={warbandColors[state[myself.uid].faction]} size={24} side={x} useBlackOutline={state[myself.uid].faction === 'zarbags-gitz'} />
+                                            }
+                                            {
+                                                i % 2 !== 0 && <AttackDie accentColorHex={warbandColors[state[myself.uid].faction]} size={24} side={x} useBlackOutline={state[myself.uid].faction === 'zarbags-gitz'} />
+                                            }
+                                        </div>
                                     ))
                                 }
                             </div>
@@ -498,20 +489,17 @@ function InteractiveMessage({ data, roomId, isLastMessage, timestamp, onShowHUD,
                     <Grid container direction="column" alignItems="center">
                     {
                         rollResults && rollResults.length > 0 && rollResults.filter(r => r.id.includes(opponent)).map(r => (
-                            <div key={r.id}>
+                            <div key={r.id} style={{ display: 'flex' }}>
                                 {
                                     r.roll.split(',').map((x, i) => (
-                                        <Die
-                                            key={i}
-                                            side={x}
-                                            type={'INITIATIVE'}
-                                            prefix={i % 2 === 0 ? 'D' : 'A'}
-                                            style={{
-                                                width: '2rem',
-                                                height: '2rem',
-                                                marginRight: '.2rem',
-                                            }}
-                                        />
+                                        <div key={i} style={{ width: 24, height: 24, marginRight: '.2rem', backgroundColor: 'white', borderRadius: 24 * .2 }}>
+                                            {
+                                                i % 2 === 0 && <DefenceDie accentColorHex={warbandColors[state[opponent].faction]} size={24} side={x} useBlackOutline={state[opponent].faction === 'zarbags-gitz'} />
+                                            }
+                                            {
+                                                i % 2 !== 0 && <AttackDie accentColorHex={warbandColors[state[opponent].faction]} size={24} side={x} useBlackOutline={state[opponent].faction === 'zarbags-gitz'} />
+                                            }
+                                        </div>
                                     ))
                                 }
                             </div>
@@ -572,7 +560,7 @@ function InteractiveMessage({ data, roomId, isLastMessage, timestamp, onShowHUD,
                 data.waitingReason === 'SELECT_SECOND_BOARD' && (
                     <Grid container>
                         <Typography>
-                            Your opponent has picked {data[`${actors.find(a => a !== myself.uid)}_board`]} board.
+                            Your opponent has picked board: {boardsInfo[data[`${actors.find(a => a !== myself.uid)}_board`]].name}.
                         </Typography>
                         <Grid item xs={12}>
                             <Button onClick={handlePickSecondBoard}>Pick my board</Button>
@@ -584,39 +572,43 @@ function InteractiveMessage({ data, roomId, isLastMessage, timestamp, onShowHUD,
     );
 }
 
-function Messenger({ roomId, state }) {
+function Messenger({ roomId, state, messages }) {
     const classes = useStyles();
     const myself = useAuthUser();
     const containerRef = useRef(null);
     const katophrane = useKatophrane(state);
-    const [messages, setMessages] = useState([]);
+    // const [messages, setMessages] = useState([]);
     const firebase = useContext(FirebaseContext);
     const [showMainHUD, setShowMainHUD] = useState(null);
     const [mainHUDPayload, setMainHUDPayload] = useState(null);
 
     useEffect(() => {
-        console.log('ONLOADED', state.players);
-        const unsubscribe = firebase.setMessagesListener(roomId, doc => {
-            if (doc.exists) {
-                console.log(doc.data());
-                setMessages(
-                    Object.entries(doc.data()).map(([id, v]) => ({
-                        ...v,
-                        id: id,
-                    }))
-                );
-                const lastMessage = document.getElementById('lastMessage');
-                if (lastMessage) {
-                    lastMessage.scrollIntoView();
-                }
+        if(!messages) return;
+        const lastMessage = messages[messages.length - 1];
+        if(lastMessage) {
+            const element = document.getElementById(lastMessage.id);
+            if(element) {
+                element.scrollIntoView();
+                console.log('SCROLLING INTO VIEW');
             }
-        });
+        }
 
-        return () => {
-            unsubscribe();
-            console.log('UNLOADED');
-        };
+        console.log('MESSEGER', messages);
     }, []);
+
+    useEffect(() => {
+        if(!messages) return;
+        const lastMessage = messages[messages.length - 1];
+        if(lastMessage) {
+            const element = document.getElementById(lastMessage.id);
+            if(element) {
+                element.scrollIntoView();
+                console.log('SCROLLING INTO VIEW', lastMessage);
+            }
+        }
+
+        // return () => unsubscribe();
+    }, [messages]);
 
     const handleCloseOverlay = e => {
         setShowMainHUD(null);
@@ -641,128 +633,99 @@ function Messenger({ roomId, state }) {
     }
 
     return (
-        <div>
-            <Grid
-                ref={containerRef}
-                container
-                spacing={0}
-                className={classes.root}
-                style={{ filter: showMainHUD ? 'blur(3px)' : '' }}
-            >
-                <div style={{ width: '100%', height: '100%', overflowY: 'scroll' }}>
-                {messages.length > 0 &&
-                    messages.map((m, i, arr) => {
-                        if (m.type === 'INTERACTIVE') {
-                            return (
-                                <InteractiveMessage
-                                    state={state}
-                                    key={m.id}
-                                    roomId={roomId}
-                                    data={m}
-                                    isLastMessage={arr.length - 1 === i}
-                                    timestamp={m.id}
-                                    onShowHUD={handleShowHUDType}
-                                />
-                            );
-                        }
+        <Grid
+            ref={containerRef}
+            container
+            spacing={0}
+            className={classes.root}
+            style={{ filter: showMainHUD ? 'blur(3px)' : '', backgroundColor: 'white' }}
+        >
+            <div style={{ width: '100%', marginBottom: '2.5rem', backgroundColor: 'white' }}>
+            {messages && messages.length > 0 &&
+                messages.map((m, i, arr) => {
+                    if (m.type === 'INTERACTIVE') {
+                        return (
+                            <InteractiveMessage
+                                state={state}
+                                key={m.id}
+                                roomId={roomId}
+                                data={m}
+                                isLastMessage={arr.length - 1 === i}
+                                timestamp={m.id}
+                                onShowHUD={handleShowHUDType}
+                            />
+                        );
+                    }
 
-                        if (
-                            m.type === 'INFO' &&
-                            m.subtype &&
-                            m.subtype.includes('CARD')
-                        ) {
-                            return (
-                                <CardMessageItem
-                                    key={m.id}
-                                    timestamp={m.id}
-                                    isLastMessage={arr.length - 1 === i}
-                                    author={
-                                        m.author === 'Katophrane'
-                                            ? m.author
-                                            : Boolean(state[m.author])
-                                            ? state[m.author].name
-                                            : m.author
-                                    }
-                                    isMineMessage={m.author === myself.uid}
-                                    cardId={m.cardId}
-                                    value={m.value}
-                                />
-                            );
-                        }
+                    if (
+                        m.type === 'INFO' &&
+                        m.subtype &&
+                        m.subtype.includes('CARD')
+                    ) {
+                        return (
+                            <CardMessageItem
+                                key={m.id}
+                                timestamp={m.id}
+                                isLastMessage={arr.length - 1 === i}
+                                author={
+                                    m.author === 'Katophrane'
+                                        ? m.author
+                                        : Boolean(state[m.author])
+                                        ? state[m.author].name
+                                        : m.author
+                                }
+                                isMineMessage={m.author === myself.uid}
+                                cardId={m.cardId}
+                                value={m.value}
+                            />
+                        );
+                    }
 
-                        if (m.type === 'CHAT' || m.type === 'INFO') {
-                            return (
-                                <ChatMessageItem
-                                    key={m.id}
-                                    timestamp={m.id}
-                                    isLastMessage={arr.length - 1 === i}
-                                    author={
-                                        m.author === 'Katophrane'
-                                            ? m.author
-                                            : Boolean(state[m.author])
-                                            ? state[m.author].name
-                                            : m.author
-                                    }
-                                    isMineMessage={m.author === myself.uid}
-                                    value={m.value}
-                                />
-                            );
-                            // <Grid id={arr.length - 1 === i ? 'lastMessage' : 'message'} item xs={12} key={m.created} className={classes.item} style={{ backgroundColor: m.author === 'Katophrane' ? 'rgba(0, 128, 128, .2)' : m.author === myself.uid ? 'rgba(255, 140, 0, .2)' : 'rgba(138, 43, 226, .2)' }}>
-                            //     <div>
-                            //         <Typography variant="body2">{`${}`}</Typography>
-                            //     </div>
-                            //     <Typography>{m.value}</Typography>
-                            // </Grid>
-                        }
+                    if (m.type === 'CHAT' || m.type === 'INFO') {
+                        return (
+                            <ChatMessageItem
+                                key={m.id}
+                                timestamp={m.id}
+                                isLastMessage={arr.length - 1 === i}
+                                author={
+                                    m.author === 'Katophrane'
+                                        ? m.author
+                                        : Boolean(state[m.author])
+                                        ? state[m.author].name
+                                        : m.author
+                                }
+                                isMineMessage={m.author === myself.uid}
+                                value={m.value}
+                            />
+                        );
+                    }
 
-                        if (m.type === 'DICE_ROLL') {
-                            return (
-                                <DiceRollMessage
-                                    key={m.created}
-                                    timestamp={m.id}
-                                    id={
-                                        arr.length - 1 === i
-                                            ? 'lastMessage'
-                                            : 'message'
-                                    }
-                                    author={`${
-                                        m.author === 'Katophrane'
-                                            ? m.author
-                                            : Boolean(state[m.author])
-                                            ? state[m.author].name
-                                            : m.author
-                                    }:`}
-                                    value={m.value}
-                                    type={m.subtype}
-                                />
-                            );
-                        }
-                    })}
-
-                </div>
-            </Grid>
-            {
-                showMainHUD && (
-                    <HUDOverlay onCloseOverlayClick={handleCloseOverlay}>
-                        {
-                            showMainHUD === 'PICK_FIRST_BOARD' && (
-                                <PickFirstBoardHUD data={mainHUDPayload} onFirstBoardSelected={handleFirstBoardSelected} />
-                            )
-                        }
-                        {
-                            showMainHUD === 'PICK_SECOND_BOARD' && (
-                                <PickSecondBoard data={mainHUDPayload} onSecondBoardSelected={handleSecondBoardSelected} />
-                            )
-                        }
-                        {/* {
-                            showMainHUD === 'GAME_STATUS_INFO' && (
-                                <GameStatusHUD data={data} />
-                            )
-                        } */}
-                    </HUDOverlay>
-                )
-            }
-        </div>
+                    if (m.type === 'DICE_ROLL') {
+                        return (
+                            <DiceRollMessage
+                                key={m.created}
+                                timestamp={m.id}
+                                id={
+                                    arr.length - 1 === i
+                                        ? 'lastMessage'
+                                        : 'message'
+                                }
+                                author={`${
+                                    m.author === 'Katophrane'
+                                        ? m.author
+                                        : Boolean(state[m.author])
+                                        ? state[m.author].name
+                                        : m.author
+                                }:`}
+                                authorFaction={state[m.author].faction}
+                                value={m.value}
+                                type={m.subtype}
+                            />
+                        );
+                    }
+                })}
+            </div>
+        </Grid>
     );
 }
 
