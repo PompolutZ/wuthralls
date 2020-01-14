@@ -31,9 +31,22 @@ function App() {
     const [open, setOpen] = useState(false);
 
     useEffect(() => {
-        window.navigator.serviceWorker.ready.then(() => {
-            setOpen(true);
-        })
+        const swUrl = `${process.env.PUBLIC_URL}/service-worker.js`;
+        window.navigator.serviceWorker.register(swUrl)
+        .then(registration => {
+            registration.onupdatefound = () => {
+                const installingWorker = registration.installing;
+                if(installingWorker == null) return;
+
+                installingWorker.onstatechange = () => {
+                    if(installingWorker.state === 'installed') {
+                        if(navigator.serviceWorker.controller) {
+                            setOpen(true);
+                        }
+                    }
+                }
+            }
+        });
     }, []);
 
     const handleClose = (event, reason) => {
@@ -57,7 +70,7 @@ function App() {
                     onClose={handleClose}
                 >
                     <Alert onClose={handleClose} severity="info">
-                        New version is available! Please, reload application to use it.
+                        New version was installed! Please, reload application to use it.
                     </Alert>
                 </Snackbar>
 
