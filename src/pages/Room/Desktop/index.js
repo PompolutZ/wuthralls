@@ -9,7 +9,6 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Messenger from './Messager';
 import ActionsPalette from './ActionsPalette';
-import Board from './Board';
 import { useAuthUser } from '../../../components/Session';
 import { cardsDb } from '../../../data/index';
 import CardsHUD from './CardsHUD';
@@ -29,6 +28,7 @@ import SendIcon from '@material-ui/icons/Send';
 import SendMessageAction from '../Phone/SendMessageAction';
 import RollDiceAction from '../Phone/RollDiceAction';
 import Overlay from './Overlay';
+import Board from './Main/Board';
 
 const propertyToCards = (source, property) => {
     return (
@@ -57,7 +57,15 @@ const useStyles = makeStyles(theme => ({
         }
     },
 
-
+    boardContainer: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        '-webkit-scrollbar': '0px',
+        overflow: 'auto',
+    }
 }));
 
 const cardDefaultWidth = 300;
@@ -202,106 +210,6 @@ function Cards({ data, onHighlightCard }) {
                     <div style={{ display: 'flex', flex: 1, flexDirection: 'row', justifyContent: 'flex-end', backgroundColor: 'orange', alignItems: 'center', marginRight: '1rem', }}>
                         <ObjectivesInHand objectives={objectivesInHand} onHighlight={hightlightCard} />
                     </div>
-
-                    {/* {
-                        // HIGHLIGHTED CARD
-                        objectiveToHightlight && (
-                            <div style={{ position: 'absolute', top: '-175%', left: '20%', filter: 'drop-shadow(5px 5px 10px black)' }} onClick={hideHightlightedObjective}>
-                                <img src={`/assets/cards/${objectiveToHightlight.id}.png`} style={{ width: '60%', borderRadius: '1rem' }} />
-                                <ButtonBase
-                                        style={{
-                                            position: 'absolute',
-                                            bottom: '0%',
-                                            left: '0%',
-                                            marginLeft: '-1.5rem',
-                                            backgroundColor: 'dimgray',
-                                            color: 'gray',
-                                            width: '4rem',
-                                            height: '4rem',
-                                            borderRadius: '2rem',
-                                            boxSizing: 'border-box',
-                                            boxShadow: '0 0 10px 2px darkgoldenrod',
-                                            zIndex: 1,
-                                        }}
-                                        onClick={playCard(objectiveToHightlight)}
-                                    >
-                                        <div style={{
-                                            position: 'absolute',
-                                            width: '3rem',
-                                            height: '3rem',
-                                            borderRadius: '2rem',
-                                            backgroundColor: 'goldenrod',
-                                            display: 'flex',
-                                        }}>
-                                        </div>
-                                        <Glory
-                                            style={{
-                                                // backgroundColor: 'orange',
-                                                color: 'darkgoldenrod',
-                                                width: '4.2rem',
-                                                height: '4.2rem',
-                                                borderRadius: '3rem',
-                                                position: 'absolute',
-                                            }}
-                                        />
-                                        <div style={{
-                                            position: 'absolute',
-                                            width: '3rem',
-                                            height: '3rem',
-                                            borderRadius: '2rem',
-                                            display: 'flex',
-                                            left: '1rem',
-                                            top: '-.5rem',
-                                        }}>
-                                            <Typography style={{ color: 'white', fontSize: '3rem', fontWeight: 800 }}>{objectiveToHightlight.glory}</Typography>
-                                        </div>
-                                    </ButtonBase>
-                                    <ButtonBase
-                                        style={{
-                                            position: 'absolute',
-                                            bottom: '0%',
-                                            left: '60%',
-                                            marginLeft: '-2rem',
-                                            backgroundColor: 'red',
-                                            color: 'white',
-                                            width: '4rem',
-                                            height: '4rem',
-                                            borderRadius: '2rem',
-                                        }}
-                                        onClick={discardCard(objectiveToHightlight)}
-                                    >
-                                        <DeleteIcon
-                                            style={{
-                                                width: '2rem',
-                                                height: '2rem',
-                                            }}
-                                        />
-                                    </ButtonBase>
-                                    <ButtonBase
-                                        style={{
-                                            position: 'absolute',
-                                            bottom: '5rem',
-                                            left: '60%',
-                                            marginLeft: '-2rem',
-                                            backgroundColor: 'red',
-                                            color: 'white',
-                                            width: '4rem',
-                                            height: '4rem',
-                                            borderRadius: '2rem',
-                                        }}
-                                        onClick={returnToPile(objectiveToHightlight, 'OBJECTIVES_HAND')}
-                                    >
-                                        <ReturnToPileIcon
-                                            style={{
-                                                width: '2rem',
-                                                height: '2rem',
-                                            }}
-                                        />
-                                    </ButtonBase>
-
-                            </div>
-                        )
-                    } */}
                 </div>
             </div>
             <div style={{ flex: '0 0', backgroundColor: 'teal' }}>
@@ -336,6 +244,7 @@ export default function DesktopRoom() {
     const [messages, setMessages] = useState(null);
     const [overlay, setOverlay] = useState(null);
     const [overlayPayload, setOverlayPayload] = useState(null);
+    const [selectedElement, setSelectedElement] = useState(null);
 
     useEffect(() => {
             const unsubscribe = firebase.setRoomListener(state.id, snapshot => {
@@ -390,7 +299,11 @@ export default function DesktopRoom() {
             <div style={{ backgroundColor: 'orange', flex: 2, display: 'flex' }}>
                 <div style={{ backgroundColor: 'mediumpurple', flex: 1 }}></div>
                 <div style={{ backgroundColor: 'Maroon', flex: 2, position: 'relative', display: 'flex' }}>
-                    <div style={{ filter: overlay ? 'blur(3px)' : '', margin: 'auto', color: 'white', fontSize: '2rem' }}>MAIN CONTENT</div>
+                    <div style={{ filter: overlay ? 'blur(3px)' : '', color: 'white', fontSize: '2rem', backgroundColor: 'green', flexGrow: 1, position: 'relative' }}>
+                        <div className={classes.boardContainer}>
+                            <Board state={data} selectedElement={selectedElement} />
+                        </div>
+                    </div>
                     {
                         overlay && (
                             <Overlay type={overlay} data={data} roomId={state.id} payload={overlayPayload} />
