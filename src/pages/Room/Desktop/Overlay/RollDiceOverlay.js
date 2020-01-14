@@ -83,6 +83,12 @@ export default function RollDiceOverlay({ roomId, rollResult, defaultAmount, myF
                 display: 'flex',
                 flexFlow: 'column',
                 alignItems: 'flex-start',
+                backgroundColor: 'orangered',
+                padding: '.5rem',
+                boxSizing: 'border-box',
+                border: '2px solid white',
+                color: 'white',
+                borderRadius: '.5rem',
             }}
         >
             <Grid item xs={12} md={6} style={{ marginTop: '.3rem' }}>
@@ -99,41 +105,25 @@ export default function RollDiceOverlay({ roomId, rollResult, defaultAmount, myF
                             aria-label="small contained button group"
                         >
                             <Button
-                                color={
-                                    selectedType === 'ATTACK'
-                                        ? 'primary'
-                                        : 'default'
-                                }
+                                style={{ color: 'white', fontWeight: selectedType === 'ATTACK' ? 900 : 300 }}
                                 onClick={handleSwitchTo('ATTACK')}
                             >
                                 Attack
                             </Button>
                             <Button
-                                color={
-                                    selectedType === 'DEFENCE'
-                                        ? 'primary'
-                                        : 'default'
-                                }
+                                style={{ color: 'white', fontWeight: selectedType === 'DEFENCE' ? 900 : 300 }}
                                 onClick={handleSwitchTo('DEFENCE')}
                             >
                                 Defence
                             </Button>
                             <Button
-                                color={
-                                    selectedType === 'MAGIC'
-                                        ? 'primary'
-                                        : 'default'
-                                }
+                                style={{ color: 'white', fontWeight: selectedType === 'MAGIC' ? 900 : 300 }}
                                 onClick={handleSwitchTo('MAGIC')}
                             >
                                 Magic
                             </Button>
                             <Button
-                                color={
-                                    selectedType === 'INITIATIVE'
-                                        ? 'primary'
-                                        : 'default'
-                                }
+                                style={{ color: 'white', fontWeight: selectedType === 'INITIATIVE' ? 900 : 300 }}
                                 onClick={handleSwitchTo('INITIATIVE')}
                             >
                                 Initiative
@@ -162,6 +152,7 @@ export default function RollDiceOverlay({ roomId, rollResult, defaultAmount, myF
                     >
                         <RemoveIcon
                             style={{
+                                color: 'white',
                                 width: '2rem',
                                 height: '2rem',
                             }}
@@ -211,6 +202,7 @@ export default function RollDiceOverlay({ roomId, rollResult, defaultAmount, myF
                     >
                         <AddIcon
                             style={{
+                                color: 'white',
                                 width: '2rem',
                                 height: '2rem',
                             }}
@@ -220,7 +212,7 @@ export default function RollDiceOverlay({ roomId, rollResult, defaultAmount, myF
             </div>
             <Button
                 onClick={handleSendTextMessage}
-                style={{ flex: '0 0 auto', alignSelf: 'flex-end' }}
+                style={{ flex: '0 0 auto', alignSelf: 'flex-end', color: 'white' }}
             >
                 <SendIcon />
             </Button>
