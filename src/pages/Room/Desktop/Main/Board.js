@@ -8,6 +8,8 @@ import { cardsDb } from '../../../../data';
 import ZoomInIcon from '@material-ui/icons/ZoomIn';
 import ZoomOutIcon from '@material-ui/icons/ZoomOut';
 import ButtonBase from '@material-ui/core/ButtonBase';
+import StartingHex from '../../../../components/CommonSVGs/StartingHex';
+import StartingHexElement from './StartingHexElement';
 
 const baseSize = 55;
 
@@ -32,24 +34,61 @@ const renderHex = (hex, svg, color) => {
             // render(draw, color) {
     const { x, y } = hex.toPoint();
     const corners = hex.corners();
+    const log = () => {
+        const element = SVG.get(`hex${hex.x}${hex.y}`); //svg.children().find(c => c.node.id === `hex${hex.x}${hex.y}`);
+        //console.log('HEX', element, hex, `hex${hex.x}${hex.y}`);
+        console.log(svg.children().length, element);
+        //this.style({ cursor: 'pointer', fill: 'red'})
+    };
+
+    const handleMouseOver = () => {
+        const element = SVG.get(`hex${hex.x}${hex.y}`); //svg.children().find(c => c.node.id === `hex${hex.x}${hex.y}`);
+        if(element) {
+            element.stop(true, true).attr({ 'stroke-width': 1 }).animate(175).attr({ 'stroke-width': 3 });
+        }
+    }
+
+    const handleMouseOut = () => {
+        const element = SVG.get(`hex${hex.x}${hex.y}`);
+        if(element) {
+            element.stop(true, true).attr({ 'stroke-width': 3 }).animate(175).attr({ 'stroke-width': 1 });
+            // element
+            // // .stop(true, true)
+            // // .stroke({ width: 3, color: color })
+            // // .animate(1000)
+            // .stroke({ width: 1, color: color });
+        } //svg.children().find(c => c.node.id === `hex${hex.x}${hex.y}`);
+    }
+
     svg
         .polygon(corners.map(({ x, y }) => `${x},${y}`))
         .fill('rgba(192,192,192, 0)')
-        .stroke({ width: 2, color: color })
-        .translate(x, y);
+        .on('mouseover', handleMouseOver)
+        .on('mouseout', handleMouseOut)
+        .attr({ stroke: 'white', 'stroke-width': 1})
+        .translate(x, y)
+        .id(`hex${hex.x}${hex.y}`);
 }
 
 const highlightHex = (hex, svg) => {
     const { x, y } = hex.toPoint();
     const corners = hex.corners();
 
-    svg
-        .polygon(corners.map(({ x, y }) => `${x},${y}`))
-        .translate(x, y)
+    const hexElement = SVG.get(`hex${hex.x}${hex.y}`);
+    if(hexElement) {
+        hexElement
         .stop(true, true)
         .fill({ opacity: 1, color: 'white' })
         .animate(500)
         .fill({ opacity: 0, color: 'white' });
+    }
+    // svg
+    //     .polygon(corners.map(({ x, y }) => `${x},${y}`))
+    //     .translate(x, y)
+        // .stop(true, true)
+        // .fill({ opacity: 1, color: 'white' })
+        // .animate(3000)
+        // .fill({ opacity: 0, color: 'white' });
 }
 
 const getGridFactory = scaleFactor => {
@@ -122,6 +161,11 @@ export default function Board({ state, selectedElement }) {
     const [scaleFactorModifier, setScaleFactorModifier] = useState(1);
     const [myData, setMyData] = useState(state[myself.uid]);
     const [opponentData, setOpponentData] = useState(state.players.length > 1 ? state[state.players.find(p => p !== myself.uid)] : null)
+    
+    const startingHexes = [
+        [1,1],[3,1],[5,1],[0,3],[1,3],[4,3],[5,4], // top board temp
+        [1,7],[3,7],[5,7],[0,9],[1,9],[4,9],[5,10] // bottom board temp
+    ];
 
     useEffect(() => {
         if(!state.board.map) return;
@@ -141,7 +185,7 @@ export default function Board({ state, selectedElement }) {
         const initGrid = getGrid(scaleFactor);
         console.log(initGrid.get([3, 5]).toPoint())
         initGrid.forEach(hex => {
-            renderHex(hex, currentSvg, 'rgba(211,211,211, .5)');
+            renderHex(hex, currentSvg, 'rgba(255,255,255, 1)');
         })
         setGrid(initGrid);
     }, [scaleFactor])
@@ -380,6 +424,28 @@ export default function Board({ state, selectedElement }) {
                             //transform: `rotate(0deg)`,
                         }}
                     />
+                    {
+                        startingHexes.map((hex) => {
+                            const { x, y } = getGrid(scaleFactor).get(hex).toPoint();
+                            return (
+                                <StartingHexElement key={`${hex[0]}:${hex[1]}`} x={x} y={y} pointyTokenBaseWidth={pointyTokenBaseWidth} scaleFactor={scaleFactor} baseSize={baseSize} />
+                                // <div key={`${hex[0]}:${hex[1]}`}
+                                //     style={{
+                                //         position: 'absolute',
+                                //         zIndex: 2,
+                                //         width: pointyTokenBaseWidth * scaleFactor,
+                                //         height: pointyTokenBaseWidth * scaleFactor,
+                                //         top: y + (baseSize * scaleFactor) / 2,
+                                //         left: x,
+                                //         display: 'flex',
+                                //         flexDirection: 'column',
+                                //         alignItems: 'center',
+                                //     }}>
+                                //         <StartingHex style={{ width: '75%', height: '75%', margin: 'auto', paddingTop: '.5rem', color: 'rgba(211,211,211,.7)' }} />
+                                //     </div>
+                            ); 
+                        })
+                    }
                     <div
                         style={{
                             position: 'absolute',

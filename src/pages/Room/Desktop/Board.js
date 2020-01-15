@@ -13,7 +13,7 @@ const renderHex = (hex, svg, color) => {
     const corners = hex.corners();
     svg
         .polygon(corners.map(({ x, y }) => `${x},${y}`))
-        .fill('rgba(192,192,192, 0)')
+        .fill('rgba(255,255,255, 0)')
         .stroke({ width: 2, color: color })
         .translate(x, y);
 }
@@ -129,7 +129,7 @@ export default function Board({ roomId, state, onBoardChange, selectedElement })
         const initGrid = getGrid(nextScaleFactor);
         console.log(initGrid.get([3, 5]).toPoint())
         initGrid.forEach(hex => {
-            renderHex(hex, currentSvg, 'rgba(211,211,211, .5)');
+            renderHex(hex, currentSvg, 'magenta');
         })
         setGrid(initGrid);
     }, []);
