@@ -64,12 +64,10 @@ export default function Warband({ roomId, myfighters, enemyFighters, onSelectedF
                             boxSizing: 'border-box',
                             position: 'relative',
                             border: fighter.id.startsWith(myself.uid) ? selectedFighter && selectedFighter.id === fighter.id ? '3px dashed green' : '3px solid green' : selectedFighter && selectedFighter.id === fighter.id ? '3px dashed red' : '3px solid red',
-                            backgroundImage: `url(/assets/fighters/${fighter.icon}-icon.png)`,
-                            backgroundSize: 'cover',
-                            transform: !fighter.id.startsWith(myself.uid) ? 'scaleX(-1)' : '',
-                            filter: fighter.isOnBoard ? '' : 'grayscale(100%)',
                             }}>
-                            {/* <img src={`/assets/fighters/${fighter.icon}-icon.png`} style={{ width: '100%' }} /> */}
+
+                            <img src={`/assets/fighters/${fighter.icon}-icon.png`} style={{ width: '100%', filter: fighter.isOnBoard ? '' : 'grayscale(100%)', transform: !fighter.id.startsWith(myself.uid) ? 'scaleX(-1)' : '', }} />
+
                             <div style={{
                                 width: '70%',
                                 height: '70%',

@@ -460,8 +460,8 @@ export default function Board({ roomId, state, onBoardChange, selectedElement })
                                         key={k}
                                         style={{
                                             position: 'absolute',
-                                            backgroundImage: `url(/assets/fighters/${fighter.icon}-icon.png)`,
-                                            backgroundSize: 'cover',
+                                            // backgroundImage: `url(/assets/fighters/${fighter.icon}-icon.png)`,
+                                            // backgroundSize: 'cover',
                                             zIndex: 600,
                                             width: 80 * scaleFactor,
                                             height: 80 * scaleFactor,
@@ -469,9 +469,9 @@ export default function Board({ roomId, state, onBoardChange, selectedElement })
                                             left: x + ((95 - 80) * scaleFactor) / 2 - 2,
                                             border: k.startsWith(myself.uid) ? '3px solid limegreen' : '3px solid red',
                                             borderRadius: 80,
-                                            transform: k.startsWith(myself.uid) ? '' : 'scaleX(-1)',
                                             boxShadow: k === selectedTokenId ? k.startsWith(myself.uid) ? '0 0 7px 7px limegreen' : '0 0 7px 7px red' : '',
                                         }}>
+                                            <img src={`/assets/fighters/${fighter.icon}-icon.png`} style={{ width: '100%', transform: !k.startsWith(myself.uid) ? 'scaleX(-1)' : '', }} />
                                             <div style={{ 
                                                 position: 'absolute', 
                                                 zIndex: 601, 
