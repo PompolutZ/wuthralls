@@ -4,12 +4,16 @@ import * as SVG from 'svg.js';
 import { FirebaseContext } from '../../../../firebase';
 import { useAuthUser } from '../../../../components/Session';
 import { Typography } from '@material-ui/core';
-import { cardsDb } from '../../../../data';
+import { 
+    cardsDb,
+    boards as boardsData
+} from '../../../../data';
 import ZoomInIcon from '@material-ui/icons/ZoomIn';
 import ZoomOutIcon from '@material-ui/icons/ZoomOut';
 import ButtonBase from '@material-ui/core/ButtonBase';
 import StartingHex from '../../../../components/CommonSVGs/StartingHex';
 import StartingHexElement from './StartingHexElement';
+
 
 const baseSize = 55;
 
@@ -161,12 +165,13 @@ export default function Board({ state, selectedElement }) {
     const [scaleFactorModifier, setScaleFactorModifier] = useState(1);
     const [myData, setMyData] = useState(state[myself.uid]);
     const [opponentData, setOpponentData] = useState(state.players.length > 1 ? state[state.players.find(p => p !== myself.uid)] : null)
+    const [startingHexes, setStartingHexes] = useState(
+        [
+            ...boardsData[state.board.map.top.id].startingHexes[state.board.map.bottom.rotate],
+            ...boardsData[state.board.map.top.id].startingHexes[state.board.map.bottom.rotate].map(([x, y]) => [x, y + 6]),
+        ]
+    )
     
-    const startingHexes = [
-        [1,1],[3,1],[5,1],[0,3],[1,3],[4,3],[5,4], // top board temp
-        [1,7],[3,7],[5,7],[0,9],[1,9],[4,9],[5,10] // bottom board temp
-    ];
-
     useEffect(() => {
         if(!state.board.map) return;
 
@@ -211,6 +216,12 @@ export default function Board({ state, selectedElement }) {
     useEffect(() => {
         setTokenHexes(state.board.tokens);
         setFighters(state.board.fighters);
+        setStartingHexes(
+            [
+                ...boardsData[state.board.map.top.id].startingHexes[state.board.map.top.rotate],
+                ...boardsData[state.board.map.bottom.id].startingHexes[state.board.map.bottom.rotate].map(([x, y]) => [x, y + 6]),
+            ]
+        );
     }, [state]);
 
     useEffect(() => {
