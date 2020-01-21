@@ -46,9 +46,8 @@ function NavigationAuth({ authUser }) {
                 </li>
             </ul>
             <div>{authUser.username}</div>   
-            <div>ver 0.10.0</div>
-            <p> Fixed: Messages issue should now be finally resolved. </p> 
-            <p> New: Faction specific dice color in the board picking interactive message. </p> 
+            <div>ver 0.11.0</div>
+            <p> New: Extra visualization for blocked, lethal and starting hexes on boards. Both desktop and phone. Note, some bugs might be discovered in phone version.</p> 
         </div>
     )
 }
