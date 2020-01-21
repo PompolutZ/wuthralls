@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import StartingHex from '../../../../components/CommonSVGs/StartingHex';
+import StartingHex from '../../../components/CommonSVGs/StartingHex';
 import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles(theme => ({
