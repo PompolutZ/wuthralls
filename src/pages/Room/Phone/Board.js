@@ -671,7 +671,7 @@ const getGrid = scaleFactor =>  {
     return Grid(boardHexesArray);
 }
 
-export default function Board({ state, selectedElement }) {
+export default function Board({ state, selectedElement, scaleFactor, onScaleFactorChange }) {
     const baseBoardWidth = 757;
     const baseBoardHeight = 495;
     const baseSize = 55;
@@ -695,15 +695,15 @@ export default function Board({ state, selectedElement }) {
         left: -10000,
     })    
     const [selectedTokenId, setSelectedTokenId] = useState(null);
-    const [scaleFactor, setScaleFactor] = useState(.5);
+    //const [scaleFactor, setScaleFactor] = useState(.5);
     const [scaleFactorModifier, setScaleFactorModifier] = useState(1);
     const [myData, setMyData] = useState(state[myself.uid]);
     const [opponentData, setOpponentData] = useState(state.players.length > 1 ? state[state.players.find(p => p !== myself.uid)] : null)
-    const [startingHexes, setStartingHexes] = useState(
+    const [startingHexes, setStartingHexes] = useState(state.board.map ?
         [
             ...boardsData[state.board.map.top.id].startingHexes[state.board.map.bottom.rotate],
             ...boardsData[state.board.map.bottom.id].startingHexes[state.board.map.bottom.rotate].map(([x, y]) => [x, y + 6]),
-        ]
+        ] : []
     )
     
     useEffect(() => {
@@ -711,9 +711,10 @@ export default function Board({ state, selectedElement }) {
 
         const mainContainer = document.getElementById('mainContainer');
         
-        const nextScaleFactor = (mainContainer ? (mainContainer.offsetHeight / (baseBoardHeight * 2)) * 1.2 : scaleFactor) * scaleFactorModifier;
-        setScaleFactor(nextScaleFactor);
-        console.log('RECALC SIZE', mainContainer.offsetHeight, nextScaleFactor);
+        // const nextScaleFactor = (mainContainer ? (mainContainer.offsetHeight / (baseBoardHeight * 2)) * 1.2 : scaleFactor) * scaleFactorModifier;
+        // console.log('CHANGE SCALE FACTOR')
+        // onScaleFactorChange(nextScaleFactor);
+        console.log('RECALC SIZE', mainContainer.offsetHeight, scaleFactor);
         console.log(state);
     }, []);
 
@@ -763,12 +764,14 @@ export default function Board({ state, selectedElement }) {
     useEffect(() => {
         setTokenHexes(state.board.tokens);
         setFighters(state.board.fighters);
-        setStartingHexes(
-            [
-                ...boardsData[state.board.map.top.id].startingHexes[state.board.map.top.rotate],
-                ...boardsData[state.board.map.bottom.id].startingHexes[state.board.map.bottom.rotate].map(([x, y]) => [x, y + 6]),
-            ]
-        );
+        if(state.board.map) {
+            setStartingHexes(
+                [
+                    ...boardsData[state.board.map.top.id].startingHexes[state.board.map.top.rotate],
+                    ...boardsData[state.board.map.bottom.id].startingHexes[state.board.map.bottom.rotate].map(([x, y]) => [x, y + 6]),
+                ]
+            );
+        }
     }, [state]);
 
     useEffect(() => {
@@ -794,7 +797,7 @@ export default function Board({ state, selectedElement }) {
     }, [tokenHexes]);
 
     const handleIncreazeScaleFactor = () => {
-        setScaleFactor(prev => prev * 1.2);
+        onScaleFactorChange(prev => prev * 1.2);
         // const nextScaleFactorMod = scaleFactorModifier + 0.2;
         // setScaleFactorModifier(nextScaleFactorMod);
         // const mainContainer = document.getElementById('mainContainer');
@@ -810,7 +813,7 @@ export default function Board({ state, selectedElement }) {
         // const nextScaleFactor = (mainContainer ? (mainContainer.offsetHeight / (baseBoardHeight * 2)) * 1.2 : scaleFactor) * nextScaleFactorMod;
         // setScaleFactor(nextScaleFactor);
         // console.log('DECREASE', nextScaleFactorMod, nextScaleFactor);
-        setScaleFactor(prev => prev * .8);
+        onScaleFactorChange(prev => prev * .8);
     }
 
     const handleClick = e => {
@@ -882,8 +885,10 @@ export default function Board({ state, selectedElement }) {
 
     if(!state.board.map || !state.board.map.top || !state.board.map.bottom) {
         return (
-            <div style={{ display: 'flex' }}>
-                Waiting for players to select board pieces
+            <div style={{ display: 'flex', width: '100%', height: '100%' }}>
+                <div style={{ margin: 'auto'}}>
+                    Waiting for players to select board pieces...
+                </div>
             </div>
         )
     }
@@ -894,7 +899,7 @@ export default function Board({ state, selectedElement }) {
     const opponentHand = opponentData && opponentData.hand ? opponentData.hand.split(',').map(cardId => ({ ...cardsDb[cardId], id: cardId })) : [];
 
     return (
-        <div id="mainContainer" style={{ display: 'flex', flexFlow: 'row wrap', backgroundColor: 'lightskyblue', margin: 'auto' }}>
+        <div id="mainContainer" style={{ display: 'flex', flexFlow: 'row wrap', backgroundColor: 'dimgray', color: 'white', margin: 'auto' }}>
             <div style={{ flex: '0 0 100%', display: 'flex', borderBottom: '1px solid lighgray', paddingBottom: '.2rem', marginBottom: '.2rem', alignItems: 'center' }}>
                 {
                     myData && (
@@ -951,14 +956,15 @@ export default function Board({ state, selectedElement }) {
                     )
                 }
             </div>
-            <div style={{ display: 'flex', flex: '1 0 100%', backgroundColor: 'white', }}>
+            <div style={{ display: 'flex', flex: '1 0 100%', backgroundColor: 'dimgray', }}>
                 <div
                     style={{
-                        backgroundColor: 'white',
+                        backgroundColor: 'black',
                         position: 'relative',
                         width: baseBoardWidth * scaleFactor,
                         height: (baseBoardHeight * scaleFactor) * 2,
                         margin: 'auto',
+                        filter: 'drop-shadow(5px 5px 10px black)'
                     }}
                 >
                     <img
@@ -966,6 +972,7 @@ export default function Board({ state, selectedElement }) {
                         //src={`/assets/boards/1.jpg`}
                         alt="board"
                         style={{
+                            opacity: .8,
                             width: baseBoardWidth * scaleFactor,
                             height: baseBoardHeight * scaleFactor,
                             position: 'absolute',
@@ -980,6 +987,7 @@ export default function Board({ state, selectedElement }) {
                         src={`/assets/boards/${state.board.map.bottom.id}.jpg`}
                         alt="board2"
                         style={{
+                            opacity: .8,
                             width: baseBoardWidth * scaleFactor,
                             height: baseBoardHeight * scaleFactor,
                             position: 'absolute',

@@ -75,47 +75,51 @@ function SignUpForm({ history }) {
         username === ''
 
     return (
-        <form onSubmit={onSubmit}>
-            <Grid container spacing={3} style={{ margin: '1rem' }}>
+        <form onSubmit={onSubmit} style={{ flexGrow: 1 }}>
+            <Grid container spacing={3} style={{  }}>
                 <Grid item xs={12}>
                     <TextField
+                        fullWidth
                         name="username"
                         value={username}
                         onChange={onChange}
                         type="text"
-                        placeholder="Full Name"
+                        placeholder="Your Heroic Name"
                     />
                 </Grid>
                 <Grid item xs={12}>
                     <TextField
+                        fullWidth
                         name="email"
                         value={email}
                         onChange={onChange}
                         type="text"
-                        placeholder="Email Address"
+                        placeholder="Email Address (could be fake one)"
                     />
                 </Grid>
                 <Grid item xs={12}>
                     <TextField
+                        fullWidth
                         name="passwordOne"
                         value={passwordOne}
                         onChange={onChange}
                         type="password"
-                        placeholder="Password"
+                        placeholder="Password (if fake email don't forget it)"
                     />
                 </Grid>
                 <Grid item xs={12}>
                     <TextField
+                        fullWidth
                         name="passwordTwo"
                         value={passwordTwo}
                         onChange={onChange}
                         type="password"
-                        placeholder="Confirm Password"
+                        placeholder="Password one more time to remember"
                     />
                 </Grid>
                 <Grid item xs={12}>
-                    <Button type="submit" disabled={isInvalid} color="primary" variant="contained">
-                        Sign Up
+                    <Button type="submit" disabled={isInvalid} variant="contained" color="primary">
+                        I confirm my desire to join the club and to become a thrall of Katophranes, or whoever in charge nowadays 
                     </Button>
                     {error && <p>{error.message}</p>}
                 </Grid>

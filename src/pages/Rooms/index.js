@@ -10,6 +10,7 @@ import Paper from '@material-ui/core/Paper';
 import { FirebaseContext } from '../../firebase';
 import { useHistory } from 'react-router-dom';
 import { warbands } from '../../data';
+import { SignInForm } from '../../components/SignInPage';
 
 
 function shuffle(a) {
@@ -224,7 +225,14 @@ function Rooms() {
         </div>
     ) : (
         <div style={{ margin: '1rem' }}>
-            <Typography>Sign in to create rooms</Typography>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+                <img src={`/wuc-pwa-192.png`} style={{ width: '3rem', boxSizing: "border-box", borderRadius: '1.5rem' }}/>
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                    <Typography variant="h5" style={{ flex: 1, marginLeft: '1rem' }}>WUnderworlds Club</Typography>
+                    <Typography variant="body2" style={{ flex: 1, marginLeft: '1rem' }}><i>Speak, friend, and enter.</i></Typography>
+                </div>
+            </div>
+            <SignInForm />
         </div>
     )
 }

@@ -46,18 +46,19 @@ function NavigationAuth({ authUser }) {
                 </li>
             </ul>
             <div>{authUser.username}</div>   
-            <div>ver 0.11.0</div>
+            <div>ver 0.12.0</div>
             <p> New: Extra visualization for blocked, lethal and starting hexes on boards. Both desktop and phone. Note, some bugs might be discovered in phone version.</p> 
+            <p> Some minor stuff here and there.</p> 
         </div>
     )
 }
 
 const NavigationNonAuth = () => (
-    <ul>
-        <li>
-            <Link to={ROUTES.SIGN_IN}>Sign In</Link>
-        </li>
-    </ul>
+    <span></span>
+    //     <li>
+    //         <Link to={ROUTES.SIGN_IN}>Sign In</Link>
+    //     </li>
+    // </ul>
 )
 
 function Navigation() {

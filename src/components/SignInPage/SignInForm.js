@@ -46,6 +46,10 @@ function SignInForm({ history }) {
             .catch(e => setSignInFormState(prev => ({ ...prev, error: e })));
     }
 
+    const handleJoinTheClub = () => {
+        history.push(ROUTES.SIGN_UP);
+    }
+
     return (
         <form onSubmit={onSubmit}>
             <Grid container spacing={3} style={{ padding: '1rem'}}>
@@ -71,7 +75,7 @@ function SignInForm({ history }) {
                 </Grid>
                 <Grid item xs={12}>
                     <Button disabled={isInvalid} type="submit" color="primary" variant="contained">
-                        Sign In
+                        Knock knock
                     </Button>
                 </Grid>
                 <Grid item xs={12}>
@@ -88,10 +92,14 @@ function SignInForm({ history }) {
                     </Grid>
                 </Grid>
                 <Grid item xs={12}>
+                    <Button variant="contained" style={{ background: 'orangered', color: 'white', width: '100%' }}
+                        onClick={handleJoinTheClub}>
+                        Join The Club
+                    </Button>
                     {/* <Button color="primary" variant="contained" onClick={handleAnonSignIn}>
                         Sign In anonymously
                     </Button> */}
-                    <Typography variant="body2">Note! Anon sign in has been removed for now because of bugs with it. I recommend you to sign up and if you afraid that I would steal your bank account info you are welcome to use fake email address. Just remember that in case of using fake email Google won't be able to send you password recovery email.</Typography>
+                    {/* <Typography variant="body2">Note! Anon sign in has been removed for now because of bugs with it. I recommend you to sign up and if you afraid that I would steal your bank account info you are welcome to use fake email address. Just remember that in case of using fake email Google won't be able to send you password recovery email.</Typography> */}
                 </Grid>
                 <Grid item xs={12}>
                     {error && <p>{error.message}</p>}

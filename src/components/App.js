@@ -60,7 +60,7 @@ function App() {
     return (
         <Router>
             <div style={{ width: '100%', height: '100%' }}>
-                <Snackbar
+                {/* <Snackbar
                     anchorOrigin={{
                         vertical: 'top',
                         horizontal: 'right',
@@ -72,7 +72,7 @@ function App() {
                     <Alert onClose={handleClose} severity="info">
                         New version was installed! Please, reload application to use it.
                     </Alert>
-                </Snackbar>
+                </Snackbar> */}
 
                 <Navigation />
 

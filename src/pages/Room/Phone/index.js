@@ -50,6 +50,9 @@ export default function PhoneRoom() {
     const [enemyObjectivesDiscardPile, setEnemyObjectivesDiscardPile] = useState(propertyToCards(data[data.players.find(p => p !== myself.uid)], 'dObjs')); 
     const [enemyPowersDiscardPile, setEnemyPowersDiscardPile] = useState(propertyToCards(data[data.players.find(p => p !== myself.uid)], 'dPws')); 
     const [messages, setMessages] = useState(null);
+
+    const [boardScaleFactor, setBoardScaleFactor] = useState(.5);
+
     useEffect(() => {
         const unsubscribe = firebase.setRoomListener(state.id, snapshot => {
             if(snapshot.exists) {
@@ -126,7 +129,7 @@ export default function PhoneRoom() {
                 }
                 {
                     tabIndex === 1 && (
-                        <Board roomId={state.id} state={data} selectedElement={selectedElement} />
+                        <Board roomId={state.id} state={data} selectedElement={selectedElement} scaleFactor={boardScaleFactor} onScaleFactorChange={setBoardScaleFactor} />
                     )
                 }
                 </div>

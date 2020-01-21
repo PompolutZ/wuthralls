@@ -155,8 +155,8 @@ class Firebase {
                     author: 'Katophrane',
                     type: 'INFO',
                     created: now,
-                    value: `${payload.name} room was created by ${payload[payload.createdBy].name}`
-                }
+                    value: `Greetings **${payload[payload.createdBy].name}**! You've entered the **${payload.name}** room and as soon as someone else joins it too, you could start rolling for initiative and select boards.`
+                },
             });
 
             return roomRef.id;
@@ -314,7 +314,7 @@ class Firebase {
                     author: 'Katophrane',
                     type: 'INFO',
                     created: now,
-                    value: `${playerInfo.name} joined the room.`
+                    value: `Welcome ${playerInfo.name}! You've entered this room, but you are not alone here. Roll for initiative, select boards and fight till glorious victory!`
                 }
             });
         } catch(error) {

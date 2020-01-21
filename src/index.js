@@ -15,6 +15,9 @@ function Root() {
         ...defaultTheme,
         palette: {
             ...defaultTheme.palette,
+            primary: {
+                main: 'rgba(255,69,0,1)',
+            },
             success: {
                 main: "#4caf50", 
             },
