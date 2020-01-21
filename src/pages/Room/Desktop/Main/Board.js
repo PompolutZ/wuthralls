@@ -34,10 +34,15 @@ const boardHexesArray = [
     [0, 10], [1, 10], [2, 10], [3,10], [4,10], [5,10], [6,10], [7,10],     
 ];
 
-const renderHex = (hex, svg, color) => {
+const renderHex = (hex, svg, color, lethals, blocked) => {
             // render(draw, color) {
+    console.log('RENDER isLethal', hex, lethals.some(([x, y]) => x === hex.x && y === hex.y), blocked)            
+
     const { x, y } = hex.toPoint();
     const corners = hex.corners();
+    const isLethal = lethals.some(([x, y]) => x === hex.x && y === hex.y);
+    const isBlocked = blocked.some(([x, y]) => x === hex.x && y === hex.y);
+
     const log = () => {
         const element = SVG.get(`hex${hex.x}${hex.y}`); //svg.children().find(c => c.node.id === `hex${hex.x}${hex.y}`);
         //console.log('HEX', element, hex, `hex${hex.x}${hex.y}`);
@@ -64,12 +69,19 @@ const renderHex = (hex, svg, color) => {
         } //svg.children().find(c => c.node.id === `hex${hex.x}${hex.y}`);
     }
 
+
+    // const lethalGradient = svg.gradient('radial', stop => {
+    //     stop.at({ offset: 0.7, color: 'rgba(255,0,0,.2)', opacity: 1});
+    //     stop.at({ offset: 0.8, color: 'rgba(255,0,0,.5)', opacity: 1});
+    // });
+
     svg
-        .polygon(corners.map(({ x, y }) => `${x},${y}`))
-        .fill('rgba(192,192,192, 0)')
+        .polygon(corners.map(({ x, y }) => `${x * .96},${y * .96}`))
+        //.style({ filter: isLethal ? 'drop-shadow(0px 0px 10px red)' : 'drop-shadow(0px 0px 0px white)' })
+        .fill(isBlocked ? 'rgba(192,192,192, .5)' : 'rgba(192,192,192, 0)')
         .on('mouseover', handleMouseOver)
         .on('mouseout', handleMouseOut)
-        .attr({ stroke: 'white', 'stroke-width': 1})
+        .attr({ stroke: isLethal ? 'red' : 'rgba(255,255,255,.7)', 'stroke-width': isLethal ? 3 : 1})
         .translate(x, y)
         .id(`hex${hex.x}${hex.y}`);
 }
@@ -168,7 +180,7 @@ export default function Board({ state, selectedElement }) {
     const [startingHexes, setStartingHexes] = useState(
         [
             ...boardsData[state.board.map.top.id].startingHexes[state.board.map.bottom.rotate],
-            ...boardsData[state.board.map.top.id].startingHexes[state.board.map.bottom.rotate].map(([x, y]) => [x, y + 6]),
+            ...boardsData[state.board.map.bottom.id].startingHexes[state.board.map.bottom.rotate].map(([x, y]) => [x, y + 6]),
         ]
     )
     
@@ -184,13 +196,26 @@ export default function Board({ state, selectedElement }) {
     }, []);
 
     useEffect(() => {
+
+        if(!state.board || !state.board.map || !state.board.map.top || !state.board.map.bottom) return;
         const currentSvg = svg ? svg : SVG(rootRef.current);
         currentSvg.clear();
         setSvg(currentSvg);
         const initGrid = getGrid(scaleFactor);
         console.log(initGrid.get([3, 5]).toPoint())
+
+        const lethals = [
+            ...boardsData[state.board.map.top.id].lethalHexes[state.board.map.top.rotate],
+            ...boardsData[state.board.map.bottom.id].lethalHexes[state.board.map.bottom.rotate].map(([x, y]) => [x, y + 6]),
+        ]
+
+        const blocked = [
+            ...boardsData[state.board.map.top.id].blockedHexes[state.board.map.top.rotate],
+            ...boardsData[state.board.map.bottom.id].blockedHexes[state.board.map.bottom.rotate].map(([x, y]) => [x, y + 6]),
+        ]
+
         initGrid.forEach(hex => {
-            renderHex(hex, currentSvg, 'rgba(255,255,255, 1)');
+            renderHex(hex, currentSvg, 'rgba(255,255,255, 1)', lethals, blocked);
         })
         setGrid(initGrid);
     }, [scaleFactor])
