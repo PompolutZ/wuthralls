@@ -66,12 +66,6 @@ export default function PhoneRoom() {
             console.log('MESSAGES', msgs);
             setMessages(msgs);
         });
-        // firebase.fstore.collection(`${state.id}_messages`).orderBy('created')
-        //     .get()
-        //     .then(snapshot => {
-        //         const allMessages = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
-        //         setMessages(allMessages);
-        //     });
 
         return () => {
             unsubscribe();
