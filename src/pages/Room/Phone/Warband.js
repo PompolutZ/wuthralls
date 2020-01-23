@@ -66,7 +66,16 @@ export default function Warband({ roomId, myfighters, enemyFighters, onSelectedF
                             border: fighter.id.startsWith(myself.uid) ? selectedFighter && selectedFighter.id === fighter.id ? '3px dashed green' : '3px solid green' : selectedFighter && selectedFighter.id === fighter.id ? '3px dashed red' : '3px solid red',
                             }}>
 
-                            <img src={`/assets/fighters/${fighter.icon}-icon.png`} style={{ width: '100%', filter: fighter.isOnBoard ? '' : 'grayscale(100%)', transform: !fighter.id.startsWith(myself.uid) ? 'scaleX(-1)' : '', }} />
+                            <img src={fighter.isInspired 
+                                        ? fighter.iconInspired 
+                                            ? `/assets/fighters/${fighter.iconInspired}-icon.png`
+                                            : `/assets/fighters/${fighter.icon}-icon.png`
+                                        : `/assets/fighters/${fighter.icon}-icon.png`
+                                } 
+                                style={{ 
+                                    width: '100%', 
+                                    filter: fighter.isOnBoard ? '' : 'grayscale(100%)', 
+                                    transform: !fighter.id.startsWith(myself.uid) ? 'scaleX(-1)' : '', }} />
 
                             <div style={{
                                 width: '70%',
@@ -155,7 +164,7 @@ export default function Warband({ roomId, myfighters, enemyFighters, onSelectedF
                                 )
                             }
                         </div>
-                        <Typography style={{ fontSize: '.7rem' }}>{fighter.name}</Typography>
+                        <Typography style={{ fontSize: '.7rem' }}>{ !fighter.isInspired || (fighter.isInspired && !fighter.nameInspired) ? fighter.name : fighter.nameInspired }</Typography>
                         <div style={{ display: 'flex' }}>
                             {
                                 Boolean(fighter.tokens) && fighter.tokens.split(',').map((token, idx) => (

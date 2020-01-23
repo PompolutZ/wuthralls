@@ -105,6 +105,7 @@ export const warbandColors = {
     'lady-harrows-mournflight': '#20B2AA', // light sea green
     'spiteclaws-swarm': '#800000', //maroon
     'zarbags-gitz': '#FFFF00', // yellow
+    'the-eyes-of-the-nine': '#00CED1', // dark turquoise
 }
 
 export const warbands = {
@@ -584,6 +585,71 @@ export const warbands = {
             type: 'FIGHTER',
             icon: 'thundriks-profiteers-5',
             name: 'Alensen',
+            from: {x: -1, y: -1},
+            onBoard: {x: -1, y: -1},
+            isOnBoard: false,
+            isInspired: false,
+            wounds: 0,
+            tokens: '',
+            upgrades: '',
+        },    
+    ],
+
+    'the-eyes-of-the-nine': [
+        {
+            type: 'FIGHTER',
+            icon: 'the-eyes-of-the-nine-1',
+            name: 'Vortemis',
+            from: {x: -1, y: -1},
+            onBoard: {x: -1, y: -1},
+            isOnBoard: false,
+            isInspired: false,
+            wounds: 0,
+            tokens: '',
+            upgrades: '',
+        },
+        {
+            type: 'FIGHTER',
+            icon: 'the-eyes-of-the-nine-2',
+            name: "K'charic",
+            from: {x: -1, y: -1},
+            onBoard: {x: -1, y: -1},
+            isOnBoard: false,
+            isInspired: false,
+            wounds: 0,
+            tokens: '',
+            upgrades: '',
+        },
+        {
+            type: 'FIGHTER',
+            icon: 'the-eyes-of-the-nine-3',
+            name: 'Narvia',
+            from: {x: -1, y: -1},
+            onBoard: {x: -1, y: -1},
+            isOnBoard: false,
+            isInspired: false,
+            wounds: 0,
+            tokens: '',
+            upgrades: '',
+        },    
+        {
+            type: 'FIGHTER',
+            icon: 'the-eyes-of-the-nine-4',
+            name: 'Turosh',
+            from: {x: -1, y: -1},
+            onBoard: {x: -1, y: -1},
+            isOnBoard: false,
+            isInspired: false,
+            wounds: 0,
+            tokens: '',
+            upgrades: '',
+        },    
+        {
+            type: 'FIGHTER',
+            icon: 'the-eyes-of-the-nine-5',
+            name: 'Blue Horror',
+            iconInspired: 'the-eyes-of-the-nine-5-inspired',
+            nameInspired: 'Brimstone Horrors',
             from: {x: -1, y: -1},
             onBoard: {x: -1, y: -1},
             isOnBoard: false,
