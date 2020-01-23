@@ -187,6 +187,32 @@ export default function DesktopRoom() {
         console.log('OnAction', type, payload);
         setOverlay(null);
         setOverlayPayload(null);
+
+        switch (type) {
+            case 'SCORE_OBJECTIVE':
+                const nextGloryScored = Number(data[myself.uid].gloryScored) + Number(payload.glory);
+                const nextHand = data[myself.uid].hand.split(',').filter(c => c !== payload.id).join(',');
+                const nextScoredObjectives = data[myself.uid].sObjs ? `${data[myself.uid].sObjs},${payload.id}` : `${payload.id}`;
+                setData({
+                    ...data,
+                    [myself.uid] : {
+                        ...data[myself.uid],
+                        gloryScored: nextGloryScored,
+                        hand: nextHand,
+                        sObjs: nextScoredObjectives
+                    }
+                })
+
+                firebase.updateRoom(state.id, {
+                    [`${myself.uid}.gloryScored`]: nextGloryScored,
+                    [`${myself.uid}.hand`]: nextHand,
+                    [`${myself.uid}.sObjs`]: nextScoredObjectives,
+                });
+                break;
+        
+            default:
+                break;
+        }
     }
 
     return (

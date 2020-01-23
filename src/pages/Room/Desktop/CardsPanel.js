@@ -109,6 +109,8 @@ export default function Cards({ data, onHighlightCard, onDataChange }) {
         setObjectivesDrawPile(propertyToCards(data, 'oDeck'));
         setPowersDrawPile(propertyToCards(data, 'pDeck'));
         setHand(propertyToCards(data, 'hand'));
+        setScoredObjectives(propertyToCards(data, 'sObjs'));
+        setDiscardedObjectives(propertyToCards(data, 'dObjs'));
     }, [data]);
 
     const handleDrawObjectiveCard = () => {

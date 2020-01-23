@@ -177,11 +177,11 @@ export default function Board({ state, selectedElement }) {
     const [scaleFactorModifier, setScaleFactorModifier] = useState(1);
     const [myData, setMyData] = useState(state[myself.uid]);
     const [opponentData, setOpponentData] = useState(state.players.length > 1 ? state[state.players.find(p => p !== myself.uid)] : null)
-    const [startingHexes, setStartingHexes] = useState(
-        [
-            ...boardsData[state.board.map.top.id].startingHexes[state.board.map.bottom.rotate],
-            ...boardsData[state.board.map.bottom.id].startingHexes[state.board.map.bottom.rotate].map(([x, y]) => [x, y + 6]),
-        ]
+    const [startingHexes, setStartingHexes] = useState(state.board.map ?         [
+        ...boardsData[state.board.map.top.id].startingHexes[state.board.map.bottom.rotate],
+        ...boardsData[state.board.map.bottom.id].startingHexes[state.board.map.bottom.rotate].map(([x, y]) => [x, y + 6]),
+    ]
+    : []
     )
     
     useEffect(() => {
@@ -241,11 +241,11 @@ export default function Board({ state, selectedElement }) {
     useEffect(() => {
         setTokenHexes(state.board.tokens);
         setFighters(state.board.fighters);
-        setStartingHexes(
+        setStartingHexes(state.board.map ?
             [
                 ...boardsData[state.board.map.top.id].startingHexes[state.board.map.top.rotate],
                 ...boardsData[state.board.map.bottom.id].startingHexes[state.board.map.bottom.rotate].map(([x, y]) => [x, y + 6]),
-            ]
+            ] : []
         );
     }, [state]);
 
