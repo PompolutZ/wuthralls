@@ -36,7 +36,7 @@ const boardHexesArray = [
 
 const renderHex = (hex, svg, color, lethals, blocked) => {
             // render(draw, color) {
-    console.log('RENDER isLethal', hex, lethals.some(([x, y]) => x === hex.x && y === hex.y), blocked)            
+    //console.log('RENDER isLethal', hex, lethals.some(([x, y]) => x === hex.x && y === hex.y), blocked)            
 
     const { x, y } = hex.toPoint();
     const corners = hex.corners();
@@ -362,7 +362,7 @@ export default function Board({ state, selectedElement }) {
     const opponentHand = opponentData && opponentData.hand ? opponentData.hand.split(',').map(cardId => ({ ...cardsDb[cardId], id: cardId })) : [];
 
     return (
-        <div id="mainContainer" style={{ display: 'flex', flexFlow: 'row wrap', backgroundColor: 'lightskyblue', margin: 'auto' }}>
+        <div id="mainContainer" style={{ display: 'flex', flexFlow: 'row wrap', backgroundColor: 'dimgray', margin: 'auto' }}>
             <div style={{ flex: '0 0 100%', display: 'flex', borderBottom: '1px solid lighgray', paddingBottom: '.2rem', marginBottom: '.2rem', alignItems: 'center' }}>
                 <ButtonBase onClick={handleIncreazeScaleFactor} style={{ flex: 1}}>
                     <ZoomInIcon />
@@ -420,7 +420,7 @@ export default function Board({ state, selectedElement }) {
                     )
                 } */}
             </div>
-            <div style={{ display: 'flex', flex: '1 0 100%', backgroundColor: 'white', }}>
+            <div style={{ display: 'flex', flex: '1 0 100%', backgroundColor: 'dimgray', }}>
                 <div
                     style={{
                         backgroundColor: 'white',
@@ -428,6 +428,7 @@ export default function Board({ state, selectedElement }) {
                         width: baseBoardWidth * scaleFactor,
                         height: (baseBoardHeight * scaleFactor) * 2,
                         margin: 'auto',
+                        filter: 'drop-shadow(5px 5px 10px black)'
                     }}
                 >
                     <img

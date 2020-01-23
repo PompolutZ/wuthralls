@@ -4,7 +4,7 @@ import RollDiceOverlay from './RollDiceOverlay';
 import { useAuthUser } from '../../../../components/Session';
 import ObjectiveInteractionOverlay from './ObjectiveInteractionOverlay';
 
-export default function Overlay({ type, data, roomId, payload }) {
+export default function Overlay({ type, data, roomId, payload, onAction }) {
     const myself = useAuthUser();
     
     useEffect(() => {
@@ -26,7 +26,7 @@ export default function Overlay({ type, data, roomId, payload }) {
                 }
                 {
                     type === 'OBJECTIVE_HIGHLIGHT' && (
-                        <ObjectiveInteractionOverlay data={data} card={payload} />
+                        <ObjectiveInteractionOverlay data={data} card={payload} onAction={onAction} />
                     )
                 }
             </div>

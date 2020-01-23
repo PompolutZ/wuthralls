@@ -102,105 +102,104 @@ export default function Warbands({ roomId, myfighters, enemyFighters, onSelected
 function Fighter({ fighter, myself, selectedFighter, handleRemoveFromBoard, pointyTokenBaseWidth, handleFighterClicked, handleShowFighterInfo }) {
     return (
         <div style={{ marginRight: '1rem', paddingTop: '1rem', paddingLeft: '1rem', display: 'flex', flexDirection: 'column', alignItems: 'center', filter: 'drop-shadow(2px 2px 5px dimgray)' }} onClick={handleFighterClicked(fighter)}>
-            <div style={{ 
-                width: pointyTokenBaseWidth * .7,                                 
-                height: pointyTokenBaseWidth * .7,                                 
-                borderRadius: pointyTokenBaseWidth * .7,
-                boxSizing: 'border-box',
-                position: 'relative',
-                border: fighter.id.startsWith(myself.uid) ? selectedFighter && selectedFighter.id === fighter.id ? '3px dashed green' : '3px solid green' : selectedFighter && selectedFighter.id === fighter.id ? '3px dashed red' : '3px solid red',
-                backgroundImage: `url(/assets/fighters/${fighter.icon}-icon.png)`,
-                backgroundSize: 'cover',
-                transform: !fighter.id.startsWith(myself.uid) ? 'scaleX(-1)' : '',
-                filter: fighter.isOnBoard ? '' : 'grayscale(100%)',
-                }}>
-                <div style={{
-                    width: '70%',
-                    height: '70%',
-                    position: 'absolute',
-                    top: '50%',
-                    left: '50%',
-                    marginTop: '-35%',
-                    marginLeft: '-35%',
-                    zIndex: -2,
-                    boxSizing: 'border-box',
-                    // border: fighter.id.startsWith(myself.uid) ? '3px solid green' : '3px dashed red',
-                    borderRadius: '70%',
-                    boxShadow: selectedFighter && selectedFighter.id === fighter.id ? fighter.id.startsWith(myself.uid) ? '0 0 25px 10px green' : '0 0 25px 10px red' : ''
-                }} />    
-                <div style={{
-                    width: '70%',
-                    height: '70%',
-                    position: 'absolute',
-                    top: '50%',
-                    left: '50%',
-                    marginTop: '-35%',
-                    marginLeft: '-35%',
-                    zIndex: -1,
-                    boxSizing: 'border-box',
-                    // border: fighter.id.startsWith(myself.uid) ? '3px solid green' : '3px dashed red',
-                    borderRadius: '70%',
-                    boxShadow: fighter.isInspired ? '0 0 35px 15px yellow' : ''
-                }} />    
-                {
-                    selectedFighter && selectedFighter.id === fighter.id && fighter.isOnBoard && (
-                        <ButtonBase
-                            style={{
+                        <div style={{ 
+                            width: pointyTokenBaseWidth * .7,                                 
+                            height: pointyTokenBaseWidth * .7,                                 
+                            borderRadius: pointyTokenBaseWidth * .7,
+                            boxSizing: 'border-box',
+                            position: 'relative',
+                            border: fighter.id.startsWith(myself.uid) ? selectedFighter && selectedFighter.id === fighter.id ? '3px dashed green' : '3px solid green' : selectedFighter && selectedFighter.id === fighter.id ? '3px dashed red' : '3px solid red',
+                            }}>
+
+                            <img src={`/assets/fighters/${fighter.icon}-icon.png`} style={{ width: '100%', filter: fighter.isOnBoard ? '' : 'grayscale(100%)', transform: !fighter.id.startsWith(myself.uid) ? 'scaleX(-1)' : '', }} />
+
+                            <div style={{
+                                width: '70%',
+                                height: '70%',
                                 position: 'absolute',
-                                bottom: '0%',
-                                right: '0%',
-                                marginBottom: '-.7rem',
-                                marginRight: '-1rem',
-                                backgroundColor: 'red',
-                                color: 'white',
-                                width: '2rem',
-                                height: '2rem',
-                                borderRadius: '1.5rem',
-                                zIndex: 2,
+                                top: '50%',
+                                left: '50%',
+                                marginTop: '-35%',
+                                marginLeft: '-35%',
+                                zIndex: -2,
                                 boxSizing: 'border-box',
-                                border: '2px solid white',
-                            }}
-                            onClick={handleRemoveFromBoard(fighter)}
-                        >
-                            <DeleteIcon
-                                style={{
-                                    width: '1rem',
-                                    height: '1rem',
-                                }}
-                            />
-                        </ButtonBase>
-                    )
-                }
-                {
-                    selectedFighter && selectedFighter.id === fighter.id && (
-                        <ButtonBase
-                                style={{
-                                    position: 'absolute',
-                                    top: '0%',
-                                    right: '0%',
-                                    backgroundColor: 'teal',
-                                    color: 'white',
-                                    width: '2rem',
-                                    height: '2rem',
-                                    marginTop: '-.7rem',
-                                    marginRight: '-1rem',
-                                    borderRadius: '1.5rem',
-                                    zIndex: 2,
-                                    boxSizing: 'border-box',
-                                    border: '2px solid white',
-                                }}
-                                onClick={handleShowFighterInfo(fighter)}
-                            >
-                                <EditIcon
-                                    style={{
-                                        width: '1rem',
-                                        height: '1rem',
-                                    }}
-                                />
-                        </ButtonBase>
-                    )
-                }
-            </div>
+                                // border: fighter.id.startsWith(myself.uid) ? '3px solid green' : '3px dashed red',
+                                borderRadius: '70%',
+                                boxShadow: selectedFighter && selectedFighter.id === fighter.id ? fighter.id.startsWith(myself.uid) ? '0 0 25px 10px green' : '0 0 25px 10px red' : ''
+                            }} />    
+                            <div style={{
+                                width: '70%',
+                                height: '70%',
+                                position: 'absolute',
+                                top: '50%',
+                                left: '50%',
+                                marginTop: '-35%',
+                                marginLeft: '-35%',
+                                zIndex: -1,
+                                boxSizing: 'border-box',
+                                // border: fighter.id.startsWith(myself.uid) ? '3px solid green' : '3px dashed red',
+                                borderRadius: '70%',
+                                boxShadow: fighter.isInspired ? '0 0 35px 15px yellow' : ''
+                            }} />    
+                            {
+                                selectedFighter && selectedFighter.id === fighter.id && fighter.isOnBoard && (
+                                    <ButtonBase
+                                        style={{
+                                            position: 'absolute',
+                                            bottom: '0%',
+                                            right: '0%',
+                                            marginBottom: '-.7rem',
+                                            marginRight: '-1rem',
+                                            backgroundColor: 'red',
+                                            color: 'white',
+                                            width: '2rem',
+                                            height: '2rem',
+                                            borderRadius: '1.5rem',
+                                            zIndex: 2,
+                                            boxSizing: 'border-box',
+                                            border: '2px solid white',
+                                        }}
+                                        onClick={handleRemoveFromBoard(fighter)}
+                                    >
+                                        <DeleteIcon
+                                            style={{
+                                                width: '1rem',
+                                                height: '1rem',
+                                            }}
+                                        />
+                                    </ButtonBase>
+                                )
+                            }
+                            {
+                                selectedFighter && selectedFighter.id === fighter.id && (
+                                    <ButtonBase
+                                            style={{
+                                                position: 'absolute',
+                                                top: '0%',
+                                                right: '0%',
+                                                backgroundColor: 'teal',
+                                                color: 'white',
+                                                width: '2rem',
+                                                height: '2rem',
+                                                marginTop: '-.7rem',
+                                                marginRight: '-1rem',
+                                                borderRadius: '1.5rem',
+                                                zIndex: 2,
+                                                boxSizing: 'border-box',
+                                                border: '2px solid white',
+                                            }}
+                                            onClick={handleShowFighterInfo(fighter)}
+                                        >
+                                            <EditIcon
+                                                style={{
+                                                    width: '1rem',
+                                                    height: '1rem',
+                                                }}
+                                            />
+                                    </ButtonBase>
+                                )
+                            }
+                        </div>
             <Typography style={{ fontSize: '.7rem' }}>{fighter.name}</Typography>
             <div style={{ display: 'flex' }}>
                 {

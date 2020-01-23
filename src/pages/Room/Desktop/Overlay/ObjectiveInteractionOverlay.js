@@ -42,57 +42,36 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-export default function ObjectiveInteractionOverlay({ data, card }) {
-    const [hand, setHand] = useState(null);
-    const [objectivesDrawPile, setObjectivesDrawPile] = useState(null);
-    const [powersDrawPile, setPowersDrawPile] = useState(null);
-    //const [objectiveToHightlight, setObjectiveToHightlight] = useState(null);
-    const [scoredObjectives, setScoredObjectives] = useState(null);
-    const [discardedObjectives, setDiscardedObjectives] = useState(null);
-    console.log(data, card);
-
-    useEffect(() => {
-        console.log('ObjectiveInteractionOverlay');
-    }, []);
-
-    useEffect(() => {
-        console.log('CARDS.OnPlayersDataChange');
-        console.table(data);
-        setObjectivesDrawPile(propertyToCards(data, 'oDeck'));
-        setPowersDrawPile(propertyToCards(data, 'pDeck'));
-    }, [data]);
-
+export default function ObjectiveInteractionOverlay({ data, card, onAction }) {
     const hideHightlightedObjective = () => {
         //setObjectiveToHightlight(null);
     };
 
     const playCard = card => e => {
-        if (card.type === 0) {
-            setScoredObjectives(prev => (prev ? [...prev, card] : [card]));
-        }
+        onAction({
+            type: 'SCORE_OBJECTIVE',
+            payload: card
+        });
 
-        setHand(prev => prev.filter(c => c.id !== card.id));
-        console.log(card);
         e.preventDefault();
     };
 
     const discardCard = card => e => {
-        if (card.type === 0) {
-            setDiscardedObjectives(prev => (prev ? [...prev, card] : [card]));
-        }
+        onAction({
+            type: 'DISCARD_OBJECTIVE',
+            payload: card,
+        });
 
-        setHand(prev => prev.filter(c => c.id !== card.id));
-        console.log(card);
         e.preventDefault();
     };
 
-    const returnToPile = (card, source) => () => {
-        if (card.type === 0 && source === 'OBJECTIVES_HAND') {
-            setObjectivesDrawPile(prev =>
-                prev ? shuffle([...prev, card]) : [card]
-            );
-            setHand(prev => (prev ? prev.filter(c => c.id !== card.id) : null));
-        }
+    const returnToPile = (card, source) => e => {
+        onAction({
+            type: 'RETURN_OBJECTIVE_TO_PILE',
+            payload: card
+        });
+
+        e.preventDefault();
     };
 
     return (

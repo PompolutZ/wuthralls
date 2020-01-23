@@ -31,6 +31,8 @@ import Overlay from './Overlay';
 import Board from './Main/Board';
 import Scrollbar from 'react-scrollbars-custom';
 import Warbands from './Warbands';
+import Cards from './CardsPanel';
+import GameInfoPanel from './GameInfoPanel';
 
 const propertyToCards = (source, property) => {
     return (
@@ -92,249 +94,6 @@ const ObjectivesInHand = React.memo(({ objectives, onHighlight }) => (
     </>
 ));
 
-function Cards({ data, onHighlightCard }) {
-    const [hand, setHand] = useState(null);
-    const [objectivesDrawPile, setObjectivesDrawPile] = useState(null);
-    const [powersDrawPile, setPowersDrawPile] = useState(null);
-    const [objectiveToHightlight, setObjectiveToHightlight] = useState(null);
-    const [scoredObjectives, setScoredObjectives] = useState(null);
-    const [discardedObjectives, setDiscardedObjectives] = useState(null);
-
-    useEffect(() => {
-        console.log('CARDS.OnPlayersDataChange');
-        console.table(data);
-        setObjectivesDrawPile(propertyToCards(data, 'oDeck'));
-        setPowersDrawPile(propertyToCards(data, 'pDeck'));
-    }, [data]);
-
-    const handleDrawObjectiveCard = () => {
-        if (objectiveToHightlight) return;
-
-        const [first] = objectivesDrawPile;
-        if (!first) return;
-
-        const objectivesInHand = hand ? hand.filter(c => c.type === 0) : [];
-        if (objectivesInHand.length === 3) return;
-
-        setHand(prev => (prev ? [...prev, first] : [first]));
-        setObjectivesDrawPile(objectivesDrawPile.slice(1));
-    };
-
-    const hightlightCard = card => () => {
-        console.log(card);
-        onHighlightCard(card, 'OBJECTIVE_HIGHLIGHT');
-    };
-
-    const hideHightlightedObjective = () => {
-        setObjectiveToHightlight(null);
-    };
-
-    const playCard = card => e => {
-        if (card.type === 0) {
-            setScoredObjectives(prev => (prev ? [...prev, card] : [card]));
-        }
-
-        setHand(prev => prev.filter(c => c.id !== card.id));
-        console.log(card);
-        e.preventDefault();
-    };
-
-    const discardCard = card => e => {
-        if (card.type === 0) {
-            setDiscardedObjectives(prev => (prev ? [...prev, card] : [card]));
-        }
-
-        setHand(prev => prev.filter(c => c.id !== card.id));
-        console.log(card);
-        e.preventDefault();
-    };
-
-    const returnToPile = (card, source) => () => {
-        if (card.type === 0 && source === 'OBJECTIVES_HAND') {
-            setObjectivesDrawPile(prev =>
-                prev ? shuffle([...prev, card]) : [card]
-            );
-            setHand(prev => (prev ? prev.filter(c => c.id !== card.id) : null));
-        }
-        // console.log(card, source);
-        // if(source === OBJECTIVES_HAND) {
-        //     setHand(prev => prev ? prev.filter(c => c.id !== card.id) : []);
-        //     setObjectiveDrawPile(prev => prev ? shuffle([...prev, card]) : [card]);
-        // }
-
-        // if(source === POWERS_HAND) {
-        //     setHand(prev => prev ? prev.filter(c => c.id !== card.id) : []);
-        //     setPowersDrawPile(prev => prev ? shuffle([...prev, card]) : [card]);
-        // }
-
-        // if(source === OBJECTIVES_SCORED) {
-        //     setScoredObjectives(prev => prev ? prev.filter(c => c.id !== card.id) : []);
-        //     setObjectiveDrawPile(prev => prev ? shuffle([...prev, card]) : [card]);
-        // }
-
-        // if(source === OBJECTIVES_DISCARDED) {
-        //     setDiscardedObjectives(prev => prev ? prev.filter(c => c.id !== card.id) : []);
-        //     setObjectiveDrawPile(prev => prev ? shuffle([...prev, card]) : [card]);
-        // }
-
-        // if(source === POWERS_DISCARDED) {
-        //     setDiscardedPowers(prev => prev ? prev.filter(c => c.id !== card.id) : []);
-        //     setPowersDrawPile(prev => prev ? shuffle([...prev, card]) : [card]);
-        // }
-
-        // setHighlightCard(null);
-        // setHighlightFromSource(null);
-        // setModified(true);
-    };
-
-    const objectivesInHand = hand ? hand.filter(c => c.type === 0) : [];
-    const powersInHand = hand ? hand.filter(c => c.type !== 0) : [];
-
-    return (
-        <div
-            style={{
-                height: '200px',
-                backgroundColor: 'lightskyblue',
-                flex: '0 0 auto',
-                display: 'flex',
-            }}
-        >
-            <div style={{ flex: '1 0', backgroundColor: 'OrangeRed' }}>
-                <div
-                    style={{
-                        display: 'flex',
-                        margin: '1rem',
-                        flexDirection: 'row-reverse',
-                        position: 'relative',
-                    }}
-                >
-                    <div
-                        style={{
-                            flex: '0 0 auto',
-                            order: 4,
-                            marginRight: '1rem',
-                        }}
-                    >
-                        <Typography style={{ fontSize: '.7rem' }}>
-                            Scored:
-                        </Typography>
-                        <div
-                            style={{
-                                height: cardDefaultHeight * 0.17,
-                                width: cardDefaultWidth * 0.17,
-                                boxSizing: 'border-box',
-                                border: '2px dashed black',
-                                marginBottom: '.3rem',
-                            }}
-                        >
-                            {scoredObjectives &&
-                                scoredObjectives.length > 0 &&
-                                scoredObjectives
-                                    .slice(-1)
-                                    .map(card => (
-                                        <img
-                                            key={card.id}
-                                            src={`/assets/cards/${card.id}.png`}
-                                            style={{ width: '100%' }}
-                                        />
-                                    ))}
-                        </div>
-                        <Typography style={{ fontSize: '.7rem' }}>
-                            Discarded:
-                        </Typography>
-                        <div
-                            style={{
-                                height: cardDefaultHeight * 0.17,
-                                width: cardDefaultWidth * 0.17,
-                                boxSizing: 'border-box',
-                                border: '2px dashed black',
-                            }}
-                        >
-                            {discardedObjectives &&
-                                discardedObjectives.length > 0 &&
-                                discardedObjectives
-                                    .slice(-1)
-                                    .map(card => (
-                                        <img
-                                            key={card.id}
-                                            src={`/assets/cards/${card.id}.png`}
-                                            style={{ width: '100%' }}
-                                        />
-                                    ))}
-                        </div>
-                    </div>
-                    <div onClick={handleDrawObjectiveCard}>
-                        <img
-                            src={`/assets/cards/objectives_back.png`}
-                            style={{
-                                width: '4rem',
-                                filter: `drop-shadow(2px 2px 5px black) ${
-                                    objectivesDrawPile &&
-                                    objectivesDrawPile.length <= 0
-                                        ? 'grayscale(100%) saturate(50%)'
-                                        : ''
-                                }`,
-                            }}
-                        />
-                    </div>
-                    <div
-                        style={{
-                            display: 'flex',
-                            flex: 1,
-                            flexDirection: 'row',
-                            justifyContent: 'flex-end',
-                            backgroundColor: 'orange',
-                            alignItems: 'center',
-                            marginRight: '1rem',
-                        }}
-                    >
-                        <ObjectivesInHand
-                            objectives={objectivesInHand}
-                            onHighlight={hightlightCard}
-                        />
-                    </div>
-                </div>
-            </div>
-            <div style={{ flex: '0 0', backgroundColor: 'teal' }}>
-                <div
-                    style={{
-                        display: 'flex',
-                        flexFlow: 'column nowrap',
-                        alignItems: 'center',
-                        margin: '1rem',
-                    }}
-                >
-                    {data.name && <Typography>{data.name}</Typography>}
-                    {data.faction && (
-                        <img
-                            src={`/assets/factions/${data.faction}-icon.png`}
-                            style={{ width: '2rem', height: '2rem' }}
-                        />
-                    )}
-                </div>
-            </div>
-            <div style={{ flex: '1 0', backgroundColor: 'purple' }}>
-                <div
-                    style={{
-                        display: 'flex',
-                        margin: '1rem',
-                        flexDirection: 'row',
-                    }}
-                >
-                    <img
-                        src={`/assets/cards/powers_back.png`}
-                        style={{
-                            width: '4rem',
-                            boxShadow: '2px 2px 10px 2px black',
-                            borderRadius: '.3rem',
-                        }}
-                    />
-                </div>
-            </div>
-        </div>
-    );
-}
-
 export default function DesktopRoom() {
     const classes = useStyles();
     const myself = useAuthUser();
@@ -345,14 +104,16 @@ export default function DesktopRoom() {
     const [overlay, setOverlay] = useState(null);
     const [overlayPayload, setOverlayPayload] = useState(null);
     const [selectedElement, setSelectedElement] = useState(null);
+    const [opponentData, setOpponentData] = useState(state.players.length > 1 ? state[state.players.find(p => p !== myself.uid)] : null)
 
     useEffect(() => {
         const unsubscribe = firebase.setRoomListener(state.id, snapshot => {
             if (snapshot.exists) {
+                console.log('READ SERVER STATE');
                 const serverData = { ...snapshot.data(), id: snapshot.id };
-
+                console.log('SERVER', serverData);
                 if (__isEqual(data, serverData)) return;
-
+                console.log('SHOULD UPDATE LOCAL');
                 setData(serverData);
             }
         });
@@ -385,6 +146,7 @@ export default function DesktopRoom() {
         if (e.code === 'Escape') {
             setOverlay(null);
             setOverlayPayload(null);
+            setSelectedElement(null);
         }
     };
 
@@ -407,15 +169,34 @@ export default function DesktopRoom() {
 
     }
 
+    const handleCardsDataChange = async (key, value) => {
+        console.log(key, value);
+        setData({
+            ...data,
+            [key]: value
+        });
+
+        try {
+            await firebase.updateBoardProperty(state.id, key, value);
+        } catch(e) {
+            console.error(e);
+        }
+    }
+
+    const handleOverlayAction = ({ type, payload }) => {
+        console.log('OnAction', type, payload);
+        setOverlay(null);
+        setOverlayPayload(null);
+    }
+
     return (
         <div className={classes.root}>
             <div
                 style={{
-                    height: '100px',
                     flex: '0 0 auto',
                 }}
             >
-                navigation and general info
+                <GameInfoPanel myData={data[myself.uid]} opponentData={opponentData} round={state.status.round} />
             </div>
             <div
                 style={{ flex: 2, display: 'flex' }}
@@ -423,7 +204,7 @@ export default function DesktopRoom() {
                 <div style={{ backgroundColor: 'lightgray', flex: 1, display: 'flex', boxSizing: 'border-box', borderRadius: '.5rem', marginRight: '.5rem', marginBottom: '.5rem', marginLeft: '.5rem' }}>
                     <Warbands 
                         roomId={data.id}
-                        onSelectedFighterChange={onSelectedElementChange}
+                        onSelectedFighterChange={setSelectedElement}
                         myfighters={Object.entries(data.board.fighters)
                             .map(([id, value]) => ({ ...value, id: id }))
                             .filter(token => token.id.startsWith(myself.uid))}
@@ -501,6 +282,7 @@ export default function DesktopRoom() {
                             data={data}
                             roomId={state.id}
                             payload={overlayPayload}
+                            onAction={handleOverlayAction}
                         />
                     )}
                 </div>
@@ -609,11 +391,14 @@ export default function DesktopRoom() {
                     </div>
                 </div>
             </div>
-
-            <Cards
-                data={data[myself.uid]}
-                onHighlightCard={handleHighlightCard}
-            />
+            <div style={{ flex: '0 1 20%'}}>
+                <Cards
+                    data={data[myself.uid]}
+                    onHighlightCard={handleHighlightCard}
+                    onDataChange={handleCardsDataChange}
+                />
+            </div>
         </div>
     );
 }
+
