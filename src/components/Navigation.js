@@ -46,9 +46,8 @@ function NavigationAuth({ authUser }) {
                 </li>
             </ul>
             <div>{authUser.username}</div>   
-            <div>ver 0.12.0</div>
-            <p> New: Extra visualization for blocked, lethal and starting hexes on boards. Both desktop and phone. Note, some bugs might be discovered in phone version.</p> 
-            <p> Some minor stuff here and there.</p> 
+            <div>ver 0.13.0</div>
+            <p> New: Added all missing warbands and boards.</p> 
         </div>
     )
 }

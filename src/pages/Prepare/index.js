@@ -120,14 +120,14 @@ function Prepare() {
                         ? <img className={classes.factionIcon} src={`/assets/factions/${selectedFaction}-icon.png`} />
                         : <UnknownIcon className={classes.factionIcon} />
                     }
-                    <Typography>Currently supported factions:</Typography>
+                    {/* <Typography>Currently supported factions:</Typography>
                     <div>
                     {
                         Object.keys(warbands).map(warband => (
                             <img key={warband} src={`/assets/factions/${warband}-icon.png`} style={{ width: '2rem', height: '2rem'}} />
                         ))
                     }
-                    </div>
+                    </div> */}
                 </Grid>
                 <Grid item xs={12}>
                     <Typography variant="h6">Objective cards pile</Typography>

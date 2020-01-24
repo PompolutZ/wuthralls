@@ -143,6 +143,7 @@ export default function SpawnRoom() {
     }
 
     const createNewRoom = async () => {
+        console.log(selectedFaction);
         const featureHexTokens = shuffle(featureTokens).reduce((r, token, idx) => ({ ...r, [`Feature_${idx}`]: token }), {});
         const lethalHexes = lethalHexTokens.reduce((r, token, idx) => ({ ...r, [`Lethal_${idx}`]: token }), {});
         const myWarband = warbands[selectedFaction].reduce((r, fighter, idx) => ({ ...r, [`${myself.uid}_F${idx}`]: fighter }), {});
@@ -215,14 +216,14 @@ export default function SpawnRoom() {
                         ? <img className={classes.factionIcon} src={`/assets/factions/${selectedFaction}-icon.png`} />
                         : <UnknownIcon className={classes.factionIcon} />
                     }
-                    <Typography>Currently supported factions:</Typography>
+                    {/* <Typography>Currently supported factions:</Typography>
                     <div>
                     {
                         Object.keys(warbands).map(warband => (
                             <img key={warband} src={`/assets/factions/${warband}-icon.png`} style={{ width: '2rem', height: '2rem'}} />
                         ))
                     }
-                    </div>
+                    </div> */}
                 </Grid>
                 <Grid item xs={12} lg={4}>
                     <Typography variant="h6">Objective cards pile</Typography>
