@@ -312,6 +312,7 @@ export default function Board({ state, selectedElement, scaleFactor, onScaleFact
         ]
 
         if(hex) {
+            console.log("ping")
             highlightHex(hex, svg, lethals, blocked);
             if(selectedTokenId) {
                 if(selectedElement.type === 'SCATTER_TOKEN') {
@@ -340,6 +341,7 @@ export default function Board({ state, selectedElement, scaleFactor, onScaleFact
                         value: `${myself.username} placed ${selectedTokenId.startsWith(myself.uid) ? 'HIS' : 'ENEMIES'} ${fighters[selectedTokenId].name} to (${hex.x},${hex.y}).`,
                     })
                 } else {
+                    console.log("ping");
                     const updatedToken = {
                         ...tokenHexes[selectedTokenId],
                         from: tokenHexes[selectedTokenId].isOnBoard ? tokenHexes[selectedTokenId].onBoard : {x: -1, y: -1 },
@@ -491,7 +493,7 @@ export default function Board({ state, selectedElement, scaleFactor, onScaleFact
                             position: 'absolute',
                             width: baseBoardWidth * scaleFactor,
                             height: (baseBoardHeight * scaleFactor) * 2,
-                            zIndex: 600,
+                            zIndex: 700,
                         }}
                         ref={rootRef}
                         onClick={handleClick}
@@ -573,7 +575,7 @@ export default function Board({ state, selectedElement, scaleFactor, onScaleFact
                                             position: 'absolute',
                                             // backgroundImage: `url(/assets/fighters/${fighter.icon}-icon.png)`,
                                             // backgroundSize: 'cover',
-                                            zIndex: 600,
+                                            zIndex: !fighter.subtype ? 600 : 599,
                                             width: 80 * scaleFactor,
                                             height: 80 * scaleFactor,
                                             top: y + ((95 - 80) * scaleFactor) * 2.75 -4,
@@ -583,23 +585,26 @@ export default function Board({ state, selectedElement, scaleFactor, onScaleFact
                                             boxShadow: k === selectedTokenId ? k.startsWith(myself.uid) ? '0 0 7px 7px limegreen' : '0 0 7px 7px red' : '',
                                         }}>
                                             <img src={`/assets/fighters/${fighter.icon}-icon.png`} style={{ width: '100%', transform: !k.startsWith(myself.uid) ? 'scaleX(-1)' : '', }} />
-
-                                            <div style={{ 
-                                                position: 'absolute', 
-                                                zIndex: 601, 
-                                                width: '2rem', 
-                                                height: '2rem', 
-                                                backgroundColor: 'darkred',
-                                                display: 'flex',
-                                                border: '1px solid white',
-                                                borderRadius: '1rem',
-                                                top: '-.5rem',
-                                                left: '-.5rem',
-                                                transformOrigin: 'center center',
-                                                transform: `scale(${scaleFactor})`,
-                                                boxSizing: 'boarder-box', verticalAlign: 'middle' }}>
-                                                <Typography style={{ fontSize: '1.5rem', margin: 'auto', color: 'white', verticalAlign: 'middle'}}>{fighter.wounds}</Typography>
-                                            </div>
+                                            {
+                                                !fighter.subtype && (
+                                                    <div style={{ 
+                                                        position: 'absolute', 
+                                                        zIndex: 601, 
+                                                        width: '2rem', 
+                                                        height: '2rem', 
+                                                        backgroundColor: 'darkred',
+                                                        display: 'flex',
+                                                        border: '1px solid white',
+                                                        borderRadius: '1rem',
+                                                        top: '-.5rem',
+                                                        left: '-.5rem',
+                                                        transformOrigin: 'center center',
+                                                        transform: `scale(${scaleFactor})`,
+                                                        boxSizing: 'boarder-box', verticalAlign: 'middle' }}>
+                                                        <Typography style={{ fontSize: '1.5rem', margin: 'auto', color: 'white', verticalAlign: 'middle'}}>{fighter.wounds}</Typography>
+                                                    </div>
+                                                )
+                                            }
                                             {
                                                 fighter.tokens && (
                                                     <div style={{ 

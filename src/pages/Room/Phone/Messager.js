@@ -337,7 +337,7 @@ function PickSecondBoard({ data, onSecondBoardSelected }) {
             <div style={{ margin: 'auto', display: 'flex', flexFlow: 'column nowrap', alignItems: 'center' }}>
                 <div style={{ position: 'relative' }}>
                     <img src={`/assets/boards/${boardsList[data.opponentBoard - 1].id}.jpg`} style={{ width: window.screen.width * .7, transform: `rotate(${values.top.rotate}deg)`, transformOrigin: 'center center' }} alt={boardsList[data.opponentBoard - 1].name} />                    
-                    <ButtonBase style={{ backgroundColor: 'teal', color: 'white', width: '2rem', height: '2rem', boxSizing: 'boarder-box', border: '2px solid white', borderRadius: '2rem', position: 'absolute', top: '50%', left: 0, marginTop: '-1rem', marginLeft: '-1rem' }}
+                    <ButtonBase style={{ backgroundColor: 'teal', color: 'white', width: '2rem', height: '2rem', boxSizing: 'boarder-box', border: '2px solid white', borderRadius: '2rem', position: 'absolute', top: 0, left: '50%', marginTop: '-1rem', marginLeft: '-1rem' }}
                         onClick={flipBoard('top')}>
                         <FlipIcon style={{ transform: 'rotate(180deg)'}} />
                     </ButtonBase>

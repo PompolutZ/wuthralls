@@ -46,8 +46,8 @@ function NavigationAuth({ authUser }) {
                 </li>
             </ul>
             <div>{authUser.username}</div>   
-            <div>ver 0.13.0</div>
-            <p> New: Added all missing warbands and boards.</p> 
+            <div>ver 0.14.0</div>
+            <p> New: Ogor Boy is here!.</p> 
         </div>
     )
 }

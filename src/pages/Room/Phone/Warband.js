@@ -135,7 +135,7 @@ export default function Warband({ roomId, myfighters, enemyFighters, onSelectedF
                                 )
                             }
                             {
-                                selectedFighter && selectedFighter.id === fighter.id && (
+                                selectedFighter && selectedFighter.id === fighter.id && !Boolean(fighter.subtype) && (
                                     <ButtonBase
                                             style={{
                                                 position: 'absolute',
