@@ -1,25 +1,53 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { useTheme } from '@material-ui/core/styles';
 import DesktopRoom from '../Desktop';
 import PhoneRoom from '../Phone';
+import { useLocation } from 'react-router-dom';
+import InitiativeAndBoardsSetup from './InitiativeAndBoardsSetup';
+import { FirebaseContext } from '../../../firebase';
 
 export default function RoomSizePicker({}) {
     const theme = useTheme();
     const isLg = useMediaQuery(theme.breakpoints.up('lg'));
     const [loaded, setLoaded] = useState(false);
+    const { state } = useLocation();
+    const [data, setData] = useState(state);
+    const firebase = useContext(FirebaseContext);
     
     useEffect(() => {
+        const unsubscribe = firebase.setRoomListener(state.id, snapshot => {
+            if(snapshot.exists) {
+                setData({...snapshot.data(), id: snapshot.id})
+            }
+        });
+
+        // const unsubscribeFromMessages = firebase.fstore.collection('messages').doc(state.id).onSnapshot(s => {
+        //     if(!s.data()) return;
+        //     const msgs = Object.entries(s.data()).map(([key, value]) => ({...value, id: Number(key) }));
+        //     console.log('MESSAGES', msgs);
+        //     setMessages(msgs);
+        // });
+
         setLoaded(true);
-    }, [])
+
+        return () => {
+            unsubscribe();
+            // unsubscribeFromMessages();
+        };
+    }, []);
 
     if(!loaded) return <span>Loading...</span>;
-    
-    if(isLg) {
-        console.log('DESKTOP ROOM');
-        return <DesktopRoom />
+
+    if(data.status.stage === "SETUP") {
+        return <InitiativeAndBoardsSetup data={data} />
     } else {
-        console.log('PHONE ROOM');
-        return <PhoneRoom />
+        if(isLg) {
+            console.log('DESKTOP ROOM');
+            return <DesktopRoom />
+        } else {
+            console.log('PHONE ROOM');
+            return <PhoneRoom />
+        }
     }
 }

@@ -150,7 +150,7 @@ function Rooms() {
                                                     </Grid>
                                                 </Grid>
                                                 <Grid item xs={12}>
-                                                    <Button onClick={handleGetInRoom(r)} variant="contained" color="primary">Get In</Button>
+                                                    <Button onClick={handleGetInRoom(r)} variant="contained" color="primary" disabled={r.players.length < 2}>Get In</Button>
                                                     {
                                                         (r.createdBy === myself.uid || (myself.roles && myself.roles['ADMIN'])) && (
                                                             <Button style={{ color: 'red', margin: 'auto .5rem' }} onClick={handleDeleteRoom(r.id)} variant="outlined">Delete</Button>

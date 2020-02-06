@@ -573,7 +573,7 @@ function Messenger({ roomId, state, messages }) {
     const classes = useStyles();
     const myself = useAuthUser();
     const containerRef = useRef(null);
-    const katophrane = useKatophrane(state);
+    //const katophrane = useKatophrane(state);
     // const [messages, setMessages] = useState([]);
     const firebase = useContext(FirebaseContext);
     const [showMainHUD, setShowMainHUD] = useState(null);
@@ -607,27 +607,27 @@ function Messenger({ roomId, state, messages }) {
         // return () => unsubscribe();
     }, [messages]);
 
-    const handleCloseOverlay = e => {
-        setShowMainHUD(null);
-        setMainHUDPayload(null);
+    // const handleCloseOverlay = e => {
+    //     setShowMainHUD(null);
+    //     setMainHUDPayload(null);
         
-        e.preventDefault();
-    }
+    //     e.preventDefault();
+    // }
 
     const handleShowHUDType = (type, payload) => {
         setShowMainHUD(type);
         setMainHUDPayload(payload);
     }
 
-    const handleFirstBoardSelected = payload => {
-        katophrane.selectFirstBoard({...payload });
-        setShowMainHUD(null);
-    }
+    // const handleFirstBoardSelected = payload => {
+    //     //katophrane.selectFirstBoard({...payload });
+    //     setShowMainHUD(null);
+    // }
 
-    const handleSecondBoardSelected = payload => {
-        katophrane.selectSecondBoard(payload);
-        setShowMainHUD(null);
-    }
+    // const handleSecondBoardSelected = payload => {
+    //     //katophrane.selectSecondBoard(payload);
+    //     setShowMainHUD(null);
+    // }
 
     return (
         <div>
@@ -724,7 +724,7 @@ function Messenger({ roomId, state, messages }) {
                     })}
                 </div>
             </Grid>
-            {
+            {/* {
                 showMainHUD && (
                     <HUDOverlay onCloseOverlayClick={handleCloseOverlay}>
                         {
@@ -737,14 +737,9 @@ function Messenger({ roomId, state, messages }) {
                                 <PickSecondBoard data={mainHUDPayload} onSecondBoardSelected={handleSecondBoardSelected} />
                             )
                         }
-                        {/* {
-                            showMainHUD === 'GAME_STATUS_INFO' && (
-                                <GameStatusHUD data={data} />
-                            )
-                        } */}
                     </HUDOverlay>
                 )
-            }
+            } */}
         </div>
     );
 }

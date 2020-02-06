@@ -102,11 +102,11 @@ export default function SpawnRoom() {
     const firebase = useContext(FirebaseContext);
     const history = useHistory();
     const { state } = useLocation();
-    const [selectedFaction, setSelectedFaction] = useState(null);
-    const [objectiveCards, setObjectiveCards] = useState(''); //useState(`04031,03340,03373,03385,04035,03310,03345,03004,03357,03006,03007,03319`);
-    const [powerCards, setPowerCards] = useState(''); //useState(`04050,06350,07021,03471,07014,03451,03551,03012,03023,04046,04003,03499,03389,03027,03446,03557,03504,03449,03506,03529`);
+    const [selectedFaction, setSelectedFaction] = useState("hrothgorns-mantrappers"); //useState(null);
+    const [objectiveCards, setObjectiveCards] = useState(`06172,06162,06295,06164,07001,06165,03384,06167,06311,03357,03368,06316`); //useState('');
+    const [powerCards, setPowerCards] = useState(`06191,06181,06182,06184,06395,06175,06176,06187,06364,06398,07014,06189,06388,06179,03420,06434,03400,06403,03401,06417`); //useState('');
     const [playerIsReady, setPlayerIsReady] = useState(false);
-    const [roomName, setRoomName] = useState(''); //useState(`${Math.random()}`);
+    const [roomName, setRoomName] = useState(`DEV ${Math.ceil(100 * Math.random())}`); //useState('');
 
     useEffect(() => {
         console.log(objectiveCards, powerCards);
@@ -153,6 +153,22 @@ export default function SpawnRoom() {
             createdBy: myself.uid,
             status: {
                 round: 1,
+                stage: "SETUP",
+                waitingFor: [myself.uid],
+                waitingReason: 'INITIATIVE_ROLL',
+                rollOffs: {
+                    [`${myself.uid}_1`]: "",
+                },
+                rollOffNumber: 1,
+                orientation: "HORIZONTAL",
+                top: {
+                    id: -1,
+                    rotate: 0,
+                },
+                bottom: {
+                    id: -1,
+                    rotate: 0
+                }
             },
             board: {
                 fighters: {

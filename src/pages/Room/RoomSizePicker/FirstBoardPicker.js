@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import AttackDie from '../../components/AttackDie';
-import DefenceDie from '../../components/DefenceDie';
-import MagicDie from '../../components/MagicDie';
-
 import * as SVG from 'svg.js';
 import { defineGrid, extendHex } from 'honeycomb-grid';
 import ButtonBase from '@material-ui/core/ButtonBase';
+import Typography from '@material-ui/core/Typography';
+import MoveNextIcon from '@material-ui/icons/LabelImportant';
+import FlipIcon from '@material-ui/icons/RotateRight';
+import Button from '@material-ui/core/Button';
 import { 
     cardsDb,
     boards as boardsData
-} from '../../data';
+} from '../../../data';
 
 const baseSize = 55;
 const baseBoardWidth = 757;
@@ -27,44 +27,11 @@ const verticalBoardHexes = [
 ];
 
 const horizontalBoardHexes = [
-    [0, 0],
-    [1, 0],
-    [2, 0],
-    [3, 0],
-    [4, 0],
-    [5, 0],
-    [6, 0],
-    [7, 0],
-    [0, 1],
-    [1, 1],
-    [2, 1],
-    [3, 1],
-    [4, 1],
-    [5, 1],
-    [6, 1],
-    [0, 2],
-    [1, 2],
-    [2, 2],
-    [3, 2],
-    [4, 2],
-    [5, 2],
-    [6, 2],
-    [7, 2],
-    [0, 3],
-    [1, 3],
-    [2, 3],
-    [3, 3],
-    [4, 3],
-    [5, 3],
-    [6, 3],
-    [0, 4],
-    [1, 4],
-    [2, 4],
-    [3, 4],
-    [4, 4],
-    [5, 4],
-    [6, 4],
-    [7, 4],
+    [0, 0], [1, 0], [2, 0], [3,0], [4,0], [5,0], [6,0], [7,0], 
+    [0, 1], [1, 1], [2, 1], [3,1], [4,1], [5,1], [6,1],
+    [0, 2], [1, 2], [2, 2], [3,2], [4,2], [5,2], [6,2], [7,2],
+    [0, 3], [1, 3], [2, 3], [3,3], [4,3], [5,3], [6,3],
+    [0, 4], [1, 4], [2, 4], [3,4], [4,4], [5,4], [6,4], [7,4],
 ];
 
 const noOnesHexesHorizontal = [
@@ -77,7 +44,7 @@ const noOnesHexesHorizontal = [
     [6, 5],
 ];
 
-const renderHex = (hex, svg, color, lethals, blocked, starting) => {
+const renderHex = (hex, svg, color, starting, lethals, blocked) => {
     // render(draw, color) {
     //console.log('RENDER isLethal', hex, lethals.some(([x, y]) => x === hex.x && y === hex.y), blocked)
 
@@ -179,7 +146,7 @@ const modifyNoOnesArray = (array, offset) => {
         : array.slice(0, 7 - Math.abs(offset));
 };
 
-function BoardPlacer({ scale, onInitiaScaleChange, boardOffset }) {
+function BoardPlacer({ scale, onInitiaScaleChange, boardOffset=0, hexes }) {
     const [scaleFactor, setScaleFactor] = useState(scale);
     const [draw, setDraw] = useState(null);
     const [boardWidth, setBoardWidth] = useState(baseBoardWidth + Math.abs(boardOffset) * 94);
@@ -227,45 +194,46 @@ function BoardPlacer({ scale, onInitiaScaleChange, boardOffset }) {
         const currentDraw = draw ? draw : SVG('svg_container');
         currentDraw.clear();
         const Hex = extendHex({
-            orientation: 'flat',
+            orientation: 'pointy',
             size: 55 * scaleFactor,
-            origin: [0, 0] //[0, -55 / 2 * scaleFactor],
+            origin: [0, -55 / 2 * scaleFactor],//[0, 0] //[0, -55 / 2 * scaleFactor],
         });
 
         const lethals = [
-            ...boardsData[3].vertical.lethalHexes[0].map(([x, y]) => boardOffset < 0 ? [x + Math.abs(boardOffset), y] : [x, y]),
-            ...boardsData[11].vertical.lethalHexes[0].map(([x, y]) => boardOffset > 0 ? [x + boardOffset, y + 6] : [x, y + 6]),
+            // ...boardsData[3].lethalHexes[0].map(([x, y]) => boardOffset < 0 ? [x + Math.abs(boardOffset), y] : [x, y]),
+            // ...boardsData[11].lethalHexes[0].map(([x, y]) => boardOffset > 0 ? [x + boardOffset, y + 6] : [x, y + 6]),
         ]
 
         const blocked = [
-            ...boardsData[3].vertical.blockedHexes[0].map(([x, y]) => boardOffset < 0 ? [x + Math.abs(boardOffset), y] : [x, y]),
-            ...boardsData[11].vertical.blockedHexes[0].map(([x, y]) => boardOffset > 0 ? [x + boardOffset, y + 6] : [x, y + 6]),
+            // ...boardsData[3].blockedHexes[0].map(([x, y]) => boardOffset < 0 ? [x + Math.abs(boardOffset), y] : [x, y]),
+            // ...boardsData[11].blockedHexes[0].map(([x, y]) => boardOffset > 0 ? [x + boardOffset, y + 6] : [x, y + 6]),
         ]
 
         const startingHexes = [
-            ...boardsData[3].vertical.startingHexes[0].map(([x, y]) => boardOffset < 0 ? [x + Math.abs(boardOffset), y] : [x, y]),
-            ...boardsData[11].vertical.startingHexes[0].map(([x, y]) => boardOffset > 0 ? [x + boardOffset, y + 6] : [x, y + 6]),
+            // ...boardsData[3].startingHexes[0].map(([x, y]) => boardOffset < 0 ? [x + Math.abs(boardOffset), y] : [x, y]),
+            // ...boardsData[11].startingHexes[0].map(([x, y]) => boardOffset > 0 ? [x + boardOffset, y + 6] : [x, y + 6]),
         ]
 
         const Grid = defineGrid(Hex);
         Grid
         (
-            ...verticalBoardHexes,
-            ...[
-                // [0,0], [1,0], [2,0],[3,0], [4,0],
-                // [0,1], [1,1], [2,1],[3,1], [4,1],
-                // [0,2], [1,2], [2,2],[3,2], [4,2],
-                // [0,3], [1,3], [2,3],[3,3], [4,3],
-                // [0,4], [1,4], [2,4],[3,4], [4,4],
-                // [0,5], [1,5], [2,5],[3,5], [4,5],
-                // [0,6], [1,6], [2,6],[3,6], [4,6],
-                // [0,7], [2,7], [4,7],
-                //
-                [1,7], [3,7]
-                // [1,1], [3,1],
-                //[0,1], [1,1], [2,1],[3,1],[4,1]
-            ],
-            ...verticalBoardHexes.map(([x, y]) => [x, y + 8])
+            ...horizontalBoardHexes
+            // ...verticalBoardHexes,
+            // ...[
+            //     // [0,0], [1,0], [2,0],[3,0], [4,0],
+            //     // [0,1], [1,1], [2,1],[3,1], [4,1],
+            //     // [0,2], [1,2], [2,2],[3,2], [4,2],
+            //     // [0,3], [1,3], [2,3],[3,3], [4,3],
+            //     // [0,4], [1,4], [2,4],[3,4], [4,4],
+            //     // [0,5], [1,5], [2,5],[3,5], [4,5],
+            //     // [0,6], [1,6], [2,6],[3,6], [4,6],
+            //     // [0,7], [2,7], [4,7],
+            //     //
+            //     [1,7], [3,7]
+            //     // [1,1], [3,1],
+            //     //[0,1], [1,1], [2,1],[3,1],[4,1]
+            // ],
+            // ...verticalBoardHexes.map(([x, y]) => [x, y + 8])
         )
         // ([
         //     ...horizontalBoardHexes.map(([x, y]) => boardOffset < 0 ? [x + Math.abs(boardOffset), y] : [x, y]),
@@ -275,18 +243,18 @@ function BoardPlacer({ scale, onInitiaScaleChange, boardOffset }) {
         .forEach(hex => {
             const { x, y } = hex.toPoint();
             // use hexSymbol and set its position for each hex
-            renderHex(hex, currentDraw, 'magenta', [], [], []) //lethals, blocked, startingHexes);
+            renderHex(hex, currentDraw, 'magenta', hexes.starting, hexes.lethals, hexes.blocked) //lethals, blocked, startingHexes);
         });
         if(!draw) {
             setDraw(currentDraw);
         }
-    }, [scaleFactor]);
+    }, [hexes]);
 
     return (
         <div id="main_container"
             style={{
                 // backgroundColor: 'orangered',
-                flex: 1,
+                flex: '1 0 50%',
                 position: 'relative',
             }}
         >
@@ -322,14 +290,15 @@ function BoardPlacer({ scale, onInitiaScaleChange, boardOffset }) {
             <div
                 id="svg_container"
                 style={{
-                    width: baseBoardHeight * 2 * scaleFactor,//baseBoardWidth * scaleFactor + (Math.abs(boardOffset) * (94 * scaleFactor)),
-                    height: baseBoardWidth * scaleFactor * 2, //baseBoardHeight * 2 * scaleFactor,
-                    // background: 'magenta',
+                    width: baseBoardWidth * scaleFactor, //baseBoardHeight * 2 * scaleFactor,//baseBoardWidth * scaleFactor + (Math.abs(boardOffset) * (94 * scaleFactor)),
+                    height: baseBoardHeight * scaleFactor, //baseBoardWidth * scaleFactor * 2, //baseBoardHeight * 2 * scaleFactor,
+                    background: 'lightgray',
                     position: 'absolute',
-                    left: '62.5px',
+                    // left: '62.5px',
                     // top: '-12.5px'
-                    // top: '50%',
-                    // marginTop: -baseBoardHeight * 2 * scaleFactor / 2
+                    top: '50%',
+                    marginTop: -baseBoardHeight * scaleFactor / 2,
+                    filter: 'drop-shadow(2px 2px 5px dimgray)'
                 }}
             >
             </div>
@@ -337,24 +306,31 @@ function BoardPlacer({ scale, onInitiaScaleChange, boardOffset }) {
     );
 }
 
-export default function Playground() {
+export default function FirstBoardPicker({ onBoardPicked }) {
     const [scale, setScale] = useState(.5);
-    const [offset, setOffset] = useState(0);
+    const [selectedIndex, setSelectedIndex] = useState(1);
+    const [startingHexes, setStartingHexes] = useState(boardsData[selectedIndex].horizontal.startingHexes[0]);
+    const [lethalHexes, setLethalHexes] = useState(boardsData[selectedIndex].horizontal.lethalHexes[0]);
+    const [blockedHexes, setBlockedHexes] = useState(boardsData[selectedIndex].horizontal.blockedHexes[0]);
 
-    const increaseScale = () => {
-        setScale(scale => scale + .2);
+    useEffect(() => {
+        setStartingHexes(boardsData[selectedIndex].horizontal.startingHexes[0]);
+        setLethalHexes(boardsData[selectedIndex].horizontal.lethalHexes[0]);
+        setBlockedHexes(boardsData[selectedIndex].horizontal.blockedHexes[0]);
+    }, [selectedIndex]);
+
+    const handleMoveSelectionLeft = () => {
+        const nextIndex = selectedIndex - 1 < 1 ? 14 : selectedIndex - 1;
+        setSelectedIndex(nextIndex);
     }
 
-    const decreaseScale = () => {
-        setScale(scale => scale - .2);
+    const handleMoveSelectionRight = () => {
+        const nextIndex = selectedIndex + 1 > 14 ? 1 : selectedIndex + 1;
+        setSelectedIndex(nextIndex);
     }
 
-    const changeOffsetLeft = () => {
-        setOffset(offset => offset > -4 ? offset - 1 : -4)
-    }
-
-    const changeOffsetRight = () => {
-        setOffset(offset => offset > 3 ? 4 : offset + 1);
+    const handleSelectCurrent = () => {
+        onBoardPicked(selectedIndex);
     }
 
     return (
@@ -364,22 +340,25 @@ export default function Playground() {
                 width: '100%',
                 height: '100%',
                 display: 'flex',
+                flexDirection: 'column',
             }}
         >
-            <div style={{ backgroundColor: 'orange', flex: '0 1 10%' }}></div>
+            <div style={{ flex: '0 1 20%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                <Typography variant="h5">{boardsData[selectedIndex].name}</Typography>
+            </div>
             <div
                 style={{
                     // backgroundColor: 'teal',
                     flex: 1,
                     display: 'flex',
-                    flexDirection: 'column',
                 }}
             >
                 <div
-                    style={{ backgroundColor: 'orange', flex: '0 1 10%', display: 'flex' }}
+                    style={{ flex: '0 1 10%', display: 'flex' }}
                 >
-                    <ButtonBase style={{ flex: 1}} onClick={increaseScale}>Up</ButtonBase>
-                    <ButtonBase style={{ flex: 1}} onClick={decreaseScale}>Down</ButtonBase>
+                    <ButtonBase style={{ flex: 1}} onClick={handleMoveSelectionLeft}>
+                        <MoveNextIcon style={{ transform: 'scaleX(-1)' }} />
+                    </ButtonBase>
                 </div>
                 <div
                     style={{
@@ -388,16 +367,24 @@ export default function Playground() {
                         overflow: 'auto',
                     }}
                 >
-                    <BoardPlacer scale={scale} onInitiaScaleChange={setScale} boardOffset={offset} />
+                    <BoardPlacer scale={scale} onInitiaScaleChange={setScale} boardOffset={offset} hexes={{
+                        starting: startingHexes,
+                        lethals: lethalHexes,
+                        blocked: blockedHexes,
+                    }} />
                 </div>
                 <div
-                    style={{ backgroundColor: 'orange', flex: '0 1 10%', display: 'flex' }}
+                    style={{ flex: '0 1 10%', display: 'flex' }}
                 >
-                    <ButtonBase style={{ flex: 1}} onClick={changeOffsetLeft}>Left</ButtonBase>
-                    <ButtonBase style={{ flex: 1}} onClick={changeOffsetRight}>Right</ButtonBase>
+                    <ButtonBase style={{ flex: 1}} onClick={handleMoveSelectionRight}>
+                        <MoveNextIcon />
+                    </ButtonBase>
                 </div>
             </div>
-            <div style={{ backgroundColor: 'orange', flex: '0 1 10%' }}></div>
+            <div style={{ flex: '0 1 20%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                <Button variant="contained" color="primary" onClick={handleSelectCurrent}>{`Pick this one!`}</Button>
+            </div>
+            {/* <div style={{ backgroundColor: 'orange', flex: '0 1 10%' }}></div> */}
         </div>
     );
 }

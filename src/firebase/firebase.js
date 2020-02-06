@@ -293,12 +293,19 @@ class Firebase {
             const roomRef = this.fstore.collection("rooms").doc(roomId);
 
             await roomRef.update({
+                // add player to players list
                 players: this.firestoreArrayUnion(playerId),
-                'board.fighters': warband
+                // add player's warband
+                'board.fighters': warband,
+                // add player's deck and other meta
+                [playerId]: playerInfo,
+                // add player to boards initiative rolloff
+                [`status.waitingFor`]: this.firestoreArrayUnion(playerId),
+                [`status.rollOffs.${playerId}_1`]: "", 
             });
-            await roomRef.update({
-                [playerId]: playerInfo
-            })
+            // await roomRef.update({
+                
+            // })
 
             // const now = new Date();
             // await this.fstore.collection(`${roomRef.id}_messages`).doc(`${now.getTime()}`).set({

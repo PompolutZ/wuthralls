@@ -27,7 +27,7 @@ export default function PhoneRoom() {
     const myself = useAuthUser();
     const firebase = useContext(FirebaseContext);
     const { state } = useLocation();
-    const katophrane = useKatophrane(state);
+    //const katophrane = useKatophrane(state);
     const theme = useTheme();
     const [tabIndex, setTabIndex] = React.useState(0);
     const [selectedElement, setSelectedElement] = useState(null);
@@ -74,9 +74,9 @@ export default function PhoneRoom() {
     }, []);
 
 
-    useEffect(() => {
-        console.log('KATO', katophrane);
-    }, [katophrane]);
+    // useEffect(() => {
+    //     console.log('KATO', katophrane);
+    // }, [katophrane]);
 
     useEffect(() => {
         console.log('Room.OnDataUpdated', data);

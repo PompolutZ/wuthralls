@@ -49,10 +49,10 @@ function Prepare() {
     const firebase = useContext(FirebaseContext);
     const history = useHistory();
     const { state } = useLocation();
-    const katophrane = useKatophrane(state);
-    const [selectedFaction, setSelectedFaction] = useState(null);
-    const [objectiveCards, setObjectiveCards] = useState(''); //useState(`06270,06281,06099,06100,03340,03373,06103,06104,06106,03302,06107,03319`);
-    const [powerCards, setPowerCards] = useState(''); //useState(`07021,07022,06110,06363,06396,06122,06112,03550,06113,06434,06126,06368,03544,06118,06119,03436,06109,03514,03506,03529`);
+    //const katophrane = useKatophrane(state);
+    const [selectedFaction, setSelectedFaction] = useState("hrothgorns-mantrappers"); //useState(null);
+    const [objectiveCards, setObjectiveCards] = useState(`06172,06162,06295,06164,07001,06165,03384,06167,06311,03357,03368,06316`); //useState('');
+    const [powerCards, setPowerCards] = useState(`06191,06181,06182,06184,06395,06175,06176,06187,06364,06398,07014,06189,06388,06179,03420,06434,03400,06403,03401,06417`); //useState('');
     const [playerIsReady, setPlayerIsReady] = useState(false);
 
     useEffect(() => {
@@ -102,7 +102,7 @@ function Prepare() {
         console.log('I WILL CRASH NOW');
         await firebase.addPlayerToRoom(state.id, myself.uid, playerInfo, {...state.board.fighters, ...myWarband });
 
-        katophrane.startNextInteractiveStep(myself.uid);
+        //katophrane.startNextInteractiveStep(myself.uid);
 
         history.push('/');
     }
