@@ -86,6 +86,7 @@ export const factionIndexes = [
     "the-grymwatch", // 21
     "rippas-snarlfangs", // 22
     "hrothgorns-mantrappers", // 23
+    "the-wurmspat", // 24
 ]
 
 export const warbandColors = {
@@ -112,6 +113,8 @@ export const warbandColors = {
     'godsworn-hunt': '#A52A2A', // brown
     'grashraks-despoilers': '#8B4513', // saddle brown
     "hrothgorns-mantrappers": "#4682B4", // steelblue
+    'the-wurmspat': '#556B2F', // dark olive
+    'the-farstriders': "#0000CD", // medium blue
 }
 
 export const warbands = {
@@ -144,6 +147,84 @@ export const warbands = {
             type: 'FIGHTER',
             icon: 'steelhearts-champions-3',
             name: 'Angharad',
+            from: {x: -1, y: -1},
+            onBoard: {x: -1, y: -1},
+            isOnBoard: false,
+            isInspired: false,
+            wounds: 0,
+            tokens: '',
+            upgrades: '',
+        },    
+    ],
+
+    'the-wurmspat': [
+        {
+            type: 'FIGHTER',
+            icon: 'the-wurmspat-1',
+            name: 'Fecula',
+            from: {x: -1, y: -1},
+            onBoard: {x: -1, y: -1},
+            isOnBoard: false,
+            isInspired: false,
+            wounds: 0,
+            tokens: '',
+            upgrades: '',
+        },
+        {
+            type: 'FIGHTER',
+            icon: 'the-wurmspat-2',
+            name: 'Ghulgoch',
+            from: {x: -1, y: -1},
+            onBoard: {x: -1, y: -1},
+            isOnBoard: false,
+            isInspired: false,
+            wounds: 0,
+            tokens: '',
+            upgrades: '',
+        },
+        {
+            type: 'FIGHTER',
+            icon: 'the-wurmspat-3',
+            name: 'Sepsimus',
+            from: {x: -1, y: -1},
+            onBoard: {x: -1, y: -1},
+            isOnBoard: false,
+            isInspired: false,
+            wounds: 0,
+            tokens: '',
+            upgrades: '',
+        },    
+    ],
+
+    'the-farstriders': [
+        {
+            type: 'FIGHTER',
+            icon: 'the-farstriders-1',
+            name: 'Sanson',
+            from: {x: -1, y: -1},
+            onBoard: {x: -1, y: -1},
+            isOnBoard: false,
+            isInspired: false,
+            wounds: 0,
+            tokens: '',
+            upgrades: '',
+        },
+        {
+            type: 'FIGHTER',
+            icon: 'the-farstriders-2',
+            name: 'Almeric',
+            from: {x: -1, y: -1},
+            onBoard: {x: -1, y: -1},
+            isOnBoard: false,
+            isInspired: false,
+            wounds: 0,
+            tokens: '',
+            upgrades: '',
+        },
+        {
+            type: 'FIGHTER',
+            icon: 'the-farstriders-3',
+            name: 'Elias',
             from: {x: -1, y: -1},
             onBoard: {x: -1, y: -1},
             isOnBoard: false,

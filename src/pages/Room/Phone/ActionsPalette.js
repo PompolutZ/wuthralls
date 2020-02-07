@@ -345,7 +345,7 @@ export default function ActionsPalette({
             )}
             {
                 selectedAction === 'SCATTER' && (
-                    <ScatterToken onSelectionChange={onSelectedElementChange} />
+                    <ScatterToken onSelectionChange={onSelectedElementChange} orientation={data.status && data.status.orientation} />
                 )
             }
             {

@@ -37,13 +37,7 @@ const horizontalBoardHexes = [
 ];
 
 const noOnesHexesHorizontal = [
-    [0, 5],
-    [1, 5],
-    [2, 5],
-    [3, 5],
-    [4, 5],
-    [5, 5],
-    [6, 5],
+    [0, 5],[1, 5],[2, 5],[3, 5],[4, 5],[5, 5],[6, 5],
 ];
 
 const renderHex = (hex, svg, color, starting, lethals, blocked, orientation) => {
@@ -304,8 +298,6 @@ function BoardPlacer({ scale, onInitiaScaleChange, boardOffset=0, data }) {
                     height: data.orientation === 'horizontal' ? baseBoardHeight * 2 * scaleFactor : baseBoardWidth * 2 * scaleFactor, //baseBoardWidth * scaleFactor * 2, //baseBoardHeight * 2 * scaleFactor,
                     background: 'lightgray',
                     position: 'absolute',
-                    // left: '62.5px',
-                    // top: '-12.5px'
                     top: data.orientation === 'horizontal' ? '50%' : 0,
                     left: data.orientation === 'horizontal' ? 0 : '50%',
                     marginTop: data.orientation === 'horizontal' ? -baseBoardHeight * 2 * scaleFactor / 2 : 0,
@@ -379,20 +371,7 @@ export default function SecondBoardPicker({ onBoardPicked, top }) {
             ...horizontalBoardHexes.map(([x, y]) => offset > 0 ? [x + offset, y + 6] : [x, y + 6]),
         ] : [
             ...verticalBoardHexes,
-            ...[
-                // [0,0], [1,0], [2,0],[3,0], [4,0],
-                // [0,1], [1,1], [2,1],[3,1], [4,1],
-                // [0,2], [1,2], [2,2],[3,2], [4,2],
-                // [0,3], [1,3], [2,3],[3,3], [4,3],
-                // [0,4], [1,4], [2,4],[3,4], [4,4],
-                // [0,5], [1,5], [2,5],[3,5], [4,5],
-                // [0,6], [1,6], [2,6],[3,6], [4,6],
-                // [0,7], [2,7], [4,7],
-                //
-                [1,7], [3,7]
-                // [1,1], [3,1],
-                //[0,1], [1,1], [2,1],[3,1],[4,1]
-            ],
+            ...[[1,7], [3,7]],
             ...verticalBoardHexes.map(([x, y]) => [x, y + 8])
         ]
 

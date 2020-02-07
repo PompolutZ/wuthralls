@@ -113,7 +113,7 @@ export default function PhoneRoom() {
     }
 
     return (
-        <div style={{ width: '100%', height: '100%' }}>
+        <div style={{ width: '100%', height: '100%', backgroundColor: 'dimgray' }}>
             <div style={{ filter: isHUDOpen ? 'blur(3px)' : '', width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
                 <div style={{ width: '100%', height: `100%`, flex: 1, overflowY: 'scroll' }}>
                 {

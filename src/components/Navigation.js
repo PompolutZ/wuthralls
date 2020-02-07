@@ -46,8 +46,10 @@ function NavigationAuth({ authUser }) {
                 </li>
             </ul>
             <div>{authUser.username}</div>   
-            <div>ver 0.14.0</div>
-            <p> New: Ogor Boy is here!.</p> 
+            <div>ver 0.15.0</div>
+            <p> New: Wurmspat and Farstriders are here!.</p> 
+            <p> New: Board setup which support short to short and longwise with offset placement!.</p> 
+            <p> Note: Really badly tested!.</p> 
         </div>
     )
 }

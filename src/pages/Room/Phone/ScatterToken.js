@@ -19,8 +19,9 @@ import HUDOverlay from '../../../components/HUDOverlay';
 import FighterHUD from '../../../components/FighterHUD';
 import GameStatusHUD from './GameStatusHUD';
 
-export default function ScatterToken({ onSelectionChange }) {
-    const [rotateAngle, setRotateAngle] = useState(0);
+export default function ScatterToken({ onSelectionChange, orientation }) {
+    console.log("SCATTER TOKEN RENDER", orientation);
+    const [rotateAngle, setRotateAngle] = useState(orientation === 'horizontal' ? 0 : 30);
     const [isSelected, setIsSelected] = useState(false);
     const [values, setValues] = useState({
         id: 'SCATTER_TOKEN',

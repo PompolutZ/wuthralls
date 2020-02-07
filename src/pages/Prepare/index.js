@@ -50,9 +50,9 @@ function Prepare() {
     const history = useHistory();
     const { state } = useLocation();
     //const katophrane = useKatophrane(state);
-    const [selectedFaction, setSelectedFaction] = useState("hrothgorns-mantrappers"); //useState(null);
-    const [objectiveCards, setObjectiveCards] = useState(`06172,06162,06295,06164,07001,06165,03384,06167,06311,03357,03368,06316`); //useState('');
-    const [powerCards, setPowerCards] = useState(`06191,06181,06182,06184,06395,06175,06176,06187,06364,06398,07014,06189,06388,06179,03420,06434,03400,06403,03401,06417`); //useState('');
+    const [selectedFaction, setSelectedFaction] = useState(null); //useState("hrothgorns-mantrappers");
+    const [objectiveCards, setObjectiveCards] = useState(''); //useState(`06172,06162,06295,06164,07001,06165,03384,06167,06311,03357,03368,06316`);
+    const [powerCards, setPowerCards] = useState(''); //useState(`06191,06181,06182,06184,06395,06175,06176,06187,06364,06398,07014,06189,06388,06179,03420,06434,03400,06403,03401,06417`);
     const [playerIsReady, setPlayerIsReady] = useState(false);
 
     useEffect(() => {

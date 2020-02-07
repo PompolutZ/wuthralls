@@ -37,6 +37,15 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
+function hexToRgb(hex) {
+    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? {
+      r: parseInt(result[1], 16),
+      g: parseInt(result[2], 16),
+      b: parseInt(result[3], 16)
+    } : null;
+  }
+
 const DiceRollMessage = React.memo(({
     id, author, value, type, timestamp, authorFaction
 }) => {
@@ -49,28 +58,30 @@ const DiceRollMessage = React.memo(({
         setCreated(date);
     }, []);
 
+    const {r, g, b} = hexToRgb(warbandColors[authorFaction]);
+
     return (
         <Grid
             id={timestamp}
             item
             xs={12}
             className={classes.item}
-            style={{ backgroundColor: 'rgba(30,144,255,.2)' }}
+            style={{ backgroundColor: `rgba(${r},${g},${b}, .5)`, filter: 'drop-shadow(5px 5px 10px black)', }}
         >
             <Typography
                 variant="body2"
-                style={{ color: 'gray', fontWeight: 'bold', fontSize: '.6rem' }}
+                style={{ color: 'ghostwhite', fontWeight: 'bold', fontSize: '.6rem' }}
             >{`${author} rolls ${type}:`}</Typography>
             <Typography
                 variant="body2"
-                style={{ color: 'gray', fontSize: '.6rem' }}
+                style={{ color: 'lightgray', fontSize: '.6rem' }}
             >{`${created &&
                 created.toLocaleString('en-US', {
                     hour12: false,
                 })}`}</Typography>
-            <div style={{ display: 'flex'}}>
+            <div style={{ display: 'flex', margin: '1rem', }}>
                 {value.split(',').map((x, i) => (
-                    <div key={i} style={{ width: 36, height: 36, marginRight: '.2rem', backgroundColor: 'white', borderRadius: 36 * .2 }}>
+                    <div key={i} style={{ width: 36, height: 36, marginRight: '.2rem', backgroundColor: 'white', borderRadius: 36 * .2, filter: 'drop-shadow(2.5px 2.5px 5px black)', }}>
                         {
                             type === 'ATTACK' && <AttackDie accentColorHex={warbandColors[authorFaction]} size={36} side={x} useBlackOutline={authorFaction === 'zarbags-gitz'} />
                         }
@@ -128,33 +139,34 @@ const CardMessageItem = React.memo(({
             style={{
                 backgroundColor:
                     author === 'Katophrane'
-                        ? 'rgba(0, 128, 128, .2)'
+                        ? 'rgba(0, 128, 128, 1)'
                         : isMineMessage
-                        ? 'rgba(255, 140, 0, .2)'
-                        : 'rgba(138, 43, 226, .2)',
+                        ? 'rgba(255, 140, 0, 1)'
+                        : 'rgba(138, 43, 226, 1)',
+                filter: 'drop-shadow(5px 5px 10px black)',
             }}
         >
             <div>
                 <Typography
                     variant="body2"
                     style={{
-                        color: 'gray',
+                        color: 'ghostwhite',
                         fontWeight: 'bold',
                         fontSize: '.6rem',
                     }}
                 >{`${author}`}</Typography>
                 <Typography
                     variant="body2"
-                    style={{ color: 'gray', fontSize: '.6rem' }}
+                    style={{ color: 'ghostwhite', fontSize: '.6rem' }}
                 >{`${created &&
                     created.toLocaleString('en-US', {
                         hour12: false,
                     })}`}</Typography>
             </div>
-            <Typography>{value}</Typography>
+            <Typography style={{ color: 'white' }}>{value}</Typography>
             <img
                 src={`/assets/cards/${cardId}.png`}
-                style={{ width: '5rem', borderRadius: '.3rem' }}
+                style={{ width: '5rem', borderRadius: '.3rem', filter: 'drop-shadow(2.5px 2.5px 5px black)', }}
                 onClick={handleSwitchHighglight}
             />
             {highlight && (
@@ -218,32 +230,35 @@ const ChatMessageItem = React.memo(({
             xs={12}
             className={classes.item}
             style={{
-                backgroundColor:
-                    author === 'Katophrane'
-                        ? 'rgba(0, 128, 128, .2)'
-                        : isMineMessage
-                        ? 'rgba(255, 140, 0, .2)'
-                        : 'rgba(138, 43, 226, .2)',
+                backgroundColor: '#36393F',
+                    // author === 'Katophrane'
+                    //     ? '#36393F'
+                    //     : isMineMessage
+                    //     ? 'rgba(255, 140, 0, 1)'
+                    //     : 'rgba(138, 43, 226, 1)',
+                filter: 'drop-shadow(5px 5px 10px black)',
             }}
         >
             <div>
                 <Typography
                     variant="body2"
                     style={{
-                        color: 'gray',
+                        color: 'ghostwhite',
                         fontWeight: 'bold',
                         fontSize: '.6rem',
                     }}
                 >{`${author}`}</Typography>
                 <Typography
                     variant="body2"
-                    style={{ color: 'gray', fontSize: '.6rem' }}
+                    style={{ color: '#727479', fontSize: '.6rem' }}
                 >{`${created &&
                     created.toLocaleString('en-US', {
                         hour12: false,
                     })}`}</Typography>
             </div>
-            <Markdown source={value} />
+            <div style={{ color: '#ACD0D4' }}>
+                <Markdown source={value} />
+            </div>
         </Grid>
     );
 })
@@ -437,7 +452,7 @@ function InteractiveMessage({ data, roomId, isLastMessage, timestamp, onShowHUD,
             >{`Initiative roll for boards selection`}</Typography>
             <Typography
                 variant="body2"
-                style={{ color: 'gray', fontSize: '.6rem' }}
+                style={{ color: 'ghostwhite', fontSize: '.6rem' }}
             >{`${created &&
                 created.toLocaleString('en-US', {
                     hour12: false,
@@ -636,9 +651,9 @@ function Messenger({ roomId, state, messages }) {
                 container
                 spacing={0}
                 className={classes.root}
-                style={{ filter: showMainHUD ? 'blur(3px)' : '', backgroundColor: 'white' }}
+                style={{ filter: showMainHUD ? 'blur(3px)' : '', backgroundColor: 'dimgray' }}
             >
-                <div style={{ width: '100%', height: '100%', marginBottom: '2.5rem', backgroundColor: 'white' }}>
+                <div style={{ width: '100%', height: '100%', marginBottom: '2.5rem' }}>
                 {messages && messages.length > 0 &&
                     messages.map((m, i, arr) => {
                         if (m.type === 'INTERACTIVE') {
