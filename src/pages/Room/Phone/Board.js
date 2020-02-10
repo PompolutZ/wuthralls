@@ -479,7 +479,14 @@ export default function Board({ state, selectedElement, scaleFactor, onScaleFact
                         filter: 'drop-shadow(5px 5px 10px black)'
                     }}
                 >
-                    <img
+                    <TopBoard baseBoardWidth={baseBoardWidth}
+                        baseBoardHeight={baseBoardHeight}
+                        boardId={state.status.top.id}
+                        orientation={state.status.orientation}
+                        offset={state.status.offset}
+                        rotate={state.status.top.rotate}
+                        scaleFactor={scaleFactor} />
+                    {/* <img
                         src={`/assets/boards/${state.status.top.id}${state.status.orientation === 'horizontal' ? '' : 'v'}.jpg`}
                         //src={`/assets/boards/1.jpg`}
                         alt="board"
@@ -494,7 +501,7 @@ export default function Board({ state, selectedElement, scaleFactor, onScaleFact
                             transform: `rotate(${state.status.top.rotate}deg)`,
                             // transform: `rotate(0deg)`,
                         }}
-                    />
+                    /> */}
                     <img
                         //src={`/assets/boards/10.jpg`}
                         src={`/assets/boards/${state.status.bottom.id}${state.status.orientation === 'horizontal' ? '' : 'v'}.jpg`}
@@ -514,7 +521,6 @@ export default function Board({ state, selectedElement, scaleFactor, onScaleFact
                     />
                     {
                         startingHexes.map((hex) => {
-                            console.log(startingHexes, hex)
                             const { x, y } = getGrid(scaleFactor, state.status.orientation, state.status.offset).get(hex).toPoint();
                             return (
                                 <StartingHexElement key={`${hex[0]}:${hex[1]}`} x={state.status.orientation === 'horizontal' ? x : x + (baseSize * scaleFactor) / 2 + 4} y={state.status.orientation === 'horizontal' ? y : y - (baseSize * scaleFactor) / 2 - 4} pointyTokenBaseWidth={pointyTokenBaseWidth} scaleFactor={scaleFactor} baseSize={baseSize} />
@@ -696,4 +702,23 @@ export default function Board({ state, selectedElement, scaleFactor, onScaleFact
         </div>
     );
 }
+
+const TopBoard = React.memo(({ baseBoardWidth, baseBoardHeight, boardId, orientation, offset, rotate, scaleFactor }) => 
+<img
+    src={`/assets/boards/${boardId}${orientation === 'horizontal' ? '' : 'v'}.jpg`}
+    //src={`/assets/boards/1.jpg`}
+    alt="board"
+    style={{
+        opacity: .8,
+        width: orientation === 'horizontal' ? baseBoardWidth * scaleFactor : baseBoardHeight * scaleFactor,
+        height: orientation === 'horizontal' ? baseBoardHeight * scaleFactor : baseBoardWidth * scaleFactor,
+        position: 'absolute',
+        left: orientation === 'horizontal' && offset < 0 ? (Math.abs(offset) * (94 * scaleFactor)) : 0,
+        zIndex: '1',
+        transformOrigin: 'center center',
+        transform: `rotate(${rotate}deg)`,
+        // transform: `rotate(0deg)`,
+    }}
+/>
+)
 

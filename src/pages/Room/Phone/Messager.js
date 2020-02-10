@@ -27,9 +27,9 @@ import {
 
 const useStyles = makeStyles(theme => ({
     item: {
-        margin: '.5rem 1rem .5rem .5rem',
-        padding: '.3rem',
-        borderRadius: '.3rem',
+        // margin: '.5rem 1rem .5rem .5rem',
+        padding: '.5rem',
+        // borderRadius: '.3rem',
     },
 
     root: {
@@ -66,7 +66,7 @@ const DiceRollMessage = React.memo(({
             item
             xs={12}
             className={classes.item}
-            style={{ backgroundColor: `rgba(${r},${g},${b}, .5)`, filter: 'drop-shadow(5px 5px 10px black)', }}
+            style={{ backgroundColor: `rgba(${r},${g},${b}, .5)` }}
         >
             <Typography
                 variant="body2"
@@ -143,14 +143,14 @@ const CardMessageItem = React.memo(({
                         : isMineMessage
                         ? 'rgba(255, 140, 0, 1)'
                         : 'rgba(138, 43, 226, 1)',
-                filter: 'drop-shadow(5px 5px 10px black)',
+                // filter: 'drop-shadow(5px 5px 10px black)',
             }}
         >
             <div>
                 <Typography
                     variant="body2"
                     style={{
-                        color: 'ghostwhite',
+                        color: isMineMessage ? 'magenta' : 'ghostwhite',
                         fontWeight: 'bold',
                         fontSize: '.6rem',
                     }}
@@ -166,7 +166,7 @@ const CardMessageItem = React.memo(({
             <Typography style={{ color: 'white' }}>{value}</Typography>
             <img
                 src={`/assets/cards/${cardId}.png`}
-                style={{ width: '5rem', borderRadius: '.3rem', filter: 'drop-shadow(2.5px 2.5px 5px black)', }}
+                style={{ width: '5rem', borderRadius: '.3rem' }}
                 onClick={handleSwitchHighglight}
             />
             {highlight && (
@@ -236,14 +236,14 @@ const ChatMessageItem = React.memo(({
                     //     : isMineMessage
                     //     ? 'rgba(255, 140, 0, 1)'
                     //     : 'rgba(138, 43, 226, 1)',
-                filter: 'drop-shadow(5px 5px 10px black)',
+                // filter: 'drop-shadow(5px 5px 10px black)',
             }}
         >
             <div>
                 <Typography
                     variant="body2"
                     style={{
-                        color: 'ghostwhite',
+                        color: isMineMessage ? 'magenta' : 'ghostwhite',
                         fontWeight: 'bold',
                         fontSize: '.6rem',
                     }}
@@ -256,7 +256,7 @@ const ChatMessageItem = React.memo(({
                         hour12: false,
                     })}`}</Typography>
             </div>
-            <div style={{ color: '#ACD0D4' }}>
+            <div style={{ color: author === 'Katophrane' ? '#ACD0D4' : isMineMessage ? '#FFEFD5' : '#FA8072' }}>
                 <Markdown source={value} />
             </div>
         </Grid>
@@ -613,12 +613,13 @@ function Messenger({ roomId, state, messages }) {
         const lastMessage = messages[messages.length - 1];
         if(lastMessage) {
             const element = document.getElementById(lastMessage.id);
-            if(element) {
-                element.scrollIntoView();
-                console.log('SCROLLING INTO VIEW', lastMessage);
-            }
+            setTimeout(() => {
+                if(element) {
+                    element.scrollIntoView();
+                    console.log('SCROLLING INTO VIEW', lastMessage);
+                }
+            }, 1000);
         }
-
         // return () => unsubscribe();
     }, [messages]);
 
