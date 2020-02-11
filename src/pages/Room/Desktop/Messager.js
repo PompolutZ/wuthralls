@@ -38,6 +38,15 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
+function hexToRgb(hex) {
+    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? {
+      r: parseInt(result[1], 16),
+      g: parseInt(result[2], 16),
+      b: parseInt(result[3], 16)
+    } : null;
+  }
+
 const DiceRollMessage = React.memo(({
     id, author, value, type, timestamp, authorFaction
 }) => {
@@ -50,42 +59,44 @@ const DiceRollMessage = React.memo(({
         setCreated(date);
     }, []);
 
+    const {r, g, b} = hexToRgb(warbandColors[authorFaction]);
+
     return (
         <Grid
             id={timestamp}
             item
             xs={12}
             className={classes.item}
-            style={{ backgroundColor: 'rgba(30,144,255,.2)' }}
+            style={{ backgroundColor: `rgba(${r},${g},${b}, .5)` }}
         >
             <Typography
                 variant="body2"
-                style={{ color: 'gray', fontWeight: 'bold', fontSize: '.6rem' }}
+                style={{ color: 'ghostwhite', fontWeight: 'bold', fontSize: '.6rem' }}
             >{`${author} rolls ${type}:`}</Typography>
             <Typography
                 variant="body2"
-                style={{ color: 'gray', fontSize: '.6rem' }}
+                style={{ color: 'lightgray', fontSize: '.6rem' }}
             >{`${created &&
                 created.toLocaleString('en-US', {
                     hour12: false,
                 })}`}</Typography>
-            <div style={{ display: 'flex'}}>
+            <div style={{ display: 'flex', margin: '1rem', }}>
                 {value.split(',').map((x, i) => (
-                    <div key={i} style={{ width: 24, height: 24, marginRight: '.2rem', backgroundColor: 'white', borderRadius: 24 * .2 }}>
+                    <div key={i} style={{ width: 36, height: 36, marginRight: '.2rem', backgroundColor: 'white', borderRadius: 36 * .2, filter: 'drop-shadow(2.5px 2.5px 5px black)', }}>
                         {
-                            type === 'ATTACK' && <AttackDie accentColorHex={warbandColors[authorFaction]} size={24} side={x} useBlackOutline={authorFaction === 'zarbags-gitz'} />
+                            type === 'ATTACK' && <AttackDie accentColorHex={warbandColors[authorFaction]} size={36} side={x} useBlackOutline={authorFaction === 'zarbags-gitz'} />
                         }
                         {
-                            type === 'DEFENCE' && <DefenceDie accentColorHex={warbandColors[authorFaction]} size={24} side={x} useBlackOutline={authorFaction === 'zarbags-gitz'} />
+                            type === 'DEFENCE' && <DefenceDie accentColorHex={warbandColors[authorFaction]} size={36} side={x} useBlackOutline={authorFaction === 'zarbags-gitz'} />
                         }
                         {
-                            type === 'MAGIC' && <MagicDie size={24} side={x} />
+                            type === 'MAGIC' && <MagicDie size={36} side={x} />
                         }
                         {
-                            type === 'INITIATIVE' && i % 2 === 0 && <DefenceDie accentColorHex={warbandColors[authorFaction]} size={24} side={x} useBlackOutline={authorFaction === 'zarbags-gitz'} />
+                            type === 'INITIATIVE' && i % 2 === 0 && <DefenceDie accentColorHex={warbandColors[authorFaction]} size={36} side={x} useBlackOutline={authorFaction === 'zarbags-gitz'} />
                         }
                         {
-                            type === 'INITIATIVE' && i % 2 !== 0 && <AttackDie accentColorHex={warbandColors[authorFaction]} size={24} side={x} useBlackOutline={authorFaction === 'zarbags-gitz'} />
+                            type === 'INITIATIVE' && i % 2 !== 0 && <AttackDie accentColorHex={warbandColors[authorFaction]} size={36} side={x} useBlackOutline={authorFaction === 'zarbags-gitz'} />
                         }
                     </div>
                 )
@@ -129,30 +140,31 @@ const CardMessageItem = React.memo(({
             style={{
                 backgroundColor:
                     author === 'Katophrane'
-                        ? 'rgba(0, 128, 128, .2)'
+                        ? 'rgba(0, 128, 128, 1)'
                         : isMineMessage
-                        ? 'rgba(255, 140, 0, .2)'
-                        : 'rgba(138, 43, 226, .2)',
+                        ? 'rgba(255, 140, 0, 1)'
+                        : 'rgba(138, 43, 226, 1)',
+                // filter: 'drop-shadow(5px 5px 10px black)',
             }}
         >
             <div>
                 <Typography
                     variant="body2"
                     style={{
-                        color: 'gray',
+                        color: isMineMessage ? 'magenta' : 'ghostwhite',
                         fontWeight: 'bold',
                         fontSize: '.6rem',
                     }}
                 >{`${author}`}</Typography>
                 <Typography
                     variant="body2"
-                    style={{ color: 'gray', fontSize: '.6rem' }}
+                    style={{ color: 'ghostwhite', fontSize: '.6rem' }}
                 >{`${created &&
                     created.toLocaleString('en-US', {
                         hour12: false,
                     })}`}</Typography>
             </div>
-            <Typography>{value}</Typography>
+            <Typography style={{ color: 'white' }}>{value}</Typography>
             <img
                 src={`/assets/cards/${cardId}.png`}
                 style={{ width: '5rem', borderRadius: '.3rem' }}
@@ -219,37 +231,39 @@ const ChatMessageItem = React.memo(({
             xs={12}
             className={classes.item}
             style={{
-                backgroundColor:
-                    author === 'Katophrane'
-                        ? 'rgba(0, 128, 128, .2)'
-                        : isMineMessage
-                        ? 'rgba(255, 140, 0, .2)'
-                        : 'rgba(138, 43, 226, .2)',
+                backgroundColor: '#36393F',
+                    // author === 'Katophrane'
+                    //     ? '#36393F'
+                    //     : isMineMessage
+                    //     ? 'rgba(255, 140, 0, 1)'
+                    //     : 'rgba(138, 43, 226, 1)',
+                // filter: 'drop-shadow(5px 5px 10px black)',
             }}
         >
             <div>
                 <Typography
                     variant="body2"
                     style={{
-                        color: 'gray',
+                        color: isMineMessage ? 'magenta' : 'ghostwhite',
                         fontWeight: 'bold',
                         fontSize: '.6rem',
                     }}
                 >{`${author}`}</Typography>
                 <Typography
                     variant="body2"
-                    style={{ color: 'gray', fontSize: '.6rem' }}
+                    style={{ color: '#727479', fontSize: '.6rem' }}
                 >{`${created &&
                     created.toLocaleString('en-US', {
                         hour12: false,
                     })}`}</Typography>
             </div>
-            <div style={{ fontSize: '.8rem' }}>
-                <Markdown source={value} />                
+            <div style={{ color: author === 'Katophrane' ? '#ACD0D4' : isMineMessage ? '#FFEFD5' : '#FA8072' }}>
+                <Markdown source={value} />
             </div>
         </Grid>
     );
 })
+
 
 function PickFirstBoardHUD({ data, onFirstBoardSelected}) {
     const boardsList = Object.entries(boards).map(([k, v]) => ({...v, id: k}));
@@ -638,9 +652,9 @@ function Messenger({ roomId, state, messages }) {
             container
             spacing={0}
             className={classes.root}
-            style={{ filter: showMainHUD ? 'blur(3px)' : '', backgroundColor: 'white' }}
+            style={{ filter: showMainHUD ? 'blur(3px)' : '', backgroundColor: '#36393F' }}
         >
-            <div style={{ width: '100%', marginBottom: '2.5rem', backgroundColor: 'white' }}>
+            <div style={{ width: '100%', marginBottom: '2.5rem', backgroundColor: '#36393F' }}>
             {messages && messages.length > 0 &&
                 messages.map((m, i, arr) => {
                     if (m.type === 'INTERACTIVE') {

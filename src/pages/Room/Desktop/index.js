@@ -105,6 +105,8 @@ export default function DesktopRoom() {
     const [overlayPayload, setOverlayPayload] = useState(null);
     const [selectedElement, setSelectedElement] = useState(null);
     const [opponentData, setOpponentData] = useState(state.players.length > 1 ? state[state.players.find(p => p !== myself.uid)] : null)
+    const [boardScaleFactor, setBoardScaleFactor] = useState(.5);
+
 
     useEffect(() => {
         const unsubscribe = firebase.setRoomListener(state.id, snapshot => {
@@ -296,8 +298,11 @@ export default function DesktopRoom() {
                                 }}
                             >
                                 <Board
-                                    state={data}
+                                    roomId={state.id} 
+                                    state={data} 
                                     selectedElement={selectedElement}
+                                    scaleFactor={boardScaleFactor} 
+                                    onScaleFactorChange={setBoardScaleFactor}
                                 />
                             </Scrollbar>
                         </div>

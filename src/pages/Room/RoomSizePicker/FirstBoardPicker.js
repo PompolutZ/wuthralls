@@ -123,8 +123,8 @@ const renderHex = (hex, svg, color, starting, lethals, blocked) => {
         .fill(verticalFill
             
         )
-        .on('mouseover', handleMouseOver)
-        .on('mouseout', handleMouseOut)
+        // .on('mouseover', handleMouseOver)
+        // .on('mouseout', handleMouseOut)
         .attr({ stroke: 'dimgray', 'stroke-width': 1 })
         .translate(x, y)
         .scale(0.9)
@@ -158,12 +158,14 @@ function BoardPlacer({ scale, onInitiaScaleChange, boardOffset=0, hexes }) {
         let nextScaleFactor;
         if(offsetHeight > offsetWidth) {
             // scale based on width
-            console.log(offsetWidth / baseBoardWidth);
-            nextScaleFactor = offsetWidth / (baseBoardWidth + Math.abs(boardOffset) * 94); 
+            console.log(offsetWidth / (baseBoardWidth + Math.abs(boardOffset) * 94));
+            nextScaleFactor = offsetWidth / baseBoardWidth;
             setScaleFactor(nextScaleFactor);
             onInitiaScaleChange(nextScaleFactor);
         } else {
-            setScaleFactor()
+            nextScaleFactor = offsetHeight / baseBoardHeight;
+            setScaleFactor(nextScaleFactor);
+            onInitiaScaleChange(nextScaleFactor);
         }
 
         console.log('LOAD');
@@ -180,11 +182,13 @@ function BoardPlacer({ scale, onInitiaScaleChange, boardOffset=0, hexes }) {
         if(offsetHeight > offsetWidth) {
             // scale based on width
             console.log(offsetWidth / (baseBoardWidth + Math.abs(boardOffset) * 94));
-            nextScaleFactor = offsetWidth / (baseBoardWidth + Math.abs(boardOffset) * 94);
+            nextScaleFactor = offsetWidth / baseBoardWidth;
             setScaleFactor(nextScaleFactor);
             onInitiaScaleChange(nextScaleFactor);
         } else {
-            setScaleFactor()
+            nextScaleFactor = offsetHeight / baseBoardHeight;
+            setScaleFactor(nextScaleFactor);
+            onInitiaScaleChange(nextScaleFactor);
         }
 
         console.log('OFFSET CHANGE')
@@ -199,47 +203,11 @@ function BoardPlacer({ scale, onInitiaScaleChange, boardOffset=0, hexes }) {
             origin: [0, -55 / 2 * scaleFactor],//[0, 0] //[0, -55 / 2 * scaleFactor],
         });
 
-        const lethals = [
-            // ...boardsData[3].lethalHexes[0].map(([x, y]) => boardOffset < 0 ? [x + Math.abs(boardOffset), y] : [x, y]),
-            // ...boardsData[11].lethalHexes[0].map(([x, y]) => boardOffset > 0 ? [x + boardOffset, y + 6] : [x, y + 6]),
-        ]
-
-        const blocked = [
-            // ...boardsData[3].blockedHexes[0].map(([x, y]) => boardOffset < 0 ? [x + Math.abs(boardOffset), y] : [x, y]),
-            // ...boardsData[11].blockedHexes[0].map(([x, y]) => boardOffset > 0 ? [x + boardOffset, y + 6] : [x, y + 6]),
-        ]
-
-        const startingHexes = [
-            // ...boardsData[3].startingHexes[0].map(([x, y]) => boardOffset < 0 ? [x + Math.abs(boardOffset), y] : [x, y]),
-            // ...boardsData[11].startingHexes[0].map(([x, y]) => boardOffset > 0 ? [x + boardOffset, y + 6] : [x, y + 6]),
-        ]
-
         const Grid = defineGrid(Hex);
         Grid
         (
             ...horizontalBoardHexes
-            // ...verticalBoardHexes,
-            // ...[
-            //     // [0,0], [1,0], [2,0],[3,0], [4,0],
-            //     // [0,1], [1,1], [2,1],[3,1], [4,1],
-            //     // [0,2], [1,2], [2,2],[3,2], [4,2],
-            //     // [0,3], [1,3], [2,3],[3,3], [4,3],
-            //     // [0,4], [1,4], [2,4],[3,4], [4,4],
-            //     // [0,5], [1,5], [2,5],[3,5], [4,5],
-            //     // [0,6], [1,6], [2,6],[3,6], [4,6],
-            //     // [0,7], [2,7], [4,7],
-            //     //
-            //     [1,7], [3,7]
-            //     // [1,1], [3,1],
-            //     //[0,1], [1,1], [2,1],[3,1],[4,1]
-            // ],
-            // ...verticalBoardHexes.map(([x, y]) => [x, y + 8])
         )
-        // ([
-        //     ...horizontalBoardHexes.map(([x, y]) => boardOffset < 0 ? [x + Math.abs(boardOffset), y] : [x, y]),
-        //     ...modifyNoOnesArray(noOnesHexesHorizontal, boardOffset).map(([x, y]) => boardOffset < 0 ? [x + Math.abs(boardOffset), y] : [x, y]),
-        //     ...horizontalBoardHexes.map(([x, y]) => boardOffset > 0 ? [x + boardOffset, y + 6] : [x, y + 6]),
-        // ])
         .forEach(hex => {
             const { x, y } = hex.toPoint();
             // use hexSymbol and set its position for each hex
@@ -258,35 +226,6 @@ function BoardPlacer({ scale, onInitiaScaleChange, boardOffset=0, hexes }) {
                 position: 'relative',
             }}
         >
-            {/* <img style={{ 
-                width: baseBoardHeight * scaleFactor,
-                height: baseBoardWidth * scaleFactor,
-                position: 'absolute',
-                left: '50px', //boardOffset < 0 ? Math.abs(boardOffset) * (94 * scaleFactor) : 0,
-                //transform: 'translate(0, 50px) rotate(90deg)',
-                transition: 'all .3s ease-out',
-            }}
-                src={`/assets/boards/14v.jpg`} />
-            <img style={{ 
-                width: baseBoardHeight * scaleFactor,
-                height: baseBoardWidth * scaleFactor,
-                position: 'absolute',
-                top: baseBoardWidth* scaleFactor,
-                left: '50px', //boardOffset < 0 ? Math.abs(boardOffset) * (94 * scaleFactor) : 0,
-                //transform: 'translate(0, 50px) rotate(90deg)',
-                transition: 'all .3s ease-out',
-            }}
-                src={`/assets/boards/8v.jpg`} /> */}
-            {/* <img style={{ 
-                width: baseBoardWidth * scaleFactor,
-                height: baseBoardHeight * scaleFactor,
-                position: 'absolute',
-                top: baseBoardHeight * scaleFactor,
-                left: boardOffset > 0 ? boardOffset * (94 * scaleFactor) : 0,
-                transition: 'all .3s ease-out'
-            }}
-                src={`/assets/boards/12.jpg`} /> */}
-
             <div
                 id="svg_container"
                 style={{
@@ -298,7 +237,9 @@ function BoardPlacer({ scale, onInitiaScaleChange, boardOffset=0, hexes }) {
                     // top: '-12.5px'
                     top: '50%',
                     marginTop: -baseBoardHeight * scaleFactor / 2,
-                    filter: 'drop-shadow(2px 2px 5px dimgray)'
+                    left: '50%',
+                    marginLeft: -baseBoardWidth * scaleFactor / 2,
+                    filter: 'drop-shadow(2px 2px 5px dimgray)',
                 }}
             >
             </div>
@@ -336,11 +277,11 @@ export default function FirstBoardPicker({ onBoardPicked }) {
     return (
         <div
             style={{
-                // background: 'magenta',
                 width: '100%',
                 height: '100%',
                 display: 'flex',
                 flexDirection: 'column',
+                //alignItems: 'center',
             }}
         >
             <div style={{ flex: '0 1 20%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
@@ -362,9 +303,11 @@ export default function FirstBoardPicker({ onBoardPicked }) {
                 </div>
                 <div
                     style={{
-                        flex: 1,
+                        flex: 1,//'1 1 50%',
+                        backgroundColor: 'magenta',
                         display: 'flex',
                         overflow: 'auto',
+                        // justifyContent: 'center',
                     }}
                 >
                     <BoardPlacer scale={scale} onInitiaScaleChange={setScale} boardOffset={offset} hexes={{

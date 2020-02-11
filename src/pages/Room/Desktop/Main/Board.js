@@ -11,9 +11,7 @@ import {
 import ZoomInIcon from '@material-ui/icons/ZoomIn';
 import ZoomOutIcon from '@material-ui/icons/ZoomOut';
 import ButtonBase from '@material-ui/core/ButtonBase';
-import StartingHex from '../../../../components/CommonSVGs/StartingHex';
 import StartingHexElement from './StartingHexElement';
-
 
 const baseSize = 55;
 
@@ -34,9 +32,38 @@ const boardHexesArray = [
     [0, 10], [1, 10], [2, 10], [3,10], [4,10], [5,10], [6,10], [7,10],     
 ];
 
+const verticalBoardHexes = [
+    [0,0], [1,0], [2,0],[3,0], [4,0],
+    [0,1], [1,1], [2,1],[3,1], [4,1],
+    [0,2], [1,2], [2,2],[3,2], [4,2],
+    [0,3], [1,3], [2,3],[3,3], [4,3],
+    [0,4], [1,4], [2,4],[3,4], [4,4],
+    [0,5], [1,5], [2,5],[3,5], [4,5],
+    [0,6], [1,6], [2,6],[3,6], [4,6],
+    [0,7], [2,7], [4,7],
+];
+
+const horizontalBoardHexes = [
+    [0, 0], [1, 0], [2, 0], [3,0], [4,0], [5,0], [6,0], [7,0], 
+    [0, 1], [1, 1], [2, 1], [3,1], [4,1], [5,1], [6,1],
+    [0, 2], [1, 2], [2, 2], [3,2], [4,2], [5,2], [6,2], [7,2],
+    [0, 3], [1, 3], [2, 3], [3,3], [4,3], [5,3], [6,3],
+    [0, 4], [1, 4], [2, 4], [3,4], [4,4], [5,4], [6,4], [7,4],
+];
+
+const noOnesHexesHorizontal = [
+    [0, 5],[1, 5],[2, 5],[3, 5],[4, 5],[5, 5],[6, 5],
+];
+
+const modifyNoOnesArray = (array, offset) => {
+    return offset > 0
+        ? array.map(([x, y]) => [x + offset, y]).slice(0, 7 - offset)
+        : array.slice(0, 7 - Math.abs(offset));
+};
+
 const renderHex = (hex, svg, color, lethals, blocked) => {
             // render(draw, color) {
-    //console.log('RENDER isLethal', hex, lethals.some(([x, y]) => x === hex.x && y === hex.y), blocked)            
+    console.log('RENDER isLethal', hex, lethals.some(([x, y]) => x === hex.x && y === hex.y), blocked)            
 
     const { x, y } = hex.toPoint();
     const corners = hex.corners();
@@ -61,19 +88,8 @@ const renderHex = (hex, svg, color, lethals, blocked) => {
         const element = SVG.get(`hex${hex.x}${hex.y}`);
         if(element) {
             element.stop(true, true).attr({ 'stroke-width': 3 }).animate(175).attr({ 'stroke-width': 1 });
-            // element
-            // // .stop(true, true)
-            // // .stroke({ width: 3, color: color })
-            // // .animate(1000)
-            // .stroke({ width: 1, color: color });
-        } //svg.children().find(c => c.node.id === `hex${hex.x}${hex.y}`);
+        }
     }
-
-
-    // const lethalGradient = svg.gradient('radial', stop => {
-    //     stop.at({ offset: 0.7, color: 'rgba(255,0,0,.2)', opacity: 1});
-    //     stop.at({ offset: 0.8, color: 'rgba(255,0,0,.5)', opacity: 1});
-    // });
 
     svg
         .polygon(corners.map(({ x, y }) => `${x * .96},${y * .96}`))
@@ -86,34 +102,30 @@ const renderHex = (hex, svg, color, lethals, blocked) => {
         .id(`hex${hex.x}${hex.y}`);
 }
 
-const highlightHex = (hex, svg) => {
+const highlightHex = (hex, svg, lethals, blocked) => {
     const { x, y } = hex.toPoint();
     const corners = hex.corners();
+    const isLethal = lethals.some(([x, y]) => x === hex.x && y === hex.y);
+    const isBlocked = blocked.some(([x, y]) => x === hex.x && y === hex.y);
 
     const hexElement = SVG.get(`hex${hex.x}${hex.y}`);
+    console.log(hexElement, hex.x);
     if(hexElement) {
         hexElement
         .stop(true, true)
-        .fill({ opacity: 1, color: 'white' })
+        .fill({ opacity: 1, color: isLethal ? 'red' : 'white' })
         .animate(500)
-        .fill({ opacity: 0, color: 'white' });
+        .fill({ opacity: isBlocked ? .5 : 0, color: isLethal ? 'red' : 'white' });
     }
-    // svg
-    //     .polygon(corners.map(({ x, y }) => `${x},${y}`))
-    //     .translate(x, y)
-        // .stop(true, true)
-        // .fill({ opacity: 1, color: 'white' })
-        // .animate(3000)
-        // .fill({ opacity: 0, color: 'white' });
 }
 
-const getGridFactory = scaleFactor => {
+const getGridFactory = (scaleFactor, orientation) => {
     const hexProto = {
         baseSize: baseSize,
         scaleFactor: .5,
-        orientation: 'pointy',
+        orientation: orientation === 'horizontal' ? 'pointy' : 'flat',
         size: 55 * scaleFactor,
-        origin: [0, -55 / 2 * scaleFactor],
+        origin: orientation === 'horizontal' ? [0, -55 / 2 * scaleFactor] : [-55 / 2 * scaleFactor, 0],
         highlight(svg) {
             svg
                 .stop(true, true)
@@ -127,13 +139,13 @@ const getGridFactory = scaleFactor => {
     return defineGrid(Hex);
 }
 
-const getGrid = scaleFactor =>  {
+const getGrid = (scaleFactor, orientation, offset) =>  {
     const hexProto = {
         baseSize: baseSize,
         scaleFactor: .5,
-        orientation: 'pointy',
+        orientation: orientation === 'horizontal' ? 'pointy' : 'flat',
         size: 55 * scaleFactor,
-        origin: [0, -55 / 2 * scaleFactor],
+        origin: orientation === 'horizontal' ? [0, -55 / 2 * scaleFactor] : [-55 / 2 * scaleFactor, 0],
         highlight(svg) {
             svg
                 .stop(true, true)
@@ -146,10 +158,19 @@ const getGrid = scaleFactor =>  {
     const Hex = extendHex(hexProto);
     const Grid = defineGrid(Hex);
 
-    return Grid(boardHexesArray);
+    return Grid(orientation === 'horizontal' ? [
+            ...horizontalBoardHexes.map(([x, y]) => offset < 0 ? [x + Math.abs(offset), y] : [x, y]),
+            ...modifyNoOnesArray(noOnesHexesHorizontal, offset).map(([x, y]) => offset < 0 ? [x + Math.abs(offset), y] : [x, y]),
+            ...horizontalBoardHexes.map(([x, y]) => offset > 0 ? [x + offset, y + 6] : [x, y + 6]),
+        ] : [
+            ...verticalBoardHexes,
+            ...[[1,7], [3,7]],
+            ...verticalBoardHexes.map(([x, y]) => [x, y + 8])
+        ]
+    );
 }
 
-export default function Board({ state, selectedElement }) {
+export default function Board({ state, selectedElement, scaleFactor, onScaleFactorChange }) {
     const baseBoardWidth = 757;
     const baseBoardHeight = 495;
     const baseSize = 55;
@@ -158,7 +179,6 @@ export default function Board({ state, selectedElement }) {
     const myself = useAuthUser();
     const firebase = useContext(FirebaseContext);
     const rootRef = useRef(null);
-    // const [selectedBoardElement, setSelectedBoardElement] = useState(selectedElement);
     const [svg, setSvg] = React.useState(null);
     const [grid, setGrid] = React.useState(null);
     const [tokenHexes, setTokenHexes] = useState(state.board.tokens);
@@ -173,45 +193,49 @@ export default function Board({ state, selectedElement }) {
         left: -10000,
     })    
     const [selectedTokenId, setSelectedTokenId] = useState(null);
-    const [scaleFactor, setScaleFactor] = useState(.5);
+    //const [scaleFactor, setScaleFactor] = useState(.5);
     const [scaleFactorModifier, setScaleFactorModifier] = useState(1);
     const [myData, setMyData] = useState(state[myself.uid]);
     const [opponentData, setOpponentData] = useState(state.players.length > 1 ? state[state.players.find(p => p !== myself.uid)] : null)
-    const [startingHexes, setStartingHexes] = useState(state.board.map ?         [
-        ...boardsData[state.board.map.top.id].startingHexes[state.board.map.bottom.rotate],
-        ...boardsData[state.board.map.bottom.id].startingHexes[state.board.map.bottom.rotate].map(([x, y]) => [x, y + 6]),
-    ]
-    : []
+    const [startingHexes, setStartingHexes] = useState(state.status.stage === 'READY' ?
+        state.status.orientation === 'horizontal' ? [
+            ...boardsData[state.status.top.id][state.status.orientation].startingHexes[state.status.top.rotate].map(([x, y]) => state.status.offset < 0 ? [x + Math.abs(state.status.offset), y] : [x, y]),
+            ...boardsData[state.status.bottom.id][state.status.orientation].startingHexes[state.status.bottom.rotate].map(([x, y]) => state.status.offset > 0 ? [x + state.status.offset, y + 6] : [x, y + 6]),
+        ] : [
+            ...boardsData[state.status.top.id][state.status.orientation].startingHexes[state.status.top.rotate], // .map(([x, y]) => offset < 0 ? [x + Math.abs(offset), y] : [x, y])
+            ...boardsData[state.status.bottom.id][state.status.orientation].startingHexes[state.status.bottom.rotate].map(([x, y]) => [x, y + 8]),
+        ] : []
     )
     
     useEffect(() => {
-        if(!state.board.map) return;
+        if(state.status.stage !== 'READY') return;
 
         const mainContainer = document.getElementById('mainContainer');
-        
-        const nextScaleFactor = (mainContainer ? (mainContainer.offsetHeight / (baseBoardHeight * 2)) * 1.2 : scaleFactor) * scaleFactorModifier;
-        setScaleFactor(nextScaleFactor);
-        console.log('RECALC SIZE', mainContainer.offsetHeight, nextScaleFactor);
-        console.log(state);
     }, []);
 
     useEffect(() => {
 
-        if(!state.board || !state.board.map || !state.board.map.top || !state.board.map.bottom) return;
+        if(state.status.stage !== 'READY') return;
+        
         const currentSvg = svg ? svg : SVG(rootRef.current);
         currentSvg.clear();
         setSvg(currentSvg);
-        const initGrid = getGrid(scaleFactor);
-        console.log(initGrid.get([3, 5]).toPoint())
+        const initGrid = getGrid(scaleFactor, state.status.orientation, state.status.offset);
 
-        const lethals = [
-            ...boardsData[state.board.map.top.id].lethalHexes[state.board.map.top.rotate],
-            ...boardsData[state.board.map.bottom.id].lethalHexes[state.board.map.bottom.rotate].map(([x, y]) => [x, y + 6]),
+        const lethals = state.status.orientation === 'horizontal' ? [
+            ...boardsData[state.status.top.id][state.status.orientation].lethalHexes[state.status.top.rotate].map(([x, y]) => state.status.offset < 0 ? [x + Math.abs(state.status.offset), y] : [x, y]),
+            ...boardsData[state.status.bottom.id][state.status.orientation].lethalHexes[state.status.bottom.rotate].map(([x, y]) => state.status.offset > 0 ? [x + state.status.offset, y + 6] : [x, y + 6]),
+        ] : [
+            ...boardsData[state.status.top.id][state.status.orientation].lethalHexes[state.status.top.rotate], // .map(([x, y]) => offset < 0 ? [x + Math.abs(offset), y] : [x, y])
+            ...boardsData[state.status.bottom.id][state.status.orientation].lethalHexes[state.status.bottom.rotate].map(([x, y]) => [x, y + 8]),
         ]
 
-        const blocked = [
-            ...boardsData[state.board.map.top.id].blockedHexes[state.board.map.top.rotate],
-            ...boardsData[state.board.map.bottom.id].blockedHexes[state.board.map.bottom.rotate].map(([x, y]) => [x, y + 6]),
+        const blocked = state.status.orientation === 'horizontal' ? [
+            ...boardsData[state.status.top.id][state.status.orientation].blockedHexes[state.status.top.rotate].map(([x, y]) => state.status.offset < 0 ? [x + Math.abs(state.status.offset), y] : [x, y]),
+            ...boardsData[state.status.bottom.id][state.status.orientation].blockedHexes[state.status.bottom.rotate].map(([x, y]) => state.status.offset > 0 ? [x + state.status.offset, y + 6] : [x, y + 6]),
+        ] : [
+            ...boardsData[state.status.top.id][state.status.orientation].blockedHexes[state.status.top.rotate], // .map(([x, y]) => offset < 0 ? [x + Math.abs(offset), y] : [x, y])
+            ...boardsData[state.status.bottom.id][state.status.orientation].blockedHexes[state.status.bottom.rotate].map(([x, y]) => [x, y + 8]),
         ]
 
         initGrid.forEach(hex => {
@@ -221,7 +245,7 @@ export default function Board({ state, selectedElement }) {
     }, [scaleFactor])
 
     useEffect(() => {
-        console.log('Board.OnSelectedElementChange', selectedElement);
+        //console.log('Board.OnSelectedElementChange', selectedElement);
 
         if(selectedElement && selectedElement.type === 'SCATTER_TOKEN') {
             setScatterToken({
@@ -241,12 +265,18 @@ export default function Board({ state, selectedElement }) {
     useEffect(() => {
         setTokenHexes(state.board.tokens);
         setFighters(state.board.fighters);
-        setStartingHexes(state.board.map ?
-            [
-                ...boardsData[state.board.map.top.id].startingHexes[state.board.map.top.rotate],
-                ...boardsData[state.board.map.bottom.id].startingHexes[state.board.map.bottom.rotate].map(([x, y]) => [x, y + 6]),
-            ] : []
-        );
+
+        if(state.status.stage === 'READY') {
+            setStartingHexes(
+                state.status.orientation === 'horizontal' ? [
+                    ...boardsData[state.status.top.id][state.status.orientation].startingHexes[state.status.top.rotate].map(([x, y]) => state.status.offset < 0 ? [x + Math.abs(state.status.offset), y] : [x, y]),
+                    ...boardsData[state.status.bottom.id][state.status.orientation].startingHexes[state.status.bottom.rotate].map(([x, y]) => state.status.offset > 0 ? [x + state.status.offset, y + 6] : [x, y + 6]),
+                ] : [
+                    ...boardsData[state.status.top.id][state.status.orientation].startingHexes[state.status.top.rotate], // .map(([x, y]) => offset < 0 ? [x + Math.abs(offset), y] : [x, y])
+                    ...boardsData[state.status.bottom.id][state.status.orientation].startingHexes[state.status.bottom.rotate].map(([x, y]) => [x, y + 8]),
+                ]
+            );
+        }
     }, [state]);
 
     useEffect(() => {
@@ -262,7 +292,7 @@ export default function Board({ state, selectedElement }) {
         };
         setTokenHexes(update);
 
-        console.log('TOKEN HEXES', tokenHexes);
+        // console.log('TOKEN HEXES', tokenHexes);
         firebase.updateBoardProperty(state.id, 'board.tokens', update);
         firebase.addGenericMessage2(state.id, {
             author: 'Katophrane',
@@ -272,35 +302,51 @@ export default function Board({ state, selectedElement }) {
     }, [tokenHexes]);
 
     const handleIncreazeScaleFactor = () => {
-        setScaleFactor(prev => prev * 1.2);
-        // const nextScaleFactorMod = scaleFactorModifier + 0.2;
-        // setScaleFactorModifier(nextScaleFactorMod);
-        // const mainContainer = document.getElementById('mainContainer');
-        // const nextScaleFactor = (mainContainer ? (mainContainer.offsetHeight / (baseBoardHeight * 2)) * 1.2 : scaleFactor) * nextScaleFactorMod;
-        // setScaleFactor(nextScaleFactor);
-        // console.log('INCREASE', nextScaleFactorMod, nextScaleFactor);
+        onScaleFactorChange(prev => prev * 1.2);
     }
 
     const handleDecreaseScaleFactor = () => {
-        // const nextScaleFactorMod = scaleFactorModifier - 0.2;
-        // setScaleFactorModifier(nextScaleFactorMod);
-        // const mainContainer = document.getElementById('mainContainer');
-        // const nextScaleFactor = (mainContainer ? (mainContainer.offsetHeight / (baseBoardHeight * 2)) * 1.2 : scaleFactor) * nextScaleFactorMod;
-        // setScaleFactor(nextScaleFactor);
-        // console.log('DECREASE', nextScaleFactorMod, nextScaleFactor);
-        setScaleFactor(prev => prev * .8);
+        onScaleFactorChange(prev => prev * .8);
     }
 
     const handleClick = e => {
         const { offsetX, offsetY } = e.nativeEvent;
-        const hex = getGridFactory(scaleFactor).pointToHex([offsetX, offsetY]);
-        console.log(hex);
-        const isHexOnBoard = boardHexesArray.find(([x, y]) => hex.x === x && hex.y === y);
+        const hex = getGridFactory(scaleFactor, state.status.orientation).pointToHex([offsetX, offsetY]);
+        // console.log(hex);
+        const hexes = state.status.orientation === 'horizontal' ? [
+            ...horizontalBoardHexes.map(([x, y]) => state.status.offset < 0 ? [x + Math.abs(state.status.offset), y] : [x, y]),
+            ...modifyNoOnesArray(noOnesHexesHorizontal, state.status.offset).map(([x, y]) => state.status.offset < 0 ? [x + Math.abs(state.status.offset), y] : [x, y]),
+            ...horizontalBoardHexes.map(([x, y]) => state.status.offset > 0 ? [x + state.status.offset, y + 6] : [x, y + 6]),
+        ] : [
+            ...verticalBoardHexes,
+            ...[[1,7], [3,7]],
+            ...verticalBoardHexes.map(([x, y]) => [x, y + 8])
+        ];
+        const isHexOnBoard = hexes.find(([x, y]) => hex.x === x && hex.y === y);
+
         if(!isHexOnBoard) return;
+        const lethals = state.status.orientation === 'horizontal' ? [
+            ...boardsData[state.status.top.id][state.status.orientation].lethalHexes[state.status.top.rotate].map(([x, y]) => state.status.offset < 0 ? [x + Math.abs(state.status.offset), y] : [x, y]),
+            ...boardsData[state.status.bottom.id][state.status.orientation].lethalHexes[state.status.bottom.rotate].map(([x, y]) => state.status.offset > 0 ? [x + state.status.offset, y + 6] : [x, y + 6]),
+        ] : [
+            ...boardsData[state.status.top.id][state.status.orientation].lethalHexes[state.status.top.rotate], // .map(([x, y]) => offset < 0 ? [x + Math.abs(offset), y] : [x, y])
+            ...boardsData[state.status.bottom.id][state.status.orientation].lethalHexes[state.status.bottom.rotate].map(([x, y]) => [x, y + 8]),
+        ]
+
+        const blocked = state.status.orientation === 'horizontal' ? [
+            ...boardsData[state.status.top.id][state.status.orientation].blockedHexes[state.status.top.rotate].map(([x, y]) => state.status.offset < 0 ? [x + Math.abs(state.status.offset), y] : [x, y]),
+            ...boardsData[state.status.bottom.id][state.status.orientation].blockedHexes[state.status.bottom.rotate].map(([x, y]) => state.status.offset > 0 ? [x + state.status.offset, y + 6] : [x, y + 6]),
+        ] : [
+            ...boardsData[state.status.top.id][state.status.orientation].blockedHexes[state.status.top.rotate], // .map(([x, y]) => offset < 0 ? [x + Math.abs(offset), y] : [x, y])
+            ...boardsData[state.status.bottom.id][state.status.orientation].blockedHexes[state.status.bottom.rotate].map(([x, y]) => [x, y + 8]),
+        ]
+
         if(hex) {
-            highlightHex(hex, svg);
+            // console.log("ping")
+            highlightHex(hex, svg, lethals, blocked);
             if(selectedTokenId) {
                 if(selectedElement.type === 'SCATTER_TOKEN') {
+                    console.log('SCATTER', hex);
                     setScatterToken({
                         ...scatterToken,
                         onBoard: { x: hex.x, y: hex.y }
@@ -326,6 +372,7 @@ export default function Board({ state, selectedElement }) {
                         value: `${myself.username} placed ${selectedTokenId.startsWith(myself.uid) ? 'HIS' : 'ENEMIES'} ${fighters[selectedTokenId].name} to (${hex.x},${hex.y}).`,
                     })
                 } else {
+                    // console.log("ping");
                     const updatedToken = {
                         ...tokenHexes[selectedTokenId],
                         from: tokenHexes[selectedTokenId].isOnBoard ? tokenHexes[selectedTokenId].onBoard : {x: -1, y: -1 },
@@ -348,29 +395,24 @@ export default function Board({ state, selectedElement }) {
         }
     }
 
-    if(!state.board.map || !state.board.map.top || !state.board.map.bottom) {
+    if(state.status.stage !== 'READY') {
         return (
-            <div style={{ display: 'flex' }}>
-                Waiting for players to select board pieces
+            <div style={{ display: 'flex', width: '100%', height: '100%' }}>
+                <div style={{ margin: 'auto'}}>
+                    Waiting for players to select board pieces...
+                </div>
             </div>
         )
     }
 
-    const scatterTokenHex = scatterToken && scatterToken.isOnBoard ? getGrid(scaleFactor).get(scatterToken.onBoard) : null;
+    const scatterTokenHex = scatterToken && scatterToken.isOnBoard ? getGrid(scaleFactor, state.status.orientation, state.status.offset).get(scatterToken.onBoard) : null;
     const { x: scatterTokenX, y: scatterTokenY } = scatterTokenHex ? scatterTokenHex.toPoint() : { x: -10, y: -10};
     const myHand = myData && myData.hand ? myData.hand.split(',').map(cardId => ({ ...cardsDb[cardId], id: cardId })) : [];
     const opponentHand = opponentData && opponentData.hand ? opponentData.hand.split(',').map(cardId => ({ ...cardsDb[cardId], id: cardId })) : [];
 
     return (
-        <div id="mainContainer" style={{ display: 'flex', flexFlow: 'row wrap', backgroundColor: 'dimgray', margin: 'auto' }}>
+        <div id="mainContainer" style={{ display: 'flex', flexFlow: 'row wrap', backgroundColor: 'dimgray', color: 'white', margin: 'auto' }}>
             <div style={{ flex: '0 0 100%', display: 'flex', borderBottom: '1px solid lighgray', paddingBottom: '.2rem', marginBottom: '.2rem', alignItems: 'center' }}>
-                <ButtonBase onClick={handleIncreazeScaleFactor} style={{ flex: 1}}>
-                    <ZoomInIcon />
-                </ButtonBase>
-                <ButtonBase onClick={handleDecreaseScaleFactor}>
-                    <ZoomOutIcon />
-                </ButtonBase>
-{/* 
                 {
                     myData && (
                         <div style={{ display: 'flex', flexDirection: 'row-reverse', flex: 1, borderRight: '1px solid gray', paddingRight: '.2rem', alignItems: 'center' }}>
@@ -390,6 +432,9 @@ export default function Board({ state, selectedElement }) {
                             <div style={{ marginRight: '.2rem', width: '1rem', height: '1.5rem', backgroundColor: 'teal', borderRadius: '.2rem', color: 'white', display: 'flex' }}>
                                 <Typography style={{ margin: 'auto', fontSize: '.7rem' }}>{myHand.filter(c => c.type !== 0).length}</Typography>
                             </div>
+                            <ButtonBase onClick={handleIncreazeScaleFactor} style={{ flex: 1}}>
+                                <ZoomInIcon />
+                            </ButtonBase>
                         </div>
                     )
                 }
@@ -416,79 +461,81 @@ export default function Board({ state, selectedElement }) {
                             <div style={{ marginLeft: '.2rem', width: '1rem', height: '1.5rem', backgroundColor: 'teal', borderRadius: '.2rem', color: 'white', display: 'flex' }}>
                                 <Typography style={{ margin: 'auto', fontSize: '.7rem' }}>{opponentHand.filter(c => c.type !== 0).length}</Typography>
                             </div>
+                            <ButtonBase onClick={handleDecreaseScaleFactor}>
+                                <ZoomOutIcon />
+                            </ButtonBase>
                         </div>
                     )
-                } */}
+                }
             </div>
             <div style={{ display: 'flex', flex: '1 0 100%', backgroundColor: 'dimgray', }}>
                 <div
                     style={{
-                        backgroundColor: 'white',
                         position: 'relative',
-                        width: baseBoardWidth * scaleFactor,
-                        height: (baseBoardHeight * scaleFactor) * 2,
+                        width: state.status.orientation === 'horizontal' ? baseBoardWidth * scaleFactor + (Math.abs(state.status.offset) * (94 * scaleFactor)) : baseBoardHeight * scaleFactor, //baseBoardWidth * scaleFactor, //baseBoardHeight * 2 * scaleFactor,//baseBoardWidth * scaleFactor + (Math.abs(boardOffset) * (94 * scaleFactor)),
+                        height: state.status.orientation === 'horizontal' ? baseBoardHeight * 2 * scaleFactor : baseBoardWidth * 2 * scaleFactor, //baseBoardWidth * scaleFactor * 2, //baseBoardHeight * 2 * scaleFactor,
                         margin: 'auto',
                         filter: 'drop-shadow(5px 5px 10px black)'
                     }}
                 >
-                    <img
-                        src={`/assets/boards/${state.board.map.top.id}.jpg`}
+                    <TopBoard baseBoardWidth={baseBoardWidth}
+                        baseBoardHeight={baseBoardHeight}
+                        boardId={state.status.top.id}
+                        orientation={state.status.orientation}
+                        offset={state.status.offset}
+                        rotate={state.status.top.rotate}
+                        scaleFactor={scaleFactor} />
+                    {/* <img
+                        src={`/assets/boards/${state.status.top.id}${state.status.orientation === 'horizontal' ? '' : 'v'}.jpg`}
                         //src={`/assets/boards/1.jpg`}
                         alt="board"
                         style={{
-                            width: baseBoardWidth * scaleFactor,
-                            height: baseBoardHeight * scaleFactor,
+                            opacity: .8,
+                            width: state.status.orientation === 'horizontal' ? baseBoardWidth * scaleFactor : baseBoardHeight * scaleFactor,
+                            height: state.status.orientation === 'horizontal' ? baseBoardHeight * scaleFactor : baseBoardWidth * scaleFactor,
                             position: 'absolute',
+                            left: state.status.orientation === 'horizontal' && state.status.offset < 0 ? (Math.abs(state.status.offset) * (94 * scaleFactor)) : 0,
                             zIndex: '1',
                             transformOrigin: 'center center',
-                            transform: `rotate(${state.board.map.top.rotate}deg)`,
+                            transform: `rotate(${state.status.top.rotate}deg)`,
                             // transform: `rotate(0deg)`,
                         }}
-                    />
+                    /> */}
                     <img
                         //src={`/assets/boards/10.jpg`}
-                        src={`/assets/boards/${state.board.map.bottom.id}.jpg`}
+                        src={`/assets/boards/${state.status.bottom.id}${state.status.orientation === 'horizontal' ? '' : 'v'}.jpg`}
                         alt="board2"
                         style={{
-                            width: baseBoardWidth * scaleFactor,
-                            height: baseBoardHeight * scaleFactor,
+                            opacity: .8,
+                            width: state.status.orientation === 'horizontal' ? baseBoardWidth * scaleFactor : baseBoardHeight * scaleFactor,
+                            height: state.status.orientation === 'horizontal' ? baseBoardHeight * scaleFactor : baseBoardWidth * scaleFactor,
                             position: 'absolute',
                             zIndex: '1',
-                            top: baseBoardHeight * scaleFactor,
-                            left: 0,
+                            top: state.status.orientation === 'horizontal' ? baseBoardHeight * scaleFactor : baseBoardWidth * scaleFactor,
+                            left: state.status.orientation === 'horizontal' && state.status.offset > 0 ? (Math.abs(state.status.offset) * (94 * scaleFactor)) : 0,
                             transformOrigin: 'center center',
-                            transform: `rotate(${state.board.map.bottom.rotate}deg)`,
+                            transform: `rotate(${state.status.bottom.rotate}deg)`,
                             //transform: `rotate(0deg)`,
                         }}
                     />
                     {
                         startingHexes.map((hex) => {
-                            const { x, y } = getGrid(scaleFactor).get(hex).toPoint();
+                            const { x, y } = getGrid(scaleFactor, state.status.orientation, state.status.offset).get(hex).toPoint();
                             return (
-                                <StartingHexElement key={`${hex[0]}:${hex[1]}`} x={x} y={y} pointyTokenBaseWidth={pointyTokenBaseWidth} scaleFactor={scaleFactor} baseSize={baseSize} />
-                                // <div key={`${hex[0]}:${hex[1]}`}
-                                //     style={{
-                                //         position: 'absolute',
-                                //         zIndex: 2,
-                                //         width: pointyTokenBaseWidth * scaleFactor,
-                                //         height: pointyTokenBaseWidth * scaleFactor,
-                                //         top: y + (baseSize * scaleFactor) / 2,
-                                //         left: x,
-                                //         display: 'flex',
-                                //         flexDirection: 'column',
-                                //         alignItems: 'center',
-                                //     }}>
-                                //         <StartingHex style={{ width: '75%', height: '75%', margin: 'auto', paddingTop: '.5rem', color: 'rgba(211,211,211,.7)' }} />
-                                //     </div>
+                                <StartingHexElement key={`${hex[0]}:${hex[1]}`} x={state.status.orientation === 'horizontal' ? x : x + (baseSize * scaleFactor) / 2 + 4} y={state.status.orientation === 'horizontal' ? y : y - (baseSize * scaleFactor) / 2 - 4} pointyTokenBaseWidth={pointyTokenBaseWidth} scaleFactor={scaleFactor} baseSize={baseSize} />
                             ); 
                         })
                     }
                     <div
                         style={{
+                            width: state.status.orientation === 'horizontal' ? baseBoardWidth * scaleFactor + (Math.abs(state.status.offset) * (94 * scaleFactor)) : baseBoardHeight * scaleFactor, //baseBoardWidth * scaleFactor, //baseBoardHeight * 2 * scaleFactor,//baseBoardWidth * scaleFactor + (Math.abs(boardOffset) * (94 * scaleFactor)),
+                            height: state.status.orientation === 'horizontal' ? baseBoardHeight * 2 * scaleFactor : baseBoardWidth * 2 * scaleFactor, //baseBoardWidth * scaleFactor * 2, //baseBoardHeight * 2 * scaleFactor,
                             position: 'absolute',
-                            width: baseBoardWidth * scaleFactor,
-                            height: (baseBoardHeight * scaleFactor) * 2,
-                            zIndex: 600,
+                            top: state.status.orientation === 'horizontal' ? '50%' : 0,
+                            left: state.status.orientation === 'horizontal' ? 0 : '50%',
+                            marginTop: state.status.orientation === 'horizontal' ? -baseBoardHeight * 2 * scaleFactor / 2 : 0,
+                            marginLeft: state.status.orientation === 'horizontal' ? 0 : -(baseBoardHeight * scaleFactor) / 2,
+                            zIndex: 700,
                         }}
                         ref={rootRef}
                         onClick={handleClick}
@@ -497,14 +544,16 @@ export default function Board({ state, selectedElement }) {
                         tokenHexes && Object.entries(tokenHexes).map(([k, hex], index) => {
                             
                             if(k.startsWith('Lethal') && hex.isOnBoard) {
-                                const {x, y} = getGrid(scaleFactor).get(hex.onBoard).toPoint();
+                                const {x, y} = getGrid(scaleFactor, state.status.orientation, state.status.offset).get(hex.onBoard).toPoint();
                                 return (
                                     <div key={k} style={{
                                         position: 'absolute',
                                         zIndex: 500,
                                         width: pointyTokenBaseWidth * scaleFactor,
-                                        top: y + (baseSize * scaleFactor) / 2,
-                                        left: x,
+                                        top: state.status.orientation === 'horizontal' ? y + (baseSize * scaleFactor) / 2 : y -4,
+                                        left: state.status.orientation === 'horizontal' ? x : x + (baseSize * scaleFactor) / 2 + 4,
+                                        transform: `rotate(${state.status.orientation === 'horizontal' ? 0 : 30}deg)`,
+                                        transformOrigin: 'center center',
                                     }}>
                                         <img
                                             src={`/assets/tokens/lethal.png`}
@@ -527,14 +576,16 @@ export default function Board({ state, selectedElement }) {
                             }
 
                             if(k.startsWith('Feature') && hex.isOnBoard) {
-                                const {x, y} = getGrid(scaleFactor).get(hex.onBoard).toPoint();
+                                const {x, y} = getGrid(scaleFactor, state.status.orientation, state.status.offset).get(hex.onBoard).toPoint();
                                 return (
                                     <div key={k} style={{
                                         position: 'absolute',
                                         zIndex: 500,
                                         width: pointyTokenBaseWidth * scaleFactor,
-                                        top: y + (baseSize * scaleFactor) / 2,
-                                        left: x,
+                                        top: state.status.orientation === 'horizontal' ? y + (baseSize * scaleFactor) / 2 : y -4,
+                                        left: state.status.orientation === 'horizontal' ? x : x + (baseSize * scaleFactor) / 2,
+                                        transform: `rotate(${state.status.orientation === 'horizontal' ? 0 : 30}deg)`,
+                                        transformOrigin: 'center center',
                                         }}>
                                         <img
                                                 src={
@@ -561,43 +612,67 @@ export default function Board({ state, selectedElement }) {
                     {
                         fighters && Object.entries(fighters).map(([k, fighter]) => {
                             if(fighter.isOnBoard) {
-                                const { x, y } = getGrid(scaleFactor).get(fighter.onBoard).toPoint();
+                                const { x, y } = getGrid(scaleFactor, state.status.orientation, state.status.offset).get(fighter.onBoard).toPoint();
 
                                 return (
                                     <div
                                         key={k}
                                         style={{
                                             position: 'absolute',
-                                            // backgroundImage: `url(/assets/fighters/${fighter.icon}-icon.png)`,
-                                            // backgroundSize: 'cover',
-                                            zIndex: 600,
+                                            zIndex: !fighter.subtype ? 600 : 599,
                                             width: 80 * scaleFactor,
                                             height: 80 * scaleFactor,
-                                            top: y + ((95 - 80) * scaleFactor) * 2.75 - 2,
-                                            left: x + ((95 - 80) * scaleFactor) / 2 - 2,
+                                            top: state.status.orientation === 'horizontal' ? y + ((95 - 80) * scaleFactor) * 2.75 -4 : y, //  + (((95 - 80) * scaleFactor) * 2.75 -4) * .5
+                                            left: state.status.orientation === 'horizontal' ? x + ((95 - 80) * scaleFactor) / 2 -4 : x + (baseSize * scaleFactor) / 2 + 4, // + (((95 - 80) * scaleFactor) / 2 -4) * .5
                                             border: k.startsWith(myself.uid) ? '3px solid limegreen' : '3px solid red',
                                             borderRadius: 80,
                                             boxShadow: k === selectedTokenId ? k.startsWith(myself.uid) ? '0 0 7px 7px limegreen' : '0 0 7px 7px red' : '',
                                         }}>
                                             <img src={`/assets/fighters/${fighter.icon}-icon.png`} style={{ width: '100%', transform: !k.startsWith(myself.uid) ? 'scaleX(-1)' : '', }} />
-                                            <div style={{ 
-                                                position: 'absolute', 
-                                                zIndex: 601, 
-                                                width: '2rem', 
-                                                height: '2rem', 
-                                                backgroundColor: 'darkred',
-                                                display: 'flex',
-                                                border: '1px solid white',
-                                                borderRadius: '1rem',
-                                                top: '-.5rem',
-                                                left: '-.5rem',
-                                                transformOrigin: 'center center',
-                                                transform: `scale(${scaleFactor})`,
-                                                boxSizing: 'boarder-box', verticalAlign: 'middle' }}>
-                                                    <Typography style={{ fontSize: '1.5rem', margin: 'auto', color: 'white', verticalAlign: 'middle'}}>{fighter.wounds}</Typography>
-                                                </div>
+                                            {
+                                                !fighter.subtype && (
+                                                    <div style={{ 
+                                                        position: 'absolute', 
+                                                        zIndex: 601, 
+                                                        width: '2rem', 
+                                                        height: '2rem', 
+                                                        backgroundColor: 'darkred',
+                                                        display: 'flex',
+                                                        border: '1px solid white',
+                                                        borderRadius: '1rem',
+                                                        top: '-.5rem',
+                                                        left: '-.5rem',
+                                                        transformOrigin: 'center center',
+                                                        transform: `scale(${scaleFactor})`,
+                                                        boxSizing: 'boarder-box', verticalAlign: 'middle' }}>
+                                                        <Typography style={{ fontSize: '1.5rem', margin: 'auto', color: 'white', verticalAlign: 'middle'}}>{fighter.wounds}</Typography>
+                                                    </div>
+                                                )
+                                            }
+                                            {
+                                                fighter.tokens && (
+                                                    <div style={{ 
+                                                        position: 'absolute',
+                                                        display: 'flex',
+                                                        bottom: -((75 / 2) * scaleFactor) / 2,
+                                                    }}>
+                                                        {
+                                                            fighter.tokens.split(',').map((t, idx) => (
+                                                                <div key={idx} style={{
+                                                                    backgroundImage: `url(/assets/other/${t}.png)`,
+                                                                    width: (75 / 2) * scaleFactor,
+                                                                    height: (75 / 2) * scaleFactor,
+                                                                    backgroundSize: 'cover',
+                                                                    boxSizing: 'border-box',
+                                                                    border: '1px solid white',
+                                                                    marginRight: '.2rem'
+                                                                }} />
+                                                            ))
+                                                        }
+                                                    </div>
+                                                )
+                                            }
                                     </div>
-        
                                 )
                             }
                         })
@@ -610,8 +685,8 @@ export default function Board({ state, selectedElement }) {
                                     position: 'absolute',
                                     zIndex: 550,
                                     width: pointyTokenBaseWidth * scaleFactor,
-                                    top: scatterTokenY < 0 ? -10000 : scatterTokenY + (baseSize * scaleFactor) / 2,
-                                    left: scatterTokenX < 0 ? -10000 : scatterTokenX,
+                                    top: scatterTokenY < 0 ? -10000 : state.status.orientation === 'horizontal' ? scatterTokenY + (baseSize * scaleFactor) / 2 : scatterTokenY - 4,
+                                    left: scatterTokenX < 0 ? -10000 : state.status.orientation === 'horizontal' ? scatterTokenX : scatterTokenX + (baseSize * scaleFactor) / 2,
                                     transform: `rotate(${scatterToken.rotationAngle}deg)`, 
                                     transformOrigin: 'center center',
                                 }}
@@ -626,3 +701,23 @@ export default function Board({ state, selectedElement }) {
         </div>
     );
 }
+
+const TopBoard = React.memo(({ baseBoardWidth, baseBoardHeight, boardId, orientation, offset, rotate, scaleFactor }) => 
+<img
+    src={`/assets/boards/${boardId}${orientation === 'horizontal' ? '' : 'v'}.jpg`}
+    //src={`/assets/boards/1.jpg`}
+    alt="board"
+    style={{
+        opacity: .8,
+        width: orientation === 'horizontal' ? baseBoardWidth * scaleFactor : baseBoardHeight * scaleFactor,
+        height: orientation === 'horizontal' ? baseBoardHeight * scaleFactor : baseBoardWidth * scaleFactor,
+        position: 'absolute',
+        left: orientation === 'horizontal' && offset < 0 ? (Math.abs(offset) * (94 * scaleFactor)) : 0,
+        zIndex: '1',
+        transformOrigin: 'center center',
+        transform: `rotate(${rotate}deg)`,
+        // transform: `rotate(0deg)`,
+    }}
+/>
+)
+

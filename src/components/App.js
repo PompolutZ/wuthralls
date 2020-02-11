@@ -23,31 +23,31 @@ import Future from '../pages/Future';
 import MuiAlert from '@material-ui/lab/Alert';
 import Snackbar from '@material-ui/core/Snackbar';
 
-function Alert(props) {
-    return <MuiAlert elevation={6} variant="filled" {...props} />;
-}
+// function Alert(props) {
+//     return <MuiAlert elevation={6} variant="filled" {...props} />;
+// }
 
 function App() {
     const [open, setOpen] = useState(false);
 
-    useEffect(() => {
-        const swUrl = `${process.env.PUBLIC_URL}/service-worker.js`;
-        window.navigator.serviceWorker.register(swUrl)
-        .then(registration => {
-            registration.onupdatefound = () => {
-                const installingWorker = registration.installing;
-                if(installingWorker == null) return;
+    // useEffect(() => {
+    //     const swUrl = `${process.env.PUBLIC_URL}/service-worker.js`;
+    //     window.navigator.serviceWorker.register(swUrl)
+    //     .then(registration => {
+    //         registration.onupdatefound = () => {
+    //             const installingWorker = registration.installing;
+    //             if(installingWorker == null) return;
 
-                installingWorker.onstatechange = () => {
-                    if(installingWorker.state === 'installed') {
-                        if(navigator.serviceWorker.controller) {
-                            setOpen(true);
-                        }
-                    }
-                }
-            }
-        });
-    }, []);
+    //             installingWorker.onstatechange = () => {
+    //                 if(installingWorker.state === 'installed') {
+    //                     if(navigator.serviceWorker.controller) {
+    //                         setOpen(true);
+    //                     }
+    //                 }
+    //             }
+    //         }
+    //     });
+    // }, []);
 
     const handleClose = (event, reason) => {
         if (reason === 'clickaway') {

@@ -206,10 +206,21 @@ function BoardPlacer({ scale, onInitiaScaleChange, boardOffset=0, data }) {
         console.log('SVG CONTAINER', svgContainer, svgContainer.offsetHeight);
         if(data.orientation === 'horizontal') {
             // scale based on width
-            console.log(offsetWidth / (baseBoardWidth + Math.abs(boardOffset) * 94));
-            nextScaleFactor = offsetWidth / (baseBoardWidth + Math.abs(boardOffset) * 94);
-            setScaleFactor(nextScaleFactor);
-            onInitiaScaleChange(nextScaleFactor);
+            if(offsetHeight > offsetWidth) {
+                // scale based on width
+                console.log(offsetWidth / (baseBoardWidth + Math.abs(boardOffset) * 94));
+                nextScaleFactor = offsetWidth / (baseBoardWidth + Math.abs(boardOffset) * 94);
+                setScaleFactor(nextScaleFactor);
+                onInitiaScaleChange(nextScaleFactor);
+            } else {
+                nextScaleFactor = offsetHeight / (baseBoardHeight * 2);
+                setScaleFactor(nextScaleFactor);
+                onInitiaScaleChange(nextScaleFactor);
+            }
+    
+            // console.log(offsetWidth / (baseBoardWidth + Math.abs(boardOffset) * 94));
+            // setScaleFactor(nextScaleFactor);
+            // onInitiaScaleChange(nextScaleFactor);
         } else {
             console.log('other scale factor');
             nextScaleFactor = offsetHeight / (baseBoardWidth * 2);
@@ -258,39 +269,10 @@ function BoardPlacer({ scale, onInitiaScaleChange, boardOffset=0, data }) {
     return (
         <div id="main_container"
             style={{
-                // backgroundColor: 'orangered',
                 flex: '1 0 50%',
                 position: 'relative',
             }}
         >
-            {/* <img style={{ 
-                width: baseBoardHeight * scaleFactor,
-                height: baseBoardWidth * scaleFactor,
-                position: 'absolute',
-                left: '50px', //boardOffset < 0 ? Math.abs(boardOffset) * (94 * scaleFactor) : 0,
-                //transform: 'translate(0, 50px) rotate(90deg)',
-                transition: 'all .3s ease-out',
-            }}
-                src={`/assets/boards/14v.jpg`} />
-            <img style={{ 
-                width: baseBoardHeight * scaleFactor,
-                height: baseBoardWidth * scaleFactor,
-                position: 'absolute',
-                top: baseBoardWidth* scaleFactor,
-                left: '50px', //boardOffset < 0 ? Math.abs(boardOffset) * (94 * scaleFactor) : 0,
-                //transform: 'translate(0, 50px) rotate(90deg)',
-                transition: 'all .3s ease-out',
-            }}
-                src={`/assets/boards/8v.jpg`} /> */}
-            {/* <img style={{ 
-                width: baseBoardWidth * scaleFactor,
-                height: baseBoardHeight * scaleFactor,
-                position: 'absolute',
-                top: baseBoardHeight * scaleFactor,
-                left: boardOffset > 0 ? boardOffset * (94 * scaleFactor) : 0,
-                transition: 'all .3s ease-out'
-            }}
-                src={`/assets/boards/12.jpg`} /> */}
             <div
                 id="svg_container"
                 style={{
@@ -299,40 +281,14 @@ function BoardPlacer({ scale, onInitiaScaleChange, boardOffset=0, data }) {
                     background: 'lightgray',
                     position: 'absolute',
                     top: data.orientation === 'horizontal' ? '50%' : 0,
-                    left: data.orientation === 'horizontal' ? 0 : '50%',
+                    left: data.orientation === 'horizontal' ? '50%' : '50%',
                     marginTop: data.orientation === 'horizontal' ? -baseBoardHeight * 2 * scaleFactor / 2 : 0,
-                    marginLeft: data.orientation === 'horizontal' ? 0 : -(baseBoardHeight * scaleFactor) / 2,
+                    marginLeft: data.orientation === 'horizontal' ? (baseBoardWidth * scaleFactor + (Math.abs(boardOffset) * (94 * scaleFactor))) / -2 : -(baseBoardHeight * scaleFactor) / 2,
                     filter: 'drop-shadow(2px 2px 5px dimgray)',
                     transition: 'all .3s ease-out',
                 }}
             >
             </div>
-
-            {/* {
-                data.orientation === 'horizontal' && (
-                )
-            }
-            {
-                data.orientation === 'vertical' && (
-                    <div
-                        id="svg_container_v"
-                        style={{
-                            width: baseBoardHeight * scaleFactor, // baseBoardWidth * scaleFactor + (Math.abs(boardOffset) * (94 * scaleFactor)), //baseBoardWidth * scaleFactor, //baseBoardHeight * 2 * scaleFactor,//baseBoardWidth * scaleFactor + (Math.abs(boardOffset) * (94 * scaleFactor)),
-                            height: baseBoardWidth * 2 * scaleFactor, //baseBoardWidth * scaleFactor * 2, //baseBoardHeight * 2 * scaleFactor,
-                            background: 'lightgray',
-                            position: 'absolute',
-                            left: '50%',
-                            marginLeft: -(baseBoardHeight * scaleFactor) / 2,
-                            // left: '62.5px',
-                            // top: '-12.5px'
-                            //top: '50%',
-                            //marginTop: -baseBoardHeight * scaleFactor,
-                            filter: 'drop-shadow(2px 2px 5px dimgray)'
-                        }}
-                    >
-                    </div>
-                )
-            } */}
         </div>
     );
 }
