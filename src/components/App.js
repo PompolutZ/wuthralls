@@ -30,24 +30,11 @@ import Snackbar from '@material-ui/core/Snackbar';
 function App() {
     const [open, setOpen] = useState(false);
 
-    // useEffect(() => {
-    //     const swUrl = `${process.env.PUBLIC_URL}/service-worker.js`;
-    //     window.navigator.serviceWorker.register(swUrl)
-    //     .then(registration => {
-    //         registration.onupdatefound = () => {
-    //             const installingWorker = registration.installing;
-    //             if(installingWorker == null) return;
-
-    //             installingWorker.onstatechange = () => {
-    //                 if(installingWorker.state === 'installed') {
-    //                     if(navigator.serviceWorker.controller) {
-    //                         setOpen(true);
-    //                     }
-    //                 }
-    //             }
-    //         }
-    //     });
-    // }, []);
+    useEffect(() => {
+        window.navigator.serviceWorker.addEventListener('message', event => {
+            console.log('EVENT: ', event.data);
+        })
+    }, []);
 
     const handleClose = (event, reason) => {
         if (reason === 'clickaway') {

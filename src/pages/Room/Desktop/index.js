@@ -211,7 +211,40 @@ export default function DesktopRoom() {
                     [`${myself.uid}.sObjs`]: nextScoredObjectives,
                 });
                 break;
-        
+            case 'RETURN_OBJECTIVE_TO_PILE': 
+                const nextHand2 = data[myself.uid].hand.split(',').filter(c => c !== payload.id).join(',');
+                const nextObjectivesPile = shuffle([...data[myself.uid].oDeck.split(','), payload.id]).join(',');
+                setData({
+                    ...data,
+                    [myself.uid] : {
+                        ...data[myself.uid],
+                        hand: nextHand2,
+                        oDeck: nextObjectivesPile
+                    }
+                })
+                firebase.updateRoom(state.id, {
+                    [`${myself.uid}.hand`]: nextHand2,
+                    [`${myself.uid}.oDeck`]: nextObjectivesPile,
+                });
+
+                break;
+            case 'DISCARD_OBJECTIVE': 
+                const nextHand3 = data[myself.uid].hand.split(',').filter(c => c !== payload.id).join(',');
+                const nextDiscardObjectives = data[myself.uid].dObjs ? `${data[myself.uid].dObjs},${payload.id}` : `${payload.id}`;
+                setData({
+                    ...data,
+                    [myself.uid] : {
+                        ...data[myself.uid],
+                        hand: nextHand3,
+                        dObjs: nextDiscardObjectives
+                    }
+                })
+                firebase.updateRoom(state.id, {
+                    [`${myself.uid}.hand`]: nextHand3,
+                    [`${myself.uid}.dObjs`]: nextDiscardObjectives,
+                });
+
+                break;
             default:
                 break;
         }

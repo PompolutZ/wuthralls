@@ -65,6 +65,9 @@ export default function InitiativeAndBoardsSetup({ data }) {
     } = data;
 
     useEffect(() => {
+        if(waitingFor.includes(myself.uid) && waitingReason === 'INITIATIVE_ROLL') {
+            setCanMakeInitiativeRoll(true);
+        }
         // if(waitingFor && waitingFor.length === 0) {
         // }
         console.log(data);
