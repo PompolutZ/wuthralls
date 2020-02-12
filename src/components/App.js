@@ -32,8 +32,12 @@ function App() {
 
     useEffect(() => {
         window.navigator.serviceWorker.addEventListener('message', event => {
-            console.log('EVENT: ', event.data);
-        })
+            console.log('EVENT: ', event);
+        });
+
+        return () => {
+            window.navigator.serviceWorker.removeEventListener("message");
+        }
     }, []);
 
     const handleClose = (event, reason) => {
