@@ -29,52 +29,9 @@ import Snackbar from '@material-ui/core/Snackbar';
 
 function App() {
     const [open, setOpen] = useState(false);
-
-    useEffect(() => {
-        window.navigator.serviceWorker.addEventListener('message', event => {
-            console.log('EVENT: ', event.data);
-        });
-
-        window.navigator.serviceWorker.addEventListener('controllerchange', event => {
-            console.log('EVENT: ', event.data);
-        });
-
-        window.navigator.serviceWorker.addEventListener('messageerror', event => {
-            console.log('EVENT: ', event.data);
-        });
-
-        return () => {
-            window.navigator.serviceWorker.removeEventListener("message");
-            window.navigator.serviceWorker.removeEventListener("controllerchange");
-            window.navigator.serviceWorker.removeEventListener("messageerror");
-        }
-    }, []);
-
-    const handleClose = (event, reason) => {
-        if (reason === 'clickaway') {
-            return;
-        }
-
-        setOpen(false);
-    };
-
     return (
         <Router>
             <div style={{ width: '100%', height: '100%' }}>
-                {/* <Snackbar
-                    anchorOrigin={{
-                        vertical: 'top',
-                        horizontal: 'right',
-                    }}
-                    open={open}
-                    autoHideDuration={6000}
-                    onClose={handleClose}
-                >
-                    <Alert onClose={handleClose} severity="info">
-                        New version was installed! Please, reload application to use it.
-                    </Alert>
-                </Snackbar> */}
-
                 <Navigation />
 
                 <Route exact path={ROUTES.LANDING} component={Rooms} />

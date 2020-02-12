@@ -74,7 +74,7 @@ function registerValidSW(swUrl, config) {
                   'tabs for this page are closed. See https://bit.ly/CRA-PWA.'
               );
 
-              navigator.serviceWorker.controller.postMessage({ text: 'hello!' });
+              alert("New content available, please close the app and start it again.");
               
               //alert('New content is available and will be used after application restart.');
 
