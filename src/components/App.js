@@ -32,11 +32,21 @@ function App() {
 
     useEffect(() => {
         window.navigator.serviceWorker.addEventListener('message', event => {
-            console.log('EVENT: ', event);
+            console.log('EVENT: ', event.data);
+        });
+
+        window.navigator.serviceWorker.addEventListener('controllerchange', event => {
+            console.log('EVENT: ', event.data);
+        });
+
+        window.navigator.serviceWorker.addEventListener('messageerror', event => {
+            console.log('EVENT: ', event.data);
         });
 
         return () => {
             window.navigator.serviceWorker.removeEventListener("message");
+            window.navigator.serviceWorker.removeEventListener("controllerchange");
+            window.navigator.serviceWorker.removeEventListener("messageerror");
         }
     }, []);
 
