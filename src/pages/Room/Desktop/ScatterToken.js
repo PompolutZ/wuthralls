@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import Grid from '@material-ui/core/Grid';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -29,6 +29,10 @@ export default function ScatterToken({ onSelectionChange }) {
         rotationAngle: rotateAngle,
         onBoard: {x: -1, y: -1}
     })
+
+    useEffect(() => {
+        console.log('SCATTER', isSelected);
+    }, [isSelected]);
 
     const handleRotateLeft = e => {
         setRotateAngle(rotateAngle - 60);
@@ -74,6 +78,7 @@ export default function ScatterToken({ onSelectionChange }) {
         }
     }
 
+    console.log(isSelected);
     return (
         <Grid container justify="center" spacing={3}>
             <Grid item xs={4}>
@@ -82,9 +87,8 @@ export default function ScatterToken({ onSelectionChange }) {
                     width: '4rem',
                     height: '4rem',
                     paddingBottom: '2rem' }}>
-                    <img src={`/assets/other/scatter.png`} style={{ width: '4rem', transform: `rotate(${rotateAngle}deg)`, transformOrigin: 'center center', }} 
+                    <img src={`/assets/other/scatter.png`} style={{ width: '4rem', transform: `rotate(${rotateAngle}deg)`, transformOrigin: 'center center', filter: isSelected ? 'drop-shadow(0 2px 10px orangered)' : ''}} 
                         onClick={handleTokenClick} />
-                    <div style={{ width: '2rem', position: 'absolute', height: '2rem', zIndex: -1, top: '50%', left: '50%', marginTop: '-2rem', marginLeft: '-1rem', borderRadius: '1rem', boxShadow: isSelected ? '0 0 30px 15px magenta' : '' }} />
                     <ButtonBase style={{ position: 'absolute', width: '2.5rem', height: '2.5rem', top: '50%', marginTop: '-1rem', left: 0, marginLeft: '-2.25rem', backgroundColor: 'teal', color: 'white', boxSizing: 'border-box', border: '1px solid white', borderRadius: '1rem' }}
                         onClick={handleRotateLeft}>
                         <RotateLeftIcon />

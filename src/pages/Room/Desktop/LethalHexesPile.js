@@ -3,6 +3,7 @@ import ButtonBase from '@material-ui/core/ButtonBase';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { FirebaseContext } from '../../../firebase';
 import { useAuthUser } from '../../../components/Session';
+import Typography from '@material-ui/core/Typography';
 
 export default function LethalHexesPile({ roomId, tokens, onSelectedTokenChange }) {
     const myself = useAuthUser();
@@ -30,42 +31,46 @@ export default function LethalHexesPile({ roomId, tokens, onSelectedTokenChange 
             value: `${myself.username} removed lethal hex token from the board.`,
         })
     }
-
     return (
-        <div
-            style={{
-                width: '100%',
-                display: 'flex',
-                alignItems: 'flex-end',
-                margin: '.5rem',
-                overlow: 'scroll',
-            }}
-        >{
-            tokens.map(token => (
-                <div key={token.id} style={{ marginRight: '1rem', position: 'relative', }} onClick={handleTokenClick(token)}>
-                    <img src={`/assets/tokens/lethal.png`} style={{ width: selectedToken && selectedToken.id === token.id ? pointyTokenBaseWidth * .8 : pointyTokenBaseWidth * .7 }} />
-                    <ButtonBase
-                            style={{
-                                position: 'absolute',
-                                bottom: '0%',
-                                right: '0%',
-                                backgroundColor: 'red',
-                                color: 'white',
-                                width: '2rem',
-                                height: '2rem',
-                                borderRadius: '1.5rem',
-                            }}
-                            onClick={handleRemoveFromBoard(token)}
-                        >
-                            <DeleteIcon
-                                style={{
-                                    width: '1rem',
-                                    height: '1rem',
-                                }}
-                            />
-                    </ButtonBase>
-                </div>
-            ))
-        }</div>
+        <>{
+            tokens.map(token => {
+                console.log(token.id, selectedToken && selectedToken.id === token.id);
+
+                return (
+                    <div key={token.id} style={{ marginRight: '1rem', paddingTop: '1rem', paddingLeft: '1rem' }} onClick={handleTokenClick(token)}>
+                        <div style={{ width: pointyTokenBaseWidth * .7, position: 'relative'  }}>
+                            <img src={`/assets/tokens/lethal.png`} style={{ width: '100%', filter: selectedToken && selectedToken.id === token.id ? 'drop-shadow(0 2px 10px magenta)' : '' }} />
+                            {
+                                selectedToken && selectedToken.id === token.id && (
+                                    <ButtonBase
+                                            style={{
+                                                position: 'absolute',
+                                                bottom: '0%',
+                                                right: '0%',
+                                                backgroundColor: 'red',
+                                                color: 'white',
+                                                width: '2rem',
+                                                height: '2rem',
+                                                borderRadius: '1.5rem',
+                                                boxSizing: 'border-box',
+                                                border: '2px solid white',
+                                            }}
+                                            onClick={handleRemoveFromBoard(token)}
+                                        >
+                                            <DeleteIcon
+                                                style={{
+                                                    width: '1rem',
+                                                    height: '1rem',
+                                                }}
+                                            />
+                                    </ButtonBase>
+                                )
+                            }
+                        </div>
+                        <Typography>{`${token.id}`}</Typography>
+                    </div>
+                )
+            })
+        }</>
     );
 }

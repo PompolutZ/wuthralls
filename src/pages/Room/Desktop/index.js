@@ -33,6 +33,7 @@ import Scrollbar from 'react-scrollbars-custom';
 import Warbands from './Warbands';
 import Cards from './CardsPanel';
 import GameInfoPanel from './GameInfoPanel';
+import Hexes from './Hexes';
 
 const propertyToCards = (source, property) => {
     return (
@@ -106,6 +107,7 @@ export default function DesktopRoom() {
     const [selectedElement, setSelectedElement] = useState(null);
     const [opponentData, setOpponentData] = useState(state.players.length > 1 ? state[state.players.find(p => p !== myself.uid)] : null)
     const [boardScaleFactor, setBoardScaleFactor] = useState(.5);
+    const [leftPanelSelectedTab, setLeftPanelSelectedTab] = useState(0);
 
 
     useEffect(() => {
@@ -169,6 +171,10 @@ export default function DesktopRoom() {
 
     const handleShowFighterInfo = fighter => {
 
+    }
+
+    const handleChangeLeftPanelTab = (event, newValue) => {
+        setLeftPanelSelectedTab(newValue);
     }
 
     const handleCardsDataChange = async (key, value) => {
@@ -262,19 +268,36 @@ export default function DesktopRoom() {
             <div
                 style={{ flex: 2, display: 'flex' }}
             >
-                <div style={{ backgroundColor: 'lightgray', flex: 1, display: 'flex', boxSizing: 'border-box', borderRadius: '.5rem', marginRight: '.5rem', marginBottom: '.5rem', marginLeft: '.5rem' }}>
-                    <Warbands 
-                        roomId={data.id}
-                        onSelectedFighterChange={setSelectedElement}
-                        myfighters={Object.entries(data.board.fighters)
-                            .map(([id, value]) => ({ ...value, id: id }))
-                            .filter(token => token.id.startsWith(myself.uid))}
-                        enemyFighters={Object.entries(data.board.fighters)
-                            .map(([id, value]) => ({ ...value, id: id }))
-                            .filter(token => !token.id.startsWith(myself.uid))}
-                        onShowSelectedFighterInfo={handleShowFighterInfo}
-                        playerInfo={data[myself.uid]}                    
-                    />                    
+                <div style={{ backgroundColor: 'lightgray', flex: 1, display: 'flex', boxSizing: 'border-box', borderRadius: '.5rem', marginRight: '.5rem', marginBottom: '.5rem', marginLeft: '.5rem', flexDirection: 'column' }}>
+                    <Tabs value={leftPanelSelectedTab} onChange={handleChangeLeftPanelTab} variant="standard">
+                        <Tab label="Fighters" />
+                        <Tab label="Hexes" />
+                    </Tabs>
+                    {
+                        leftPanelSelectedTab === 0 && (
+                            <div style={{ backgroundColor: 'lightgray', flex: 1, display: 'flex', boxSizing: 'border-box', borderRadius: '.5rem', marginRight: '.5rem', marginBottom: '.5rem', marginLeft: '.5rem'}} >
+                                <Warbands 
+                                    roomId={data.id}
+                                    onSelectedFighterChange={setSelectedElement}
+                                    myfighters={Object.entries(data.board.fighters)
+                                        .map(([id, value]) => ({ ...value, id: id }))
+                                        .filter(token => token.id.startsWith(myself.uid))}
+                                    enemyFighters={Object.entries(data.board.fighters)
+                                        .map(([id, value]) => ({ ...value, id: id }))
+                                        .filter(token => !token.id.startsWith(myself.uid))}
+                                    onShowSelectedFighterInfo={handleShowFighterInfo}
+                                    playerInfo={data[myself.uid]}                    
+                                />                                      
+                            </div>              
+                        )
+                    }
+                    {
+                        leftPanelSelectedTab === 1 && (
+                            <div style={{ backgroundColor: 'lightgray', flex: 1, display: 'flex', boxSizing: 'border-box', borderRadius: '.5rem', marginRight: '.5rem', marginBottom: '.5rem', marginLeft: '.5rem'}} >
+                                <Hexes roomId={data.id} tokens={data.board.tokens} onSelectedElementChange={setSelectedElement} orientation={data.status.orientation} />
+                            </div>              
+                        )
+                    }
                 </div>
                 <div
                     style={{
