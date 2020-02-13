@@ -41,15 +41,18 @@ function NavigationAuth({ authUser }) {
                         </li>
                     )
                 }
+                {
+                    !!authUser.roles[ROLES.ADMIN] && (
+                        <li>
+                            <Link to="/users-updater">Users Updater</Link>
+                        </li>
+                    )
+                }
                 <li>
                     <SignOut />
                 </li>
             </ul>
-            <div>{authUser.username}</div>   
-            <div>ver 0.15.0</div>
-            <p> New: Wurmspat and Farstriders are here!.</p> 
-            <p> New: Board setup which support short to short and longwise with offset placement!.</p> 
-            <p> Note: Really badly tested!.</p> 
+            <div>Welcome {authUser.username} to the Club (ver. 0.16)</div>   
         </div>
     )
 }

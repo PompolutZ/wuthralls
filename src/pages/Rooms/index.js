@@ -83,6 +83,10 @@ function Rooms() {
         }
     }
 
+    const handleCheckPlayerInfo = pid => () => {
+        history.push(`/player-info`, { pid: pid });
+    }
+
     return myself ? (
         <div style={{ margin: '1rem' }}>
             <div style={{ display: 'flex', justifyContent: "center" }}>
@@ -113,8 +117,8 @@ function Rooms() {
                             <Divider style={{ marginBottom: '1rem' }} />
                             {
                                 myRooms.map(r => {
-                                    const participants = r.players.map(pid => r[pid]);
-
+                                    const participants = r.players.map(pid => ({...r[pid], pid: pid }));
+                                    console.log(participants);
                                     return (
                                         <Paper key={r.id} style={{ marginBottom: '1rem', padding: '.5rem' }}>
                                             <Grid container>
@@ -124,7 +128,7 @@ function Rooms() {
                                                         <Grid item xs={4}>
                                                             <Grid container direction="column" alignItems="center">
                                                                 <img src={`/assets/factions/${participants[0].faction}-icon.png`} style={{ width: '2rem' }} />
-                                                                <Typography variant="body1">{participants[0].name}</Typography>
+                                                                <Typography variant="body1" style={{ cursor: 'pointer', textDecoration: 'underline' }} onClick={handleCheckPlayerInfo(participants[0].pid)}>{participants[0].name}</Typography>
                                                             </Grid>
                                                         </Grid>
                                                         <Grid item xs={4} container justify="center">
@@ -142,7 +146,7 @@ function Rooms() {
                                                                 participants.length > 1 && (
                                                                     <Grid container direction="column" alignItems="center">
                                                                         <img src={`/assets/factions/${participants[1] ? participants[1].faction : ''}-icon.png`} style={{ width: '2rem' }} />
-                                                                        <Typography variant="body1">{participants[1] ? participants[1].name : ''}</Typography>
+                                                                        <Typography variant="body1" style={{ cursor: 'pointer', textDecoration: 'underline' }} onClick={handleCheckPlayerInfo(participants[1].pid)}>{participants[1] ? participants[1].name : ''}</Typography>
                                                                     </Grid>
                                                                 )
                                                             }
@@ -169,7 +173,7 @@ function Rooms() {
                             <Divider />
                             {
                                 otherRooms.map((r, i) => {
-                                    const participants = r.players.map(pid => r[pid]);
+                                    const participants = r.players.map(pid => ({...r[pid], pid: pid }));
 
                                     return (
                                         <Paper key={r.id} style={{ marginBottom: '1rem', padding: '.5rem' }}>
@@ -180,7 +184,7 @@ function Rooms() {
                                                         <Grid item xs={4}>
                                                             <Grid container direction="column" alignItems="center">
                                                                 <img src={`/assets/factions/${participants[0].faction}-icon.png`} style={{ width: '2rem' }} />
-                                                                <Typography variant="body1">{participants[0].name}</Typography>
+                                                                <Typography variant="body1" style={{ cursor: 'pointer', textDecoration: 'underline' }} onClick={handleCheckPlayerInfo(participants[0].pid)}>{participants[0].name}</Typography>
                                                             </Grid>
                                                         </Grid>
                                                         <Grid item xs={4} container justify="center">
@@ -198,7 +202,7 @@ function Rooms() {
                                                                 participants.length > 1 && (
                                                                     <Grid container direction="column" alignItems="center">
                                                                         <img src={`/assets/factions/${participants[1].faction}-icon.png`} style={{ width: '2rem' }} />
-                                                                        <Typography variant="body1">{participants[1].name}</Typography>
+                                                                        <Typography variant="body1" style={{ cursor: 'pointer', textDecoration: 'underline' }} onClick={handleCheckPlayerInfo(participants[1].pid)}>{participants[1].name}</Typography>
                                                                     </Grid>
                                                                 )
                                                             }

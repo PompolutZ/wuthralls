@@ -22,6 +22,8 @@ import History from '../pages/History';
 import Future from '../pages/Future';
 import MuiAlert from '@material-ui/lab/Alert';
 import Snackbar from '@material-ui/core/Snackbar';
+import UserUpdater from '../pages/UserUpdater';
+import PlayerInfo from '../pages/PlayerInfo';
 
 // function Alert(props) {
 //     return <MuiAlert elevation={6} variant="filled" {...props} />;
@@ -51,6 +53,7 @@ function App() {
                 <Route exact path="/:version/new/room" component={SpawnRoom} />
                 <Route path="/:version/game/:tableId" component={Game} />
                 <Route path="/playground" component={Playground} />
+                <Route path="/users-updater" component={UserUpdater} />
                 <Route
                     exact
                     path="/:version/room/:roomId"
@@ -58,6 +61,7 @@ function App() {
                 />
                 <Route exact path="/history" component={History} />
                 <Route exact path="/future" component={Future} />
+                <Route exact path="/player-info" component={PlayerInfo} />
             </div>
         </Router>
     );

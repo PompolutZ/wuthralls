@@ -3,10 +3,12 @@ import { FirebaseContext } from '../../firebase';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
+import { useHistory } from 'react-router-dom';
 
 export default function History() {
     const [gamesPlayed, setGamesPlayed] = useState(null);
     const firebase = useContext(FirebaseContext);
+    const history = useHistory();
 
     useEffect(() => {
         const playedGames = firebase.fstore.collection('gameResults').get()
@@ -17,6 +19,10 @@ export default function History() {
             })
             .catch(e => console.log(e))
     }, []);
+
+    const handleCheckPlayerInfo = pid => () => {
+        history.push(`/player-info`, { pid: pid });
+    }
 
     return (
         <div style={{ margin: '1rem' }}>
@@ -36,7 +42,7 @@ export default function History() {
                                 <Grid item xs={4}>
                                     <Grid container direction="column" alignItems="center">
                                         <img src={`/assets/factions/${r.result[0].faction}-icon.png`} style={{ width: '2rem' }} />
-                                        <Typography variant="body1">{r.result[0].name}</Typography>
+                                        <Typography variant="body1" style={{ cursor: 'pointer', textDecoration: 'underline' }} onClick={handleCheckPlayerInfo(r.result[0].pid)}>{r.result[0].name}</Typography>
                                     </Grid>
                                 </Grid>
                                 <Grid item xs={4} container justify="center">
@@ -45,7 +51,7 @@ export default function History() {
                                 <Grid item xs={4}>
                                     <Grid container direction="column" alignItems="center">
                                         <img src={`/assets/factions/${r.result[1].faction}-icon.png`} style={{ width: '2rem' }} />
-                                        <Typography variant="body1">{r.result[1].name}</Typography>
+                                        <Typography variant="body1" style={{ cursor: 'pointer', textDecoration: 'underline' }} onClick={handleCheckPlayerInfo(r.result[1].pid)}>{r.result[1].name}</Typography>
                                     </Grid>
                                 </Grid>
                             </Grid>

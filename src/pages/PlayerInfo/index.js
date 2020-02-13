@@ -2,8 +2,9 @@ import React, { useContext, useEffect, useState } from 'react';
 import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
 import { makeStyles } from '@material-ui/core/styles';
-import { useAuthUser, withAuthorization } from './Session';
-import { FirebaseContext } from '../firebase';
+import { useAuthUser, withAuthorization } from '../../components/Session';
+import { FirebaseContext } from '../../firebase';
+import { useLocation, useHistory } from 'react-router-dom';
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -16,37 +17,34 @@ const useStyles = makeStyles(theme => ({
 // import { PasswordForgetForm } from '../PasswordForget';
 // import PasswordChangeForm from '../PasswordChange';
 
-function AccountPage() {
+function PlayerInfoPage() {
     const firebase = useContext(FirebaseContext);
     const classes = useStyles();
     const authUser = useAuthUser();
     const [data, setData] = useState(null);
+    const { state } = useLocation();
 
     useEffect(() => {
-        if(!authUser) return;
-
-        firebase.user(authUser.uid).once('value').then(snapshot => {
+        firebase.user(state.pid).once('value').then(snapshot => {
             console.log(snapshot.val());
             setData(snapshot.val());
         });
-    }, [authUser]);
-
-    if(!authUser) return <h1>User Unknown</h1>
+    }, [state]);
 
     return (
         <div className={classes.root}>
-            <Typography variant="h5">{authUser.username}</Typography>
+            <Typography variant="h5">{data && data.username}</Typography>
             <Divider />
 
             <Typography>Total games played: {data && data.totalGamesPlayed}</Typography>
             <Typography>Games Won: {data && data.gamesWon}</Typography>
-            <Typography>Win Rate: {data && Math.round(((data.gamesWon / data.totalGamesPlayed) * 100))}%</Typography>
+            <Typography>Win Rate: {data && data.gamesWon && data.totalGamesPlayed && Math.round(((data.gamesWon / data.totalGamesPlayed) * 100))}%</Typography>
 
             <div style={{ display: 'flex', flexDirection: 'column' }}>
                 <Typography>Factions played with: </Typography>
                 <div style={{ display: 'flex', flexFlow: 'row wrap' }}>
                     {
-                        data && Object.entries(data.factions).sort((a, b) => b[1] - a[1]).map(([faction, gamesPlayed]) => (
+                        data && data.factions && Object.entries(data.factions).sort((a, b) => b[1] - a[1]).map(([faction, gamesPlayed]) => (
                             <img key={faction} src={`/assets/factions/${faction}-icon.png`} 
                                 style={{ 
                                     width: `${3 + 2 * (gamesPlayed / data.totalGamesPlayed)}rem`, 
@@ -65,4 +63,4 @@ function AccountPage() {
 
 const condition = authUser => !!authUser;
 
-export default withAuthorization(condition)(AccountPage);
+export default withAuthorization(condition)(PlayerInfoPage);
