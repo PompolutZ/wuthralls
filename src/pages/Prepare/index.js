@@ -54,6 +54,7 @@ function Prepare() {
     const [objectiveCards, setObjectiveCards] = useState(''); //useState(`06172,06162,06295,06164,07001,06165,03384,06167,06311,03357,03368,06316`);
     const [powerCards, setPowerCards] = useState(''); //useState(`06191,06181,06182,06184,06395,06175,06176,06187,06364,06398,07014,06189,06388,06179,03420,06434,03400,06403,03401,06417`);
     const [playerIsReady, setPlayerIsReady] = useState(false);
+    const [deck, setDeck] = useState('');
 
     useEffect(() => {
         console.log(objectiveCards, powerCards);
@@ -85,6 +86,22 @@ function Prepare() {
         setPowerCards(e.target.value);
     }
 
+    const handleDeckChange = e => {
+        const value = e.target.value;
+        const [objectives, powers] = JSON.parse(value);
+        if(objectives && objectives.length === 12) {
+            console.log(objectives.join());
+            setObjectiveCards(objectives.join());
+        }
+
+        if(powers && powers.length >= 20) {
+            console.log(powers.join());
+            setPowerCards(powers.join());
+        }
+
+        setDeck('Deck copy was successful!');
+    }
+
     const handleJoinTheRoom = async () => {
         const playerInfo = {
             name: myself.username,
@@ -111,7 +128,7 @@ function Prepare() {
         <div className={classes.root}>
             <Grid container spacing={3}>
                 <Grid item xs={12}>
-                    <Typography>Copy paste your objective and power decks. Faction will be determined automatically.</Typography>
+                    <Typography>Copy paste your deck from YAWUDB. Faction will be determined automatically.</Typography>
                 </Grid>
                 <Grid item xs={12} container alignItems="center" direction="column">
                     <Typography variant="h6">Faction</Typography>
@@ -120,34 +137,17 @@ function Prepare() {
                         ? <img className={classes.factionIcon} src={`/assets/factions/${selectedFaction}-icon.png`} />
                         : <UnknownIcon className={classes.factionIcon} />
                     }
-                    {/* <Typography>Currently supported factions:</Typography>
-                    <div>
-                    {
-                        Object.keys(warbands).map(warband => (
-                            <img key={warband} src={`/assets/factions/${warband}-icon.png`} style={{ width: '2rem', height: '2rem'}} />
-                        ))
-                    }
-                    </div> */}
                 </Grid>
                 <Grid item xs={12}>
-                    <Typography variant="h6">Objective cards pile</Typography>
+                    <Typography variant="h6">Deck</Typography>
                     <Divider />
                     <TextField 
                         fullWidth 
                         type="text"
                         multiline
-                        value={objectiveCards}
-                        onChange={handleObjectiveCardsChange} />
-                </Grid>
-                <Grid item xs={12}>
-                    <Typography variant="h6">Power cards pile</Typography>
-                    <Divider />
-                    <TextField 
-                        fullWidth 
-                        type="text"
-                        multiline
-                        value={powerCards}
-                        onChange={handlePowerCardsChange} />
+                        value={deck}
+                        placeholder={!Boolean(deck) ? 'Paste you deck here' : 'Paste successful'}
+                        onChange={handleDeckChange} />
                 </Grid>
                 <Grid item xs={12}>
                     <Button variant="contained" color="primary" onClick={handleJoinTheRoom} disabled={!playerIsReady}>Join</Button>

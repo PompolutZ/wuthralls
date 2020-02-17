@@ -107,6 +107,7 @@ export default function SpawnRoom() {
     const [powerCards, setPowerCards] = useState(''); //useState(`06191,06181,06182,06184,06395,06175,06176,06187,06364,06398,07014,06189,06388,06179,03420,06434,03400,06403,03401,06417`);
     const [playerIsReady, setPlayerIsReady] = useState(false);
     const [roomName, setRoomName] = useState(''); //useState(`DEV ${Math.ceil(100 * Math.random())}`);
+    const [deck, setDeck] = useState('');
 
     useEffect(() => {
         console.log(objectiveCards, powerCards);
@@ -136,6 +137,22 @@ export default function SpawnRoom() {
 
     const handlePowerCardsChange = e => {
         setPowerCards(e.target.value);
+    }
+
+    const handleDeckChange = e => {
+        const value = e.target.value;
+        const [objectives, powers] = JSON.parse(value);
+        if(objectives && objectives.length === 12) {
+            console.log(objectives.join());
+            setObjectiveCards(objectives.join());
+        }
+
+        if(powers && powers.length >= 20) {
+            console.log(powers.join());
+            setPowerCards(powers.join());
+        }
+
+        setDeck('Deck copy was successful!');
     }
 
     const handleRoomNameChange = e => {
@@ -192,20 +209,6 @@ export default function SpawnRoom() {
         };
 
         await firebase.addRoom2(payload);
-
-        // const playerInfo = {
-        //     name: myself.username,
-        //     faction: selectedFaction,
-        //     oDeck: shuffle(objectiveCards.split(',')).join(),
-        //     pDeck: shuffle(powerCards.split(',')).join(),
-        //     gloryScored: 0,
-        //     glorySpent: 0,
-        //     activationsLeft: 4,
-        // };
-
-        // const myWarband = warbands[selectedFaction].reduce((r, fighter, idx) => ({ ...r, [`${myself.uid}_F${idx}`]: fighter }), {});
-        // console.log(state.id, myself.uid, playerInfo, {...state.board.fighters, ...myWarband });
-        // await firebase.addPlayerToRoom(state.id, myself.uid, playerInfo, {...state.board.fighters, ...myWarband });
         history.push('/');
     }
 
@@ -223,7 +226,7 @@ export default function SpawnRoom() {
                         onChange={handleRoomNameChange} />
                 </Grid>
                 <Grid item xs={12} lg={4}>
-                    <Typography variant="body2">Copy paste your objective and power decks. Faction will be determined automatically.</Typography>
+                    <Typography variant="body2">Copy paste your deck from YAWUDB. In order to do so, navigate to the deck, then select Export to WUnderworlds Club on desktop or Copy to WUnderworlds Club on mobile via action menu (with three dots).  Faction will be determined automatically.</Typography>
                 </Grid>
                 <Grid item xs={12} container alignItems="center" direction="column" lg={4}>
                     <Typography variant="h6">Faction</Typography>
@@ -232,26 +235,19 @@ export default function SpawnRoom() {
                         ? <img className={classes.factionIcon} src={`/assets/factions/${selectedFaction}-icon.png`} />
                         : <UnknownIcon className={classes.factionIcon} />
                     }
-                    {/* <Typography>Currently supported factions:</Typography>
-                    <div>
-                    {
-                        Object.keys(warbands).map(warband => (
-                            <img key={warband} src={`/assets/factions/${warband}-icon.png`} style={{ width: '2rem', height: '2rem'}} />
-                        ))
-                    }
-                    </div> */}
                 </Grid>
                 <Grid item xs={12} lg={4}>
-                    <Typography variant="h6">Objective cards pile</Typography>
+                    <Typography variant="h6">Deck</Typography>
                     <Divider />
                     <TextField 
                         fullWidth 
                         type="text"
                         multiline
-                        value={objectiveCards}
-                        onChange={handleObjectiveCardsChange} />
+                        value={deck}
+                        placeholder={!Boolean(deck) ? 'Paste you deck here' : 'Paste successful'}
+                        onChange={handleDeckChange} />
                 </Grid>
-                <Grid item xs={12} lg={4}>
+                {/* <Grid item xs={12} lg={4}>
                     <Typography variant="h6">Power cards pile</Typography>
                     <Divider />
                     <TextField 
@@ -260,7 +256,7 @@ export default function SpawnRoom() {
                         multiline
                         value={powerCards}
                         onChange={handlePowerCardsChange} />
-                </Grid>
+                </Grid> */}
                 <Grid item xs={12} lg={4}>
                     <Button variant="contained" color="primary" onClick={createNewRoom} disabled={!playerIsReady}>Create</Button>
                 </Grid>
