@@ -128,7 +128,7 @@ function Prepare() {
         <div className={classes.root}>
             <Grid container spacing={3}>
                 <Grid item xs={12}>
-                    <Typography>Copy paste your deck from YAWUDB. Faction will be determined automatically.</Typography>
+                    <Typography>Copy paste your deck from YAWUDB. In order to do so, navigate to the deck, then select Export to WUnderworlds Club on desktop or Copy to WUnderworlds Club on mobile via action menu (with three dots).  Faction will be determined automatically.</Typography>
                 </Grid>
                 <Grid item xs={12} container alignItems="center" direction="column">
                     <Typography variant="h6">Faction</Typography>

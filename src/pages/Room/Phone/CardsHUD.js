@@ -32,6 +32,12 @@ import { cardsDb } from '../../../data/index';
 import { shuffle } from '../../../common/function';
 import Glory from '../../../components/CommonSVGs/Glory';
 
+const stringToCards = (source) => {
+    if(!Boolean(source)) return null;
+
+    return source.split(',').map(cardId => ({ ...cardsDb[cardId], id: cardId }));
+};
+
 const cardDefaultWidth = 300;
 const cardDefaultHeight = 420;
 
@@ -44,7 +50,7 @@ const POWERS_DISCARDED = 'POWERS_DISCARDED';
 const MY_CARDS_GROUP = 'MY_CARDS_GROUP';
 const ENEMY_CARDS_GROUP = 'ENEMY_CARDS_GROUP';
 
-export default function CardsHUD({
+export default React.memo(({
     roomId,
     myData,
     objectivesPile,
@@ -58,20 +64,26 @@ export default function CardsHUD({
     enemyObjectivesDiscardPile,
     enemyPowersDiscardPile,
     onClose,
-}) {
+}) => {
     const myself = useAuthUser();
-    const [objectiveDrawPile, setObjectiveDrawPile] = useState(objectivesPile);
-    const [powersDrawPile, setPowersDrawPile] = useState(powerCardsPile);
-    const [scoredObjectives, setScoredObjectives] = useState(scoredObjectivesPile);
-    const [discardedObjectives, setDiscardedObjectives] = useState(objectivesDiscardPile);
-    const [discardedPowers, setDiscardedPowers] = useState(powersDiscardPile);
-    const [hand, setHand] = useState(serverHand || []);
+    const [objectiveDrawPile, setObjectiveDrawPile] = useState(stringToCards(objectivesPile));
+    const [powersDrawPile, setPowersDrawPile] = useState(stringToCards(powerCardsPile));
+    const [scoredObjectives, setScoredObjectives] = useState(stringToCards(scoredObjectivesPile));
+    const [discardedObjectives, setDiscardedObjectives] = useState(stringToCards(objectivesDiscardPile));
+    const [discardedPowers, setDiscardedPowers] = useState(stringToCards(powersDiscardPile));
+    const [hand, setHand] = useState(stringToCards(serverHand));
     const firebase = useContext(FirebaseContext);
     const [highlightCard, setHighlightCard] = useState(null);
     const [highlightFromSource, setHighlightFromSource] = useState(null);
     const [selectedGroup, setSelectedGroup] = useState(MY_CARDS_GROUP); 
     const [modified, setModified] = useState(false);
     const [gloryScored, setGloryScored] = useState(myData ? myData.gloryScored : 0);
+
+    const opponentHand = stringToCards(enemyHand);
+    const opponentScoreObjectivesPile = stringToCards(enemyScoredObjectivesPile);
+    const opponentObjectivesDiscardPile = stringToCards(enemyObjectivesDiscardPile);
+    const opponentPowersDiscardPile = stringToCards(enemyPowersDiscardPile);
+
 
     const selectGroup = groupName => () => {
         setSelectedGroup(groupName)
@@ -821,7 +833,7 @@ export default function CardsHUD({
                             <Typography style={{ marginTop: '1rem' }}>
                                 Opponents Hand{' '}
                                 {`(${
-                                    enemyHand ? enemyHand.length
+                                    opponentHand ? opponentHand.length
                                         : 'empty'
                                 })`}
                             </Typography>
@@ -861,8 +873,8 @@ export default function CardsHUD({
                                                     fontSize: '1.2rem',
                                                 }}
                                             >
-                                                {enemyHand &&
-                                                    enemyHand.filter(c => c.type === 0).length}
+                                                {opponentHand &&
+                                                    opponentHand.filter(c => c.type === 0).length}
                                             </Typography>
                                         </Paper>
                                     </Paper>
@@ -901,8 +913,8 @@ export default function CardsHUD({
                                                     fontSize: '1.2rem',
                                                 }}
                                             >
-                                                {enemyHand &&
-                                                    enemyHand.filter(c => c.type !== 0).length}
+                                                {opponentHand &&
+                                                    opponentHand.filter(c => c.type !== 0).length}
                                             </Typography>
                                         </Paper>
                                     </Paper>
@@ -913,7 +925,7 @@ export default function CardsHUD({
                             <Typography style={{ marginTop: '1rem' }}>
                                 Scored objectives{' '}
                                 {`(${
-                                    enemyScoredObjectivesPile ? enemyScoredObjectivesPile.length
+                                    opponentScoreObjectivesPile ? opponentScoreObjectivesPile.length
                                         : 'empty'
                                 })`}
                             </Typography>
@@ -926,9 +938,9 @@ export default function CardsHUD({
                                         overflowX: 'scroll',
                                     }}
                                 >
-                                    {enemyScoredObjectivesPile &&
-                                        enemyScoredObjectivesPile.length > 0 &&
-                                        enemyScoredObjectivesPile
+                                    {opponentScoreObjectivesPile &&
+                                        opponentScoreObjectivesPile.length > 0 &&
+                                        opponentScoreObjectivesPile
                                             // .filter(c => c.type !== 0)
                                             .map((card, idx, arr) => (
                                                 <Paper
@@ -967,7 +979,7 @@ export default function CardsHUD({
                             <Typography style={{ marginTop: '1rem' }}>
                                 Discarded objectives{' '}
                                 {`(${
-                                    enemyObjectivesDiscardPile ? enemyObjectivesDiscardPile.length
+                                    opponentObjectivesDiscardPile ? opponentObjectivesDiscardPile.length
                                         : 'empty'
                                 })`}
                             </Typography>
@@ -980,9 +992,9 @@ export default function CardsHUD({
                                         overflowX: 'scroll',
                                     }}
                                 >
-                                    {enemyObjectivesDiscardPile &&
-                                        enemyObjectivesDiscardPile.length > 0 &&
-                                        enemyObjectivesDiscardPile
+                                    {opponentObjectivesDiscardPile &&
+                                        opponentObjectivesDiscardPile.length > 0 &&
+                                        opponentObjectivesDiscardPile
                                             // .filter(c => c.type !== 0)
                                             .map((card, idx, arr) => (
                                                 <Paper
@@ -1021,7 +1033,7 @@ export default function CardsHUD({
                             <Typography style={{ marginTop: '1rem' }}>
                                 Discarded powers{' '}
                                 {`(${
-                                    enemyPowersDiscardPile ? enemyPowersDiscardPile.length
+                                    opponentPowersDiscardPile ? opponentPowersDiscardPile.length
                                         : 'empty'
                                 })`}
                             </Typography>
@@ -1034,9 +1046,9 @@ export default function CardsHUD({
                                         overflowX: 'scroll',
                                     }}
                                 >
-                                    {enemyPowersDiscardPile &&
-                                        enemyPowersDiscardPile.length > 0 &&
-                                        enemyPowersDiscardPile
+                                    {opponentPowersDiscardPile &&
+                                        opponentPowersDiscardPile.length > 0 &&
+                                        opponentPowersDiscardPile
                                             // .filter(c => c.type !== 0)
                                             .map((card, idx, arr) => (
                                                 <Paper
@@ -1301,8 +1313,7 @@ export default function CardsHUD({
                     </ClickAwayListener>
                 </div>
             )}
-
             </div>
         </div>
     );
-}
+});

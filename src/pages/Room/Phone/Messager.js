@@ -21,6 +21,7 @@ import Markdown from 'react-markdown';
 import AttackDie from '../../../components/AttackDie';
 import DefenceDie from '../../../components/DefenceDie';
 import MagicDie from '../../../components/MagicDie';
+import Scrollbar from 'react-scrollbars-custom';
 import { 
     warbandColors,
     boards as boardsInfo } from '../../../data';
@@ -740,22 +741,6 @@ function Messenger({ roomId, state, messages }) {
                     })}
                 </div>
             </Grid>
-            {/* {
-                showMainHUD && (
-                    <HUDOverlay onCloseOverlayClick={handleCloseOverlay}>
-                        {
-                            showMainHUD === 'PICK_FIRST_BOARD' && (
-                                <PickFirstBoardHUD data={mainHUDPayload} onFirstBoardSelected={handleFirstBoardSelected} />
-                            )
-                        }
-                        {
-                            showMainHUD === 'PICK_SECOND_BOARD' && (
-                                <PickSecondBoard data={mainHUDPayload} onSecondBoardSelected={handleSecondBoardSelected} />
-                            )
-                        }
-                    </HUDOverlay>
-                )
-            } */}
         </div>
     );
 }

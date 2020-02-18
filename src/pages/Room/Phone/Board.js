@@ -313,7 +313,6 @@ export default function Board({ state, selectedElement, scaleFactor, onScaleFact
     const handleClick = e => {
         const { offsetX, offsetY } = e.nativeEvent;
         const hex = getGridFactory(scaleFactor, state.status.orientation).pointToHex([offsetX, offsetY]);
-        // console.log(hex);
         const hexes = state.status.orientation === 'horizontal' ? [
             ...horizontalBoardHexes.map(([x, y]) => state.status.offset < 0 ? [x + Math.abs(state.status.offset), y] : [x, y]),
             ...modifyNoOnesArray(noOnesHexesHorizontal, state.status.offset).map(([x, y]) => state.status.offset < 0 ? [x + Math.abs(state.status.offset), y] : [x, y]),
@@ -392,6 +391,9 @@ export default function Board({ state, selectedElement, scaleFactor, onScaleFact
                         [selectedTokenId]: updatedToken 
                     })
                 }
+            } else {
+                const anyFighter = Object.entries(fighters).find(([fighterId, f]) => f.onBoard.x === hex.x && f.onBoard.y === hex.y);
+                console.log('ANY FIGHTER?:', anyFighter);
             }
         }
     }

@@ -12,9 +12,9 @@ import { cardsDb } from '../../../data/index';
 import CardsHUD from './CardsHUD';
 import useKatophrane from '../../../components/hooks/useKatophrane';
 
-const propertyToCards = (source, property) => {
-    return source && source[property] && source[property].split(',').map(cardId => ({ ...cardsDb[cardId], id: cardId }));
-};
+// const propertyToCards = (source, property) => {
+//     return source && source[property] && source[property].split(',').map(cardId => ({ ...cardsDb[cardId], id: cardId }));
+// };
 
 const useStyles = makeStyles(theme => ({
     tabs: {
@@ -36,19 +36,20 @@ export default function PhoneRoom() {
     const [stickHeader, setStickHeader] = useState(false);
     const [actionsPanelOffsetHeight, setActionsPanelOffsetHeight] = useState(4 * 16);
     const [isHUDOpen, setIsHUDOpen] = useState(false);
-    const [hand, setHand] = useState(propertyToCards(data[myself.uid], 'hand')); 
-    const [enemyHand, setEnemyHand] = useState(propertyToCards(data[data.players.find(p => p !== myself.uid)], 'hand')); 
     
-    const [objectiveDrawPile, setObjectiveDrawPile] = useState(propertyToCards(data[myself.uid], 'oDeck')); 
-    const [powersDrawPile, setPowersDrawPile] = useState(propertyToCards(data[myself.uid], 'pDeck')); 
+    const [hand, setHand] = useState(data[myself.uid] && data[myself.uid].hand);
+    const [objectiveDrawPile, setObjectiveDrawPile] = useState(data[myself.uid] && data[myself.uid].oDeck); 
+    const [powersDrawPile, setPowersDrawPile] = useState(data[myself.uid] && data[myself.uid].pDeck); 
+    const [scoredObjectivesPile, setScoredObjectivesPile] = useState(data[myself.uid] && data[myself.uid].sObjs); 
+    const [objectivesDiscardPile, setObjectivesDiscardPile] = useState(data[myself.uid] && data[myself.uid].dObjs); 
+    const [powersDiscardPile, setPowersDiscardPile] = useState(data[myself.uid] && data[myself.uid].dPws);
     
-    const [scoredObjectivesPile, setScoredObjectivesPile] = useState(propertyToCards(data[myself.uid], 'sObjs')); 
-    const [objectivesDiscardPile, setObjectivesDiscardPile] = useState(propertyToCards(data[myself.uid], 'dObjs')); 
-    const [powersDiscardPile, setPowersDiscardPile] = useState(propertyToCards(data[myself.uid], 'dPws')); 
+    const [opponent, setOpponent] = useState(data[data.players.find(p => p !== myself.uid)]);
 
-    const [enemyScoredObjectivesPile, setEnemyScoredObjectivesPile] = useState(propertyToCards(data[data.players.find(p => p !== myself.uid)], 'sObjs')); 
-    const [enemyObjectivesDiscardPile, setEnemyObjectivesDiscardPile] = useState(propertyToCards(data[data.players.find(p => p !== myself.uid)], 'dObjs')); 
-    const [enemyPowersDiscardPile, setEnemyPowersDiscardPile] = useState(propertyToCards(data[data.players.find(p => p !== myself.uid)], 'dPws')); 
+    const [enemyHand, setEnemyHand] = useState(opponent && opponent.hand); 
+    const [enemyScoredObjectivesPile, setEnemyScoredObjectivesPile] = useState(opponent && opponent.sObjs); 
+    const [enemyObjectivesDiscardPile, setEnemyObjectivesDiscardPile] = useState(opponent && opponent.dObjs); 
+    const [enemyPowersDiscardPile, setEnemyPowersDiscardPile] = useState(opponent && opponent.dPws); 
     const [messages, setMessages] = useState(null);
 
     const [boardScaleFactor, setBoardScaleFactor] = useState(.5);
@@ -82,22 +83,38 @@ export default function PhoneRoom() {
         console.log('Room.OnDataUpdated', data);
         const serverHand = data[myself.uid].hand;
         console.log('My Current Hand', serverHand, objectiveDrawPile, powersDrawPile);
-        setHand(propertyToCards(data[myself.uid], 'hand'));
+        if(data[myself.uid].hand !== hand) {
+            setHand(data[myself.uid] && data[myself.uid].hand);
+        }
         
         // my drawing piles
-        setObjectiveDrawPile(propertyToCards(data[myself.uid], 'oDeck'));
-        setPowersDrawPile(propertyToCards(data[myself.uid], 'pDeck'));
+        if(data[myself.uid].oDeck !== objectiveDrawPile) {
+            setObjectiveDrawPile(data[myself.uid] && data[myself.uid].oDeck);
+        }
+        
+        if(data[myself.uid].pDeck !== powersDrawPile) {
+            setPowersDrawPile(data[myself.uid] && data[myself.uid].pDeck);
+        }
         
         // my stuff
-        setScoredObjectivesPile(propertyToCards(data[myself.uid], 'sObjs'));
-        setObjectivesDiscardPile(propertyToCards(data[myself.uid], 'dObjs'));
-        setPowersDiscardPile(propertyToCards(data[myself.uid], 'dPws'));
+        if(data[myself.uid].sObjs !== scoredObjectivesPile) {
+            setScoredObjectivesPile(data[myself.uid] && data[myself.uid].sObjs);
+        }
+        
+        if(data[myself.uid].dObjs !== objectivesDiscardPile) {
+            setObjectivesDiscardPile(data[myself.uid] && data[myself.uid].dObjs);
+        }
+        
+        if(data[myself.uid].dPws !== powersDiscardPile) {
+            setPowersDiscardPile(data[myself.uid] && data[myself.uid].dPws);
+        }
 
         // enemy stuff
-        setEnemyHand(propertyToCards(data[data.players.find(p => p !== myself.uid)], 'hand'));
-        setEnemyScoredObjectivesPile(propertyToCards(data[data.players.find(p => p !== myself.uid)], 'sObjs'));
-        setEnemyObjectivesDiscardPile(propertyToCards(data[data.players.find(p => p !== myself.uid)], 'dObjs'));
-        setEnemyPowersDiscardPile(propertyToCards(data[data.players.find(p => p !== myself.uid)], 'dPws'));
+        const opponent = data[data.players.find(p => p !== myself.uid)];
+        setEnemyHand(opponent && opponent.hand);
+        setEnemyScoredObjectivesPile(opponent && opponent.sObjs);
+        setEnemyObjectivesDiscardPile(opponent && opponent.dObjs);
+        setEnemyPowersDiscardPile(opponent && opponent.dPws);
     }, [data]);
 
     useEffect(() => {

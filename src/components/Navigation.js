@@ -52,7 +52,7 @@ function NavigationAuth({ authUser }) {
                     <SignOut />
                 </li>
             </ul>
-            <div>Welcome {authUser.username} to the Club (ver. 0.17)</div>   
+            <div>Welcome {authUser.username} to the Club (ver. 0.17.1)</div>   
         </div>
     )
 }
