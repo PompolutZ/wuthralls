@@ -9,7 +9,7 @@ import ActionsPalette from './ActionsPalette';
 import Board from './Board';
 import { useAuthUser } from '../../../components/Session';
 import { cardsDb } from '../../../data/index';
-import CardsHUD from './CardsHUD';
+import CardsHUD from './CardsHUD/CardsHUD';
 import useKatophrane from '../../../components/hooks/useKatophrane';
 
 // const propertyToCards = (source, property) => {
@@ -157,6 +157,7 @@ export default function PhoneRoom() {
                     <CardsHUD 
                         roomId={data.id} 
                         myData={data[myself.uid]}
+                        myFighters={Object.entries(data.board.fighters).filter(([fighterId, fighter]) => fighterId.startsWith(myself.uid))}
                         objectivesPile={objectiveDrawPile} 
                         powerCardsPile={powersDrawPile} 
                         serverHand={hand} 

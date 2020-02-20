@@ -164,7 +164,9 @@ const CardMessageItem = React.memo(({
                         hour12: false,
                     })}`}</Typography>
             </div>
-            <Typography style={{ color: 'white' }}>{value}</Typography>
+            <div style={{ color: 'white' }}>
+                <Markdown source={value} />
+            </div>
             <img
                 src={`/assets/cards/${cardId}.png`}
                 style={{ width: '5rem', borderRadius: '.3rem' }}
@@ -264,123 +266,123 @@ const ChatMessageItem = React.memo(({
     );
 })
 
-function PickFirstBoardHUD({ data, onFirstBoardSelected}) {
-    const boardsList = Object.entries(boards).map(([k, v]) => ({...v, id: k}));
-    const [currentIndex, setCurrentIndex] = useState(0);
+// function PickFirstBoardHUD({ data, onFirstBoardSelected}) {
+//     const boardsList = Object.entries(boards).map(([k, v]) => ({...v, id: k}));
+//     const [currentIndex, setCurrentIndex] = useState(0);
 
-    const handleMoveBy = direction => () => {
-        const next = currentIndex + direction;
-        setCurrentIndex(next < 0 ? 0 : next > boardsList.length - 1 ? boardsList.length - 1 : next);
-    }
+//     const handleMoveBy = direction => () => {
+//         const next = currentIndex + direction;
+//         setCurrentIndex(next < 0 ? 0 : next > boardsList.length - 1 ? boardsList.length - 1 : next);
+//     }
 
-    const handleSelectCurrentBoard = () => {
-        console.log(data);
-        onFirstBoardSelected({...data, boardId: currentIndex + 1 });
-    }
+//     const handleSelectCurrentBoard = () => {
+//         console.log(data);
+//         onFirstBoardSelected({...data, boardId: currentIndex + 1 });
+//     }
 
-    console.log(window.screen.width);
-    return (
-        <div style={{ width: `calc(${window.screen.width}px - 1rem)`, height: `calc(${window.screen.height}px - 1rem)`, boxSizing: 'border-box', padding: '1rem', display: 'flex' }}>
-            <div style={{ margin: 'auto', display: 'flex', flexFlow: 'column nowrap', alignItems: 'center' }}>
-                <Typography>{boardsList[currentIndex].name}</Typography>
-                <div style={{ position: 'relative' }}>
-                    <img src={`/assets/boards/${boardsList[currentIndex].id}.jpg`} style={{ width: window.screen.width * .7 }} alt={boardsList[currentIndex].name} />
-                    <ButtonBase style={{ backgroundColor: 'teal', color: 'white', width: '2rem', height: '2rem', boxSizing: 'boarder-box', border: '2px solid white', borderRadius: '2rem', position: 'absolute', top: '50%', left: 0, marginTop: '-1rem', marginLeft: '-1rem' }}
-                        onClick={handleMoveBy(-1)}>
-                        <MoveNextIcon style={{ transform: 'rotate(180deg)'}} />
-                    </ButtonBase>
-                    <ButtonBase style={{ backgroundColor: 'teal', color: 'white', width: '2rem', height: '2rem', boxSizing: 'boarder-box', border: '2px solid white', borderRadius: '2rem', position: 'absolute', top: '50%', right: 0, marginTop: '-1rem', marginRight: '-1rem' }}
-                        onClick={handleMoveBy(1)}>
-                        <MoveNextIcon />
-                    </ButtonBase>
-                </div>
-                <Button onClick={handleSelectCurrentBoard} color="primary" variant="contained">
-                    Pick this board
-                </Button>
-            </div>
-        </div>
-    )
-}
+//     console.log(window.screen.width);
+//     return (
+//         <div style={{ width: `calc(${window.screen.width}px - 1rem)`, height: `calc(${window.screen.height}px - 1rem)`, boxSizing: 'border-box', padding: '1rem', display: 'flex' }}>
+//             <div style={{ margin: 'auto', display: 'flex', flexFlow: 'column nowrap', alignItems: 'center' }}>
+//                 <Typography>{boardsList[currentIndex].name}</Typography>
+//                 <div style={{ position: 'relative' }}>
+//                     <img src={`/assets/boards/${boardsList[currentIndex].id}.jpg`} style={{ width: window.screen.width * .7 }} alt={boardsList[currentIndex].name} />
+//                     <ButtonBase style={{ backgroundColor: 'teal', color: 'white', width: '2rem', height: '2rem', boxSizing: 'boarder-box', border: '2px solid white', borderRadius: '2rem', position: 'absolute', top: '50%', left: 0, marginTop: '-1rem', marginLeft: '-1rem' }}
+//                         onClick={handleMoveBy(-1)}>
+//                         <MoveNextIcon style={{ transform: 'rotate(180deg)'}} />
+//                     </ButtonBase>
+//                     <ButtonBase style={{ backgroundColor: 'teal', color: 'white', width: '2rem', height: '2rem', boxSizing: 'boarder-box', border: '2px solid white', borderRadius: '2rem', position: 'absolute', top: '50%', right: 0, marginTop: '-1rem', marginRight: '-1rem' }}
+//                         onClick={handleMoveBy(1)}>
+//                         <MoveNextIcon />
+//                     </ButtonBase>
+//                 </div>
+//                 <Button onClick={handleSelectCurrentBoard} color="primary" variant="contained">
+//                     Pick this board
+//                 </Button>
+//             </div>
+//         </div>
+//     )
+// }
 
-function PickSecondBoard({ data, onSecondBoardSelected }) {
-    const boardsList = Object.entries(boards).map(([k, v]) => ({...v, id: k}));
-    const [currentIndex, setCurrentIndex] = useState(0);
-    const [values, setValues] = useState({
-        top: {
-            rotate: 0
-        },
-        bottom: {
-            rotate: 0,
-        }
-    })
+// function PickSecondBoard({ data, onSecondBoardSelected }) {
+//     const boardsList = Object.entries(boards).map(([k, v]) => ({...v, id: k}));
+//     const [currentIndex, setCurrentIndex] = useState(0);
+//     const [values, setValues] = useState({
+//         top: {
+//             rotate: 0
+//         },
+//         bottom: {
+//             rotate: 0,
+//         }
+//     })
 
-    useEffect(() => {
-        console.log(values);
-    }, [values]);
+//     useEffect(() => {
+//         console.log(values);
+//     }, [values]);
 
-    const handleMoveBy = direction => () => {
-        const next = currentIndex + direction;
-        setCurrentIndex(next < 0 ? 0 : next > boardsList.length - 1 ? boardsList.length - 1 : next);
-    }
+//     const handleMoveBy = direction => () => {
+//         const next = currentIndex + direction;
+//         setCurrentIndex(next < 0 ? 0 : next > boardsList.length - 1 ? boardsList.length - 1 : next);
+//     }
 
-    const handleSelectCurrentBoard = () => {
-        console.log(data);
-        onSecondBoardSelected({
-            ...data, 
-            selectedBoardId: currentIndex + 1,
-            top: { id: data.opponentBoard, rotate: values.top.rotate }, 
-            bottom: { id: currentIndex + 1, rotate: values.bottom.rotate } 
-        });
-    }
+//     const handleSelectCurrentBoard = () => {
+//         console.log(data);
+//         onSecondBoardSelected({
+//             ...data, 
+//             selectedBoardId: currentIndex + 1,
+//             top: { id: data.opponentBoard, rotate: values.top.rotate }, 
+//             bottom: { id: currentIndex + 1, rotate: values.bottom.rotate } 
+//         });
+//     }
 
-    const flipBoard = name => () => {
-        const currentValue = values[name];
-        const updatedValue = {
-            ...currentValue,
-            rotate: currentValue.rotate === 0 ? 180 : 0,
-        };
+//     const flipBoard = name => () => {
+//         const currentValue = values[name];
+//         const updatedValue = {
+//             ...currentValue,
+//             rotate: currentValue.rotate === 0 ? 180 : 0,
+//         };
 
-        setValues({
-            ...values,
-            [name]: updatedValue,
-        });
-    }
+//         setValues({
+//             ...values,
+//             [name]: updatedValue,
+//         });
+//     }
 
-    console.log('SECOND BOARD LOADED', data);
+//     console.log('SECOND BOARD LOADED', data);
 
-    return (
-        <div style={{ width: `calc(${window.screen.width}px - 1rem)`, height: `calc(${window.screen.height}px - 1rem)`, boxSizing: 'border-box', padding: '1rem', display: 'flex' }}>
-            <div style={{ margin: 'auto', display: 'flex', flexFlow: 'column nowrap', alignItems: 'center' }}>
-                <div style={{ position: 'relative' }}>
-                    <img src={`/assets/boards/${boardsList[data.opponentBoard - 1].id}.jpg`} style={{ width: window.screen.width * .7, transform: `rotate(${values.top.rotate}deg)`, transformOrigin: 'center center' }} alt={boardsList[data.opponentBoard - 1].name} />                    
-                    <ButtonBase style={{ backgroundColor: 'teal', color: 'white', width: '2rem', height: '2rem', boxSizing: 'boarder-box', border: '2px solid white', borderRadius: '2rem', position: 'absolute', top: 0, left: '50%', marginTop: '-1rem', marginLeft: '-1rem' }}
-                        onClick={flipBoard('top')}>
-                        <FlipIcon style={{ transform: 'rotate(180deg)'}} />
-                    </ButtonBase>
-                </div>
-                <div style={{ position: 'relative' }}>
-                    <img src={`/assets/boards/${boardsList[currentIndex].id}.jpg`} style={{ width: window.screen.width * .7, transform: `rotate(${values.bottom.rotate}deg)`, transformOrigin: 'center center' }} alt={boardsList[currentIndex].name} />
-                    <ButtonBase style={{ backgroundColor: 'teal', color: 'white', width: '2rem', height: '2rem', boxSizing: 'boarder-box', border: '2px solid white', borderRadius: '2rem', position: 'absolute', top: '50%', left: 0, marginTop: '-1rem', marginLeft: '-1rem' }}
-                        onClick={handleMoveBy(-1)}>
-                        <MoveNextIcon style={{ transform: 'rotate(180deg)'}} />
-                    </ButtonBase>
-                    <ButtonBase style={{ backgroundColor: 'teal', color: 'white', width: '2rem', height: '2rem', boxSizing: 'boarder-box', border: '2px solid white', borderRadius: '2rem', position: 'absolute', top: '50%', right: 0, marginTop: '-1rem', marginRight: '-1rem' }}
-                        onClick={handleMoveBy(1)}>
-                        <MoveNextIcon />
-                    </ButtonBase>
-                    <ButtonBase style={{ backgroundColor: 'teal', color: 'white', width: '2rem', height: '2rem', boxSizing: 'boarder-box', border: '2px solid white', borderRadius: '2rem', position: 'absolute', bottom: '0%', left: '50%', marginBottom: '-1rem', marginLeft: '-1rem' }}
-                        onClick={flipBoard('bottom')}>
-                        <FlipIcon style={{ transform: 'rotate(180deg)'}} />
-                    </ButtonBase>
-                </div>
-                <Typography style={{ marginTop: '1rem' }}>{boardsList[currentIndex].name}</Typography>
-                <Button onClick={handleSelectCurrentBoard} color="primary" variant="contained">
-                    I am happy with this board
-                </Button>
-            </div>
-        </div>
-    )
-}
+//     return (
+//         <div style={{ width: `calc(${window.screen.width}px - 1rem)`, height: `calc(${window.screen.height}px - 1rem)`, boxSizing: 'border-box', padding: '1rem', display: 'flex' }}>
+//             <div style={{ margin: 'auto', display: 'flex', flexFlow: 'column nowrap', alignItems: 'center' }}>
+//                 <div style={{ position: 'relative' }}>
+//                     <img src={`/assets/boards/${boardsList[data.opponentBoard - 1].id}.jpg`} style={{ width: window.screen.width * .7, transform: `rotate(${values.top.rotate}deg)`, transformOrigin: 'center center' }} alt={boardsList[data.opponentBoard - 1].name} />                    
+//                     <ButtonBase style={{ backgroundColor: 'teal', color: 'white', width: '2rem', height: '2rem', boxSizing: 'boarder-box', border: '2px solid white', borderRadius: '2rem', position: 'absolute', top: 0, left: '50%', marginTop: '-1rem', marginLeft: '-1rem' }}
+//                         onClick={flipBoard('top')}>
+//                         <FlipIcon style={{ transform: 'rotate(180deg)'}} />
+//                     </ButtonBase>
+//                 </div>
+//                 <div style={{ position: 'relative' }}>
+//                     <img src={`/assets/boards/${boardsList[currentIndex].id}.jpg`} style={{ width: window.screen.width * .7, transform: `rotate(${values.bottom.rotate}deg)`, transformOrigin: 'center center' }} alt={boardsList[currentIndex].name} />
+//                     <ButtonBase style={{ backgroundColor: 'teal', color: 'white', width: '2rem', height: '2rem', boxSizing: 'boarder-box', border: '2px solid white', borderRadius: '2rem', position: 'absolute', top: '50%', left: 0, marginTop: '-1rem', marginLeft: '-1rem' }}
+//                         onClick={handleMoveBy(-1)}>
+//                         <MoveNextIcon style={{ transform: 'rotate(180deg)'}} />
+//                     </ButtonBase>
+//                     <ButtonBase style={{ backgroundColor: 'teal', color: 'white', width: '2rem', height: '2rem', boxSizing: 'boarder-box', border: '2px solid white', borderRadius: '2rem', position: 'absolute', top: '50%', right: 0, marginTop: '-1rem', marginRight: '-1rem' }}
+//                         onClick={handleMoveBy(1)}>
+//                         <MoveNextIcon />
+//                     </ButtonBase>
+//                     <ButtonBase style={{ backgroundColor: 'teal', color: 'white', width: '2rem', height: '2rem', boxSizing: 'boarder-box', border: '2px solid white', borderRadius: '2rem', position: 'absolute', bottom: '0%', left: '50%', marginBottom: '-1rem', marginLeft: '-1rem' }}
+//                         onClick={flipBoard('bottom')}>
+//                         <FlipIcon style={{ transform: 'rotate(180deg)'}} />
+//                     </ButtonBase>
+//                 </div>
+//                 <Typography style={{ marginTop: '1rem' }}>{boardsList[currentIndex].name}</Typography>
+//                 <Button onClick={handleSelectCurrentBoard} color="primary" variant="contained">
+//                     I am happy with this board
+//                 </Button>
+//             </div>
+//         </div>
+//     )
+// }
 
 function InteractiveMessage({ data, roomId, isLastMessage, timestamp, onShowHUD, state }) {
     const myself = useAuthUser();

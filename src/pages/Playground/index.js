@@ -6,6 +6,7 @@ import MagicDie from '../../components/MagicDie';
 import * as SVG from 'svg.js';
 import { defineGrid, extendHex } from 'honeycomb-grid';
 import ButtonBase from '@material-ui/core/ButtonBase';
+import AddIcon from '@material-ui/icons/Add';
 import { 
     cardsDb,
     boards as boardsData
@@ -53,7 +54,11 @@ export default function Playground() {
                 flexDirection: 'column'
             }}
         >
-            <div style={{ flex: 1 }}></div>
+            <div style={{ flex: 1, flexDirection: 'column', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <ButtonBase style={{ width: '3rem', height: '3rem', display: 'flex', background: 'teal', color: 'white' }}>
+                    <AddIcon style={{ width: '1.5rem', height: '1.5rem', margin: 'auto' }} />
+                </ButtonBase>
+            </div>
             <div style={{ flex: '0 0 30%', backgroundColor: 'magenta', display: 'flex' }}>
             </div>
         </div>

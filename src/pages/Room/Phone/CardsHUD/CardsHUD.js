@@ -9,12 +9,12 @@ import QuestionAnswerIcon from '@material-ui/icons/QuestionAnswer';
 import RestoreIcon from '@material-ui/icons/Restore';
 import AddIcon from '@material-ui/icons/Add';
 import { makeStyles } from '@material-ui/core/styles';
-import { FirebaseContext } from '../../../firebase';
+import { FirebaseContext } from '../../../../firebase';
 import Fade from '@material-ui/core/Fade';
-import Messenger from './Messager';
-import RoomActionMaker from './RoomActionMaker';
-import ActionsPalette from './ActionsPalette';
-import Board from './Board';
+import Messenger from '../Messager';
+import RoomActionMaker from '../RoomActionMaker';
+import ActionsPalette from '../ActionsPalette';
+import Board from '../Board';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import ButtonBase from '@material-ui/core/ButtonBase';
@@ -26,11 +26,13 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import SaveIcon from '@material-ui/icons/Save';
 import ReturnToPileIcon from '@material-ui/icons/Eject';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
-import { useAuthUser } from '../../../components/Session';
+import { useAuthUser } from '../../../../components/Session';
 import { Typography } from '@material-ui/core';
-import { cardsDb } from '../../../data/index';
-import { shuffle } from '../../../common/function';
-import Glory from '../../../components/CommonSVGs/Glory';
+import { cardsDb } from '../../../../data/index';
+import { shuffle } from '../../../../common/function';
+import Glory from '../../../../components/CommonSVGs/Glory';
+
+import CardHighlight from './CardHighlight';
 
 const stringToCards = (source) => {
     if(!Boolean(source)) return null;
@@ -50,9 +52,10 @@ const POWERS_DISCARDED = 'POWERS_DISCARDED';
 const MY_CARDS_GROUP = 'MY_CARDS_GROUP';
 const ENEMY_CARDS_GROUP = 'ENEMY_CARDS_GROUP';
 
-export default React.memo(({
+export default ({
     roomId,
     myData,
+    myFighters,
     objectivesPile,
     powerCardsPile,
     serverHand,
@@ -78,12 +81,14 @@ export default React.memo(({
     const [selectedGroup, setSelectedGroup] = useState(MY_CARDS_GROUP); 
     const [modified, setModified] = useState(false);
     const [gloryScored, setGloryScored] = useState(myData ? myData.gloryScored : 0);
+    const [glorySpent, setGlorySpent] = useState(myData ? myData.glorySpent : 0);
 
     const opponentHand = stringToCards(enemyHand);
     const opponentScoreObjectivesPile = stringToCards(enemyScoredObjectivesPile);
     const opponentObjectivesDiscardPile = stringToCards(enemyObjectivesDiscardPile);
     const opponentPowersDiscardPile = stringToCards(enemyPowersDiscardPile);
 
+    console.log(myData);
 
     const selectGroup = groupName => () => {
         setSelectedGroup(groupName)
@@ -118,7 +123,9 @@ export default React.memo(({
 
     const handleClickAwayHightlight = e => {
         setHighlightCard(null);
-        e.preventDefault();
+        if(e) {
+            e.preventDefault();
+        }
     };
 
     const handleClose = () => {
@@ -136,6 +143,7 @@ export default React.memo(({
             [`${myself.uid}.dObjs`]: discardedObjectives ? discardedObjectives.map(x => x.id).join() : '',
             [`${myself.uid}.dPws`]: discardedPowers ? discardedPowers.map(x => x.id).join() : '',
             [`${myself.uid}.gloryScored`]: gloryScored,
+            [`${myself.uid}.glorySpent`]: glorySpent,
         });
         setModified(false);
     }
@@ -177,6 +185,33 @@ export default React.memo(({
 
         setHighlightCard(null);
         setModified(true);
+    }
+
+    const applyUpgrade = (upgrade, fighter) => {
+        const nextGloryScored = Number(gloryScored) - 1;
+        const nextGlorySpent = Number(glorySpent) + 1;
+
+        setHand(prev => prev.filter(c => c.id !== upgrade.id));
+        setGloryScored(nextGloryScored);
+        setGlorySpent(nextGlorySpent);
+        
+        const payload = {
+            [`board.fighters.${fighter.id}.upgrades`]: Boolean(fighter.upgrades) ? `${fighter.upgrades},${upgrade.id}` : `${upgrade.id}`,
+        }
+        
+        setHighlightCard(null);
+        setModified(true);
+
+        firebase.updateRoom(roomId, payload);
+        firebase.addGenericMessage2(roomId, {
+            author: 'Katophrane',
+            type: 'INFO',
+            subtype: 'APPLIED_UPGRADE_CARD',
+            cardId: upgrade.id,
+            value: `**${myData.name}** equips **${fighter.name}** with **${upgrade.name}** upgrade.
+            **${myData.name}** has updated his scored/spent glory to ${nextGloryScored}/${nextGlorySpent}.`,
+        });
+        console.log('APPLY UPGRADE', payload);
     }
 
     const returnToHand = (card, source) => () => {
@@ -1088,232 +1123,19 @@ export default React.memo(({
             }
             
             {highlightCard && (
-                <div
-                    style={{
-                        position: 'fixed',
-                        width: '100%',
-                        height: '100%',
-                        top: '0',
-                        left: '0',
-                        display: 'flex',
-                        zIndex: 10000,
-                        perspective: '5rem',
-                        backgroundColor: 'rgba(255,255,255,.5)',
-                    }}
-                >
-                    <ClickAwayListener onClickAway={handleClickAwayHightlight}>
-                        <Paper
-                            style={{
-                                position: 'relative',
-                                flexShrink: 0,
-                                width: cardDefaultWidth * 0.8,
-                                height: cardDefaultHeight * 0.8,
-                                margin: 'auto',
-                                borderRadius: '1rem',
-                                // border: '3px dashed black',
-                                // boxSizing: 'border-box',
-                                backgroundPosition: 'center center',
-                                backgroundSize: 'cover',
-                                backgroundRepeat: 'no-repeat',
-                                backgroundImage: `url(/assets/cards/${highlightCard.id}.png)`,
-                            }}
-                            elevation={10}
-                            onClick={handleStopHighlighting}
-                        >
-                            {
-                                highlightFromSource === OBJECTIVES_HAND &&
-                                selectedGroup === MY_CARDS_GROUP && (
-                                    <ButtonBase
-                                        style={{
-                                            position: 'absolute',
-                                            bottom: '0%',
-                                            left: '0%',
-                                            marginLeft: '-1.5rem',
-                                            backgroundColor: 'dimgray',
-                                            color: 'gray',
-                                            width: '4rem',
-                                            height: '4rem',
-                                            borderRadius: '2rem',
-                                            boxSizing: 'border-box',
-                                            boxShadow: '0 0 10px 2px darkgoldenrod',
-                                        }}
-                                        onClick={playCard(highlightCard)}
-                                    >
-                                        <div style={{
-                                            position: 'absolute',
-                                            width: '3rem',
-                                            height: '3rem',
-                                            borderRadius: '2rem',
-                                            backgroundColor: 'goldenrod',
-                                            display: 'flex',
-                                        }}>
-                                        </div>
-                                        <Glory
-                                            style={{
-                                                // backgroundColor: 'orange',
-                                                color: 'darkgoldenrod',
-                                                width: '4.2rem',
-                                                height: '4.2rem',
-                                                borderRadius: '3rem',
-                                                position: 'absolute',
-                                            }}
-                                        />
-                                        <div style={{
-                                            position: 'absolute',
-                                            width: '3rem',
-                                            height: '3rem',
-                                            borderRadius: '2rem',
-                                            display: 'flex',
-                                            left: '1rem',
-                                            top: '-.5rem',
-                                        }}>
-                                            <Typography style={{ color: 'white', fontSize: '3rem', fontWeight: 800 }}>{highlightCard.glory}</Typography>
-                                        </div>
-                                    </ButtonBase>
-                                )
-                            }
-                            {
-                                 highlightFromSource === POWERS_HAND &&
-                                 selectedGroup === MY_CARDS_GROUP && (
-                                     <ButtonBase
-                                         style={{
-                                             position: 'absolute',
-                                             bottom: '0%',
-                                             left: '0%',
-                                             marginLeft: '-1.5rem',
-                                             backgroundColor: 'teal',
-                                             color: 'white',
-                                             width: '3rem',
-                                             height: '3rem',
-                                             borderRadius: '1.5rem',
-                                         }}
-                                         onClick={playCard(highlightCard)}
-                                     >
-                                         <PlayIcon
-                                             style={{
-                                                 width: '2rem',
-                                                 height: '2rem',
-                                             }}
-                                         />
-                                     </ButtonBase>
-                                 )
-                            }
-                            {
-                                (highlightFromSource === OBJECTIVES_SCORED ||
-                                highlightFromSource === OBJECTIVES_DISCARDED ||
-                                highlightFromSource === POWERS_DISCARDED) && 
-                                selectedGroup === MY_CARDS_GROUP && (
-                                    <ButtonBase
-                                        style={{
-                                            position: 'absolute',
-                                            bottom: '0%',
-                                            left: '0%',
-                                            marginLeft: '-1.5rem',
-                                            backgroundColor: 'teal',
-                                            color: 'white',
-                                            width: '3rem',
-                                            height: '3rem',
-                                            borderRadius: '1.5rem',
-                                        }}
-                                        onClick={returnToHand(highlightCard, highlightFromSource)}
-                                    >
-                                        <DrawCardsIcon
-                                            style={{
-                                                width: '2rem',
-                                                height: '2rem',
-                                                transform: 'rotate(180deg)'
-                                            }}
-                                        />
-                                    </ButtonBase>
-                                )
-                            }
-                            {
-                                (highlightFromSource === OBJECTIVES_HAND ||
-                                    highlightFromSource === POWERS_HAND) &&
-                                    selectedGroup === MY_CARDS_GROUP && (
-                                        <ButtonBase
-                                        style={{
-                                            position: 'absolute',
-                                            bottom: '0%',
-                                            right: '0%',
-                                            marginRight: '-1.5rem',
-                                            backgroundColor: 'red',
-                                            color: 'white',
-                                            width: '3rem',
-                                            height: '3rem',
-                                            borderRadius: '1.5rem',
-                                        }}
-                                        onClick={discardCard(highlightCard)}
-                                    >
-                                        <DeleteIcon
-                                            style={{
-                                                width: '2rem',
-                                                height: '2rem',
-                                            }}
-                                        />
-                                    </ButtonBase>
-                                )
-                            }
-                            {
-                                (highlightFromSource === OBJECTIVES_HAND ||
-                                    highlightFromSource === POWERS_HAND) &&
-                                    selectedGroup === MY_CARDS_GROUP && (
-                                        <ButtonBase
-                                        style={{
-                                            position: 'absolute',
-                                            bottom: '3.5rem',
-                                            right: '0%',
-                                            marginRight: '-1.5rem',
-                                            backgroundColor: 'red',
-                                            color: 'white',
-                                            width: '3rem',
-                                            height: '3rem',
-                                            borderRadius: '1.5rem',
-                                        }}
-                                        onClick={returnToPile(highlightCard, highlightFromSource)}
-                                    >
-                                        <ReturnToPileIcon
-                                            style={{
-                                                width: '2rem',
-                                                height: '2rem',
-                                            }}
-                                        />
-                                    </ButtonBase>
-                                )
-                            }
-                            {
-                                (highlightFromSource === OBJECTIVES_SCORED ||
-                                    highlightFromSource === OBJECTIVES_DISCARDED ||
-                                    highlightFromSource === POWERS_DISCARDED) &&
-                                    selectedGroup === MY_CARDS_GROUP && (
-                                            <ButtonBase
-                                        style={{
-                                            position: 'absolute',
-                                            bottom: '0%',
-                                            right: '0%',
-                                            marginLeft: '-1.5rem',
-                                            backgroundColor: 'red',
-                                            color: 'white',
-                                            width: '3rem',
-                                            height: '3rem',
-                                            borderRadius: '1.5rem',
-                                        }}
-                                        onClick={returnToPile(highlightCard, highlightFromSource)}
-                                    >
-                                        <ReturnToPileIcon
-                                            style={{
-                                                width: '2rem',
-                                                height: '2rem',
-                                            }}
-                                        />
-                                    </ButtonBase>
-                                )
-                            }
-                        </Paper>
-                    </ClickAwayListener>
-                </div>
+                <CardHighlight highlightCard={highlightCard}
+                    myFighters={myFighters}
+                    highlightFromSource={highlightFromSource}
+                    selectedGroup={selectedGroup}
+                    handleClickAwayHightlight={handleClickAwayHightlight}
+                    handleStopHighlighting={handleStopHighlighting}
+                    playCard={playCard}
+                    returnToPile={returnToPile}
+                    returnToHand={returnToHand}
+                    discardCard={discardCard}
+                    applyFighterUpgrade={applyUpgrade} />
             )}
             </div>
         </div>
     );
-});
+};
