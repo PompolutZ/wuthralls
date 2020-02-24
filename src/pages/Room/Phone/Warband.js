@@ -5,8 +5,24 @@ import Typography from '@material-ui/core/Typography';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import { FirebaseContext } from '../../../firebase';
+import { makeStyles } from '@material-ui/core/styles';
+
+const useStyles = makeStyles(theme => ({
+    root: {
+        width: '100%',
+        display: 'flex',
+        alignItems: 'center',
+        margin: '.5rem',
+        overflow: 'scroll',
+        "&::-webkit-scrollbar-thumb": {
+            width: '10px',
+            height: '10px',
+        }
+    },
+}))
 
 export default function Warband({ roomId, myfighters, enemyFighters, onSelectedFighterChange, onShowSelectedFighterInfo, playerInfo }) {
+    const classes = useStyles();
     const myself = useAuthUser();
     const fighters = [...myfighters, ...enemyFighters];
     const pointyTokenBaseWidth = 95;
@@ -45,15 +61,7 @@ export default function Warband({ roomId, myfighters, enemyFighters, onSelectedF
     }
 
     return (
-        <div
-            style={{
-                width: '100%',
-                display: 'flex',
-                alignItems: 'center',
-                margin: '.5rem',
-                overflow: 'scroll',
-            }}
-        >
+        <div className={classes.root}>
             {
                 fighters.map(fighter => (
                     <div key={fighter.id} style={{ marginRight: '1rem', paddingTop: '1rem', paddingLeft: '1rem', display: 'flex', flexDirection: 'column', alignItems: 'center' }} onClick={handleFighterClicked(fighter)}>
@@ -76,6 +84,24 @@ export default function Warband({ roomId, myfighters, enemyFighters, onSelectedF
                                     width: '100%', 
                                     filter: fighter.isOnBoard ? '' : 'grayscale(100%)', 
                                     transform: !fighter.id.startsWith(myself.uid) ? 'scaleX(-1)' : '', }} />
+                            <div style={{
+                                position: 'absolute',
+                                width: '2rem',
+                                height: '2rem',
+                                boxSizing: 'border-box',
+                                background: 'darkred',
+                                color: 'white',
+                                borderRadius: '1rem',
+                                border: '2px solid white',
+                                top: 0, 
+                                marginTop: '-1rem',
+                                left: 0,
+                                marginLeft: '-1rem',
+                                display: 'flex',
+                                zIndex: '-1',
+                            }}>
+                                <Typography style={{ margin: 'auto', fontSize: '.8rem' }}>{fighter.wounds}</Typography>
+                            </div>
 
                             <div style={{
                                 width: '70%',

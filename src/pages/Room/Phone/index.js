@@ -29,9 +29,10 @@ export default function PhoneRoom() {
     const { state } = useLocation();
     //const katophrane = useKatophrane(state);
     const theme = useTheme();
-    const [tabIndex, setTabIndex] = React.useState(0);
+    const [tabIndex, setTabIndex] = useState(0);
     const [selectedElement, setSelectedElement] = useState(null);
     const [data, setData] = useState(state);
+    const [activePaletteType, setActivePaletteType] = useState(null);
     const navigationRef = useRef(null);
     const [stickHeader, setStickHeader] = useState(false);
     const [actionsPanelOffsetHeight, setActionsPanelOffsetHeight] = useState(4 * 16);
@@ -55,6 +56,8 @@ export default function PhoneRoom() {
     const [boardScaleFactor, setBoardScaleFactor] = useState(.5);
 
     useEffect(() => {
+        window.addEventListener("keydown", handleHotkeyDown);
+
         const unsubscribe = firebase.setRoomListener(state.id, snapshot => {
             if(snapshot.exists) {
                 setData({...snapshot.data(), id: snapshot.id})
@@ -71,9 +74,9 @@ export default function PhoneRoom() {
         return () => {
             unsubscribe();
             unsubscribeFromMessages();
+            window.removeEventListener("keydown");
         };
     }, []);
-
 
     // useEffect(() => {
     //     console.log('KATO', katophrane);
@@ -121,6 +124,30 @@ export default function PhoneRoom() {
         console.log('Room.onSelectedElementChange', selectedElement);
     }, [selectedElement]);
 
+    const handleHotkeyDown = event => {
+        if(event && event.target.type === "textarea") return;
+
+        console.log('event', event);
+
+        // switch main tab
+        if(event.key === "q") {
+            setTabIndex(current => Number(!Boolean(current)));
+            return;
+        }
+
+        if(event.key === "w") {
+            setActivePaletteType('FIGHTERS');
+            return;
+        }
+
+        if(event.key === "a") {
+            setActivePaletteType('ROLL_DICE');
+            return;
+        }
+
+        console.log('Hotkey', event);
+    }
+
     const handleActionTypeChange = offsetHeight  => {
         setActionsPanelOffsetHeight(offsetHeight);
     }
@@ -149,7 +176,8 @@ export default function PhoneRoom() {
                     onSelectedElementChange={setSelectedElement}
                     onOpenDeckHUD={changeOpenDeckHUD}
                     visibleScreenType={tabIndex}
-                    onSetScreenTabIndex={setTabIndex} />
+                    onSetScreenTabIndex={setTabIndex}
+                    activePaletteType={activePaletteType} />
             </div>
 
             {

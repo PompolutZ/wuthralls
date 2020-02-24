@@ -16,6 +16,7 @@ import DefenceDie from '../../../components/DefenceDie';
 import MagicDie from '../../../components/MagicDie';
 import { warbandColors } from '../../../data';
 
+
 export default function RollDiceAction({ roomId, rollResult, defaultAmount, myFaction }) {
     const myself = useAuthUser();
     const firebase = useContext(FirebaseContext);
@@ -40,8 +41,6 @@ export default function RollDiceAction({ roomId, rollResult, defaultAmount, myFa
             value: updated.join(),
         });
     };
-
-    const handleRollClick = () => {};
 
     const handleSwitchTo = type => () => {
         setSelectedType(type);

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useContext } from 'react';
+import React, { useState, useRef, useContext, useEffect } from 'react';
 import Grid from '@material-ui/core/Grid';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -65,6 +65,7 @@ const actions = [
 
 export default function ActionsPalette({
     data,
+    activePaletteType,
     onSelectedElementChange,
     onActionTypeChange,
     onOpenDeckHUD,
@@ -80,6 +81,11 @@ export default function ActionsPalette({
     const [mainHUDPayload, setMainHUDPayload] = useState(null);
     const [mainHUDWasModified, setMainHUDWasModified] = useState(false);
     const [mainHUDModifications, setMainHUDModifications] = useState(null);
+
+    useEffect(() => {
+        if(!activePaletteType) return;
+        setSelectedAction(activePaletteType);
+    }, [activePaletteType]);
 
     const handleClick = event => {
         if(anchorEl) {

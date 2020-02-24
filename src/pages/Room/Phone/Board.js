@@ -64,7 +64,7 @@ const modifyNoOnesArray = (array, offset) => {
 
 const renderHex = (hex, svg, color, lethals, blocked) => {
             // render(draw, color) {
-    console.log('RENDER isLethal', hex, lethals.some(([x, y]) => x === hex.x && y === hex.y), blocked)            
+    //console.log('RENDER isLethal', hex, lethals.some(([x, y]) => x === hex.x && y === hex.y), blocked)            
 
     const { x, y } = hex.toPoint();
     const corners = hex.corners();

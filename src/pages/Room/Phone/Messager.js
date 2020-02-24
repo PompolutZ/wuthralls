@@ -613,15 +613,15 @@ function Messenger({ roomId, state, messages }) {
 
     useEffect(() => {
         if(!messages) return;
-        const lastMessage = messages[messages.length - 1];
+        const [lastMessage] = messages.slice(-1);
         if(lastMessage) {
             const element = document.getElementById(lastMessage.id);
-            setTimeout(() => {
-                if(element) {
-                    element.scrollIntoView();
-                    console.log('SCROLLING INTO VIEW', lastMessage);
-                }
-            }, 1000);
+            if(element) {
+                element.scrollIntoView({
+                    behavior: 'auto',
+                    block: 'start',
+                });
+            }
         }
         // return () => unsubscribe();
     }, [messages]);

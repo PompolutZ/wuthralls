@@ -14,6 +14,7 @@ export default function Usersummaryr() {
         const playedGames = firebase.fstore.collection('gameResults').get()
             .then(snapshot => {
                 const data = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
+                console.log(data.filter(gr => gr.result.map(r => r.glory).join() === "0,0"));
                 setGamesPlayed(data.sort((a, b) => b.finishied.seconds - a.finishied.seconds));
                 const players = data.flatMap(d => d.players).reduce((r, c) => r.includes(c) ? r : [...r, c], []);
                 firebase.users().once('value').then(snapshot => {
@@ -55,9 +56,14 @@ export default function Usersummaryr() {
         }
     }
 
+    const handleRemoveEmptyGames = () => {
+
+    }
+
     return (
         <div style={{ margin: '1rem' }}>
             <Button onClick={handleReload} disabled={!players || players.length === 0} color="primary" variant="contained">Reload</Button>
+            <Button onClick={handleRemoveEmptyGames} color="primary" variant="contained">Remove Empty Games</Button>
         </div>
     )
 }
