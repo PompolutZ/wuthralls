@@ -82,15 +82,15 @@ export default function ScatterToken({ onSelectionChange, orientation }) {
                     position: 'relative',
                     width: '4rem',
                     height: '4rem',
-                    paddingBottom: '2rem' }}>
+                    marginTop: '2rem', }}>
                     <img src={`/assets/other/scatter.png`} style={{ width: '4rem', transform: `rotate(${rotateAngle}deg)`, transformOrigin: 'center center', }} 
                         onClick={handleTokenClick} />
                     <div style={{ width: '2rem', position: 'absolute', height: '2rem', zIndex: -1, top: '50%', left: '50%', marginTop: '-2rem', marginLeft: '-1rem', borderRadius: '1rem', boxShadow: isSelected ? '0 0 30px 15px magenta' : '' }} />
-                    <ButtonBase style={{ position: 'absolute', width: '2.5rem', height: '2.5rem', top: '50%', marginTop: '-1rem', left: 0, marginLeft: '-2.25rem', backgroundColor: 'teal', color: 'white', boxSizing: 'border-box', border: '1px solid white', borderRadius: '1rem' }}
+                    <ButtonBase style={{ position: 'absolute', width: '2.5rem', height: '2.5rem', top: '50%', marginTop: '-1rem', left: 0, marginLeft: '-3rem', backgroundColor: 'teal', color: 'white', boxSizing: 'border-box', border: '1px solid white', borderRadius: '1rem' }}
                         onClick={handleRotateLeft}>
                         <RotateLeftIcon />
                     </ButtonBase>
-                    <ButtonBase style={{ position: 'absolute', width: '2.5rem', height: '2.5rem', top: '50%', marginTop: '-1rem', right: 0, marginRight: '-2.25rem', backgroundColor: 'teal', color: 'white', boxSizing: 'border-box', border: '1px solid white', borderRadius: '1rem'}}
+                    <ButtonBase style={{ position: 'absolute', width: '2.5rem', height: '2.5rem', top: '50%', marginTop: '-1rem', right: 0, marginRight: '-3rem', backgroundColor: 'teal', color: 'white', boxSizing: 'border-box', border: '1px solid white', borderRadius: '1rem'}}
                         onClick={handleRotateRight}>
                         <RotateRightIcon />
                     </ButtonBase>

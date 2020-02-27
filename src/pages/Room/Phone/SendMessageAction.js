@@ -27,19 +27,18 @@ export default function SendMessageAction({ roomId, }) {
 
     return (
         <div style={{ 
-            width: '100%', 
+            flexGrow: 1,
             display: 'flex',
             alignSelf: 'flex-end',
-            alignItems: 'flex-end',
-            marginBottom: '.5rem'}}>
+            alignItems: 'flex-end'}}>
                         <TextField 
                             multiline 
                             placeholder="type here what you want to say..."
-                            style={{ flex: 1, margin: 'auto 1rem' }}
+                            style={{ flex: 1, margin: '2rem 1rem' }}
                             value={currentMessage}
                             onChange={handleTyping}
                             rowsMax={3} />
-        <Button onClick={handleSendTextMessage}>
+        <Button onClick={handleSendTextMessage} style={{ margin: '0 0 2rem 0'}}>
             <SendIcon />
         </Button>
     </div>

@@ -9,16 +9,24 @@ import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles(theme => ({
     root: {
-        width: '100%',
-        display: 'flex',
-        alignItems: 'center',
-        margin: '.5rem',
-        overflow: 'scroll',
+        flexGrow: 1,
+        position: 'relative',
         "&::-webkit-scrollbar-thumb": {
             width: '10px',
             height: '10px',
         }
     },
+
+    itemsContainer: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        display: 'flex',
+        alignItems: 'center',
+        overflow: 'auto',
+    }
 }))
 
 export default function Warband({ roomId, myfighters, enemyFighters, onSelectedFighterChange, onShowSelectedFighterInfo, playerInfo }) {
@@ -62,150 +70,153 @@ export default function Warband({ roomId, myfighters, enemyFighters, onSelectedF
 
     return (
         <div className={classes.root}>
-            {
-                fighters.map(fighter => (
-                    <div key={fighter.id} style={{ marginRight: '1rem', paddingTop: '1rem', paddingLeft: '1rem', display: 'flex', flexDirection: 'column', alignItems: 'center' }} onClick={handleFighterClicked(fighter)}>
-                        <div style={{ 
-                            width: pointyTokenBaseWidth * .7,                                 
-                            height: pointyTokenBaseWidth * .7,                                 
-                            borderRadius: pointyTokenBaseWidth * .7,
-                            boxSizing: 'border-box',
-                            position: 'relative',
-                            border: fighter.id.startsWith(myself.uid) ? selectedFighter && selectedFighter.id === fighter.id ? '3px dashed green' : '3px solid green' : selectedFighter && selectedFighter.id === fighter.id ? '3px dashed red' : '3px solid red',
-                            }}>
+            <div className={classes.itemsContainer}>
+                {
+                    fighters.map(fighter => (
+                        <div key={fighter.id} style={{ marginRight: '1rem', paddingTop: '1rem', paddingLeft: '1rem', display: 'flex', flexDirection: 'column', alignItems: 'center' }} onClick={handleFighterClicked(fighter)}>
+                            <div style={{ 
+                                width: pointyTokenBaseWidth * .7,                                 
+                                height: pointyTokenBaseWidth * .7,                                 
+                                borderRadius: pointyTokenBaseWidth * .7,
+                                boxSizing: 'border-box',
+                                position: 'relative',
+                                border: fighter.id.startsWith(myself.uid) ? selectedFighter && selectedFighter.id === fighter.id ? '3px dashed green' : '3px solid green' : selectedFighter && selectedFighter.id === fighter.id ? '3px dashed red' : '3px solid red',
+                                }}>
 
-                            <img src={fighter.isInspired 
-                                        ? fighter.iconInspired 
-                                            ? `/assets/fighters/${fighter.iconInspired}-icon.png`
+                                <img src={fighter.isInspired 
+                                            ? fighter.iconInspired 
+                                                ? `/assets/fighters/${fighter.iconInspired}-icon.png`
+                                                : `/assets/fighters/${fighter.icon}-icon.png`
                                             : `/assets/fighters/${fighter.icon}-icon.png`
-                                        : `/assets/fighters/${fighter.icon}-icon.png`
-                                } 
-                                style={{ 
-                                    width: '100%', 
-                                    filter: fighter.isOnBoard ? '' : 'grayscale(100%)', 
-                                    transform: !fighter.id.startsWith(myself.uid) ? 'scaleX(-1)' : '', }} />
-                            <div style={{
-                                position: 'absolute',
-                                width: '2rem',
-                                height: '2rem',
-                                boxSizing: 'border-box',
-                                background: 'darkred',
-                                color: 'white',
-                                borderRadius: '1rem',
-                                border: '2px solid white',
-                                top: 0, 
-                                marginTop: '-1rem',
-                                left: 0,
-                                marginLeft: '-1rem',
-                                display: 'flex',
-                                zIndex: '-1',
-                            }}>
-                                <Typography style={{ margin: 'auto', fontSize: '.8rem' }}>{fighter.wounds}</Typography>
-                            </div>
+                                    } 
+                                    style={{ 
+                                        width: '100%', 
+                                        filter: fighter.isOnBoard ? '' : 'grayscale(100%)', 
+                                        transform: !fighter.id.startsWith(myself.uid) ? 'scaleX(-1)' : '', }} />
+                                <div style={{
+                                    position: 'absolute',
+                                    width: '2rem',
+                                    height: '2rem',
+                                    boxSizing: 'border-box',
+                                    background: 'darkred',
+                                    color: 'white',
+                                    borderRadius: '1rem',
+                                    border: '2px solid white',
+                                    top: 0, 
+                                    marginTop: '-1rem',
+                                    left: 0,
+                                    marginLeft: '-1rem',
+                                    display: 'flex',
+                                    zIndex: '-1',
+                                }}>
+                                    <Typography style={{ margin: 'auto', fontSize: '.8rem' }}>{fighter.wounds}</Typography>
+                                </div>
 
-                            <div style={{
-                                width: '70%',
-                                height: '70%',
-                                position: 'absolute',
-                                top: '50%',
-                                left: '50%',
-                                marginTop: '-35%',
-                                marginLeft: '-35%',
-                                zIndex: -2,
-                                boxSizing: 'border-box',
-                                // border: fighter.id.startsWith(myself.uid) ? '3px solid green' : '3px dashed red',
-                                borderRadius: '70%',
-                                boxShadow: selectedFighter && selectedFighter.id === fighter.id ? fighter.id.startsWith(myself.uid) ? '0 0 25px 10px green' : '0 0 25px 10px red' : ''
-                            }} />    
-                            <div style={{
-                                width: '70%',
-                                height: '70%',
-                                position: 'absolute',
-                                top: '50%',
-                                left: '50%',
-                                marginTop: '-35%',
-                                marginLeft: '-35%',
-                                zIndex: -1,
-                                boxSizing: 'border-box',
-                                // border: fighter.id.startsWith(myself.uid) ? '3px solid green' : '3px dashed red',
-                                borderRadius: '70%',
-                                boxShadow: fighter.isInspired ? '0 0 35px 15px yellow' : ''
-                            }} />    
-                            {
-                                selectedFighter && selectedFighter.id === fighter.id && fighter.isOnBoard && (
-                                    <ButtonBase
-                                        style={{
-                                            position: 'absolute',
-                                            bottom: '0%',
-                                            right: '0%',
-                                            marginBottom: '-.7rem',
-                                            marginRight: '-1rem',
-                                            backgroundColor: 'red',
-                                            color: 'white',
-                                            width: '2rem',
-                                            height: '2rem',
-                                            borderRadius: '1.5rem',
-                                            zIndex: 2,
-                                            boxSizing: 'border-box',
-                                            border: '2px solid white',
-                                        }}
-                                        onClick={handleRemoveFromBoard(fighter)}
-                                    >
-                                        <DeleteIcon
-                                            style={{
-                                                width: '1rem',
-                                                height: '1rem',
-                                            }}
-                                        />
-                                    </ButtonBase>
-                                )
-                            }
-                            {
-                                selectedFighter && selectedFighter.id === fighter.id && !Boolean(fighter.subtype) && (
-                                    <ButtonBase
+                                <div style={{
+                                    width: '70%',
+                                    height: '70%',
+                                    position: 'absolute',
+                                    top: '50%',
+                                    left: '50%',
+                                    marginTop: '-35%',
+                                    marginLeft: '-35%',
+                                    zIndex: -2,
+                                    boxSizing: 'border-box',
+                                    // border: fighter.id.startsWith(myself.uid) ? '3px solid green' : '3px dashed red',
+                                    borderRadius: '70%',
+                                    boxShadow: selectedFighter && selectedFighter.id === fighter.id ? fighter.id.startsWith(myself.uid) ? '0 0 25px 10px green' : '0 0 25px 10px red' : ''
+                                }} />    
+                                <div style={{
+                                    width: '70%',
+                                    height: '70%',
+                                    position: 'absolute',
+                                    top: '50%',
+                                    left: '50%',
+                                    marginTop: '-35%',
+                                    marginLeft: '-35%',
+                                    zIndex: -1,
+                                    boxSizing: 'border-box',
+                                    // border: fighter.id.startsWith(myself.uid) ? '3px solid green' : '3px dashed red',
+                                    borderRadius: '70%',
+                                    boxShadow: fighter.isInspired ? '0 0 35px 15px yellow' : ''
+                                }} />    
+                                {
+                                    selectedFighter && selectedFighter.id === fighter.id && fighter.isOnBoard && (
+                                        <ButtonBase
                                             style={{
                                                 position: 'absolute',
-                                                top: '0%',
+                                                bottom: '0%',
                                                 right: '0%',
-                                                backgroundColor: 'teal',
+                                                marginBottom: '-.7rem',
+                                                marginRight: '-1rem',
+                                                backgroundColor: 'red',
                                                 color: 'white',
                                                 width: '2rem',
                                                 height: '2rem',
-                                                marginTop: '-.7rem',
-                                                marginRight: '-1rem',
                                                 borderRadius: '1.5rem',
                                                 zIndex: 2,
                                                 boxSizing: 'border-box',
                                                 border: '2px solid white',
                                             }}
-                                            onClick={handleShowFighterInfo(fighter)}
+                                            onClick={handleRemoveFromBoard(fighter)}
                                         >
-                                            <EditIcon
+                                            <DeleteIcon
                                                 style={{
                                                     width: '1rem',
                                                     height: '1rem',
                                                 }}
                                             />
-                                    </ButtonBase>
-                                )
-                            }
+                                        </ButtonBase>
+                                    )
+                                }
+                                {
+                                    selectedFighter && selectedFighter.id === fighter.id && !Boolean(fighter.subtype) && (
+                                        <ButtonBase
+                                                style={{
+                                                    position: 'absolute',
+                                                    top: '0%',
+                                                    right: '0%',
+                                                    backgroundColor: 'teal',
+                                                    color: 'white',
+                                                    width: '2rem',
+                                                    height: '2rem',
+                                                    marginTop: '-.7rem',
+                                                    marginRight: '-1rem',
+                                                    borderRadius: '1.5rem',
+                                                    zIndex: 2,
+                                                    boxSizing: 'border-box',
+                                                    border: '2px solid white',
+                                                }}
+                                                onClick={handleShowFighterInfo(fighter)}
+                                            >
+                                                <EditIcon
+                                                    style={{
+                                                        width: '1rem',
+                                                        height: '1rem',
+                                                    }}
+                                                />
+                                        </ButtonBase>
+                                    )
+                                }
+                            </div>
+                            <Typography style={{ fontSize: '.7rem' }}>{ !fighter.isInspired || (fighter.isInspired && !fighter.nameInspired) ? fighter.name : fighter.nameInspired }</Typography>
+                            <div style={{ display: 'flex' }}>
+                                {
+                                    Boolean(fighter.tokens) && fighter.tokens.split(',').map((token, idx) => (
+                                        <img key={idx} src={`/assets/other/${token}.png`} style={{ width: '1rem', height: '1rem', marginRight: '.1rem' }} />
+                                    ))
+                                }
+                                {
+                                    Boolean(fighter.counters) && fighter.counters.split(',').map((counter, idx) => (
+                                        <img key={idx} src={`/assets/other/${counter}.png`} style={{ width: '1rem', height: '1rem', marginRight: '.1rem' }} />
+                                    ))
+                                }
+                            </div>
                         </div>
-                        <Typography style={{ fontSize: '.7rem' }}>{ !fighter.isInspired || (fighter.isInspired && !fighter.nameInspired) ? fighter.name : fighter.nameInspired }</Typography>
-                        <div style={{ display: 'flex' }}>
-                            {
-                                Boolean(fighter.tokens) && fighter.tokens.split(',').map((token, idx) => (
-                                    <img key={idx} src={`/assets/other/${token}.png`} style={{ width: '1rem', height: '1rem', marginRight: '.1rem' }} />
-                                ))
-                            }
-                            {
-                                Boolean(fighter.counters) && fighter.counters.split(',').map((counter, idx) => (
-                                    <img key={idx} src={`/assets/other/${counter}.png`} style={{ width: '1rem', height: '1rem', marginRight: '.1rem' }} />
-                                ))
-                            }
-                        </div>
-                    </div>
-                ))
-            }                
+                    ))
+                }                
+
+            </div>
         </div>
     );
 }

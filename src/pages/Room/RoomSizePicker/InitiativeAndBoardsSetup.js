@@ -192,22 +192,24 @@ export default function InitiativeAndBoardsSetup({ data }) {
     }
 
     return (
-        <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
+        <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', background: '#36393F', color: 'whitesmoke' }}>
             {
-                data[myself.uid] && (
+                data[myself.uid] && waitingReason !== "PICK_FIRST_BOARD" && waitingReason !== "PICK_SECOND_BOARD" && (
                     <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end' }}>
                         <RollOffDiceTray 
                             rollResults={Object.entries(rollOffs).filter(([id, v]) => id.startsWith(myself.uid) && Boolean(v))} 
                             faction={data[myself.uid].faction} />
-                        <div style={{ display: 'flex' }}>
-                            <img style={{ width: '2rem', height: '2rem' }} src={`/assets/factions/${data[myself.uid].faction}-icon.png`} />
+                        <div style={{ display: 'flex', margin: '1rem', alignItems: 'center' }}>
+                            <div style={{ width: '3rem', height: '3rem', marginRight: '1rem', boxSizing: 'border-box', borderRadius: '1.5rem', border: '2px solid whitesmoke', display: 'flex' }}>
+                                <img style={{ width: '100%', height: '100%', margin: 'auto' }} src={`/assets/factions/${data[myself.uid].faction}-icon.png`} />                                
+                            </div>
                             <Typography>{data[myself.uid].name}</Typography>
                         </div>
                     </div>
                 )
             }
 
-            <div style={{ flex: waitingReason === "PICK_FIRST_BOARD" ||  waitingReason === "PICK_SECOND_BOARD" ? '0 1 80%' : '0 1 10%', display: 'flex', alignItems: 'center', flexDirection: 'column', justifyContent: 'center' }}>
+            <div style={{ flex: waitingReason === "PICK_SECOND_BOARD" ? 1 : waitingReason === "PICK_FIRST_BOARD" ? '0 1 60%' : '0 1 10%', display: 'flex', alignItems: 'center', flexDirection: 'column', justifyContent: 'center' }}>
                 {
                     waitingFor.includes(myself.uid) && waitingReason === "INITIATIVE_ROLL" && (
                         <Button variant="contained" color="primary" onClick={handleInitiativeRoll} disabled={!canMakeInitiativeRoll}>Roll Initiative</Button>
@@ -215,7 +217,7 @@ export default function InitiativeAndBoardsSetup({ data }) {
                 }
                 {
                     !waitingFor.includes(myself.uid) && (
-                        <Typography>Waiting for opponent...</Typography>
+                        <Typography variant="h4">Waiting for opponent...</Typography>
                     )
                 }
                 {
@@ -238,11 +240,13 @@ export default function InitiativeAndBoardsSetup({ data }) {
                 }
             </div>
             {
-                opponent && (
+                opponent && waitingReason !== "PICK_FIRST_BOARD" && waitingReason !== "PICK_SECOND_BOARD" && (
                     <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start' }}>
-                        <div style={{ display: 'flex' }}>
-                            <img style={{ width: '2rem', height: '2rem' }} src={`/assets/factions/${data[opponent].faction}-icon.png`} />
-                            <Typography>{data[opponent].name}</Typography>
+                        <div style={{ display: 'flex', margin: '1rem', alignItems: 'center' }}>
+                            <div style={{ width: '3rem', height: '3rem', marginRight: '1rem', boxSizing: 'border-box', borderRadius: '1.5rem', border: '2px solid whitesmoke', display: 'flex' }}>
+                                <img style={{ width: '100%', height: '100%', margin: 'auto' }} src={`/assets/factions/${data[opponent].faction}-icon.png`} />                                
+                            </div>
+                            <Typography variant="h6">{data[opponent].name}</Typography>
                         </div>
                         <RollOffDiceTray 
                                 rollResults={Object.entries(rollOffs).filter(([id, v]) => id.startsWith(opponent) && Boolean(v))} 

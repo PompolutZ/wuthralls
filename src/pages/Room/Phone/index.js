@@ -74,7 +74,7 @@ export default function PhoneRoom() {
         return () => {
             unsubscribe();
             unsubscribeFromMessages();
-            window.removeEventListener("keydown");
+            window.removeEventListener("keydown", handleHotkeyDown);
         };
     }, []);
 
@@ -159,7 +159,7 @@ export default function PhoneRoom() {
     return (
         <div style={{ width: '100%', height: '100%', backgroundColor: 'dimgray' }}>
             <div style={{ filter: isHUDOpen ? 'blur(3px)' : '', width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
-                <div style={{ width: '100%', height: `100%`, flex: 1, overflowY: 'scroll' }}>
+                <div style={{ flex: 1, display: 'flex', backgroundColor: 'dimgray' }}>
                 {
                     tabIndex === 0 && (
                         <Messenger roomId={state.id} state={data} messages={messages} />
@@ -171,13 +171,15 @@ export default function PhoneRoom() {
                     )
                 }
                 </div>
-                <ActionsPalette onActionTypeChange={handleActionTypeChange} 
-                    data={data} 
-                    onSelectedElementChange={setSelectedElement}
-                    onOpenDeckHUD={changeOpenDeckHUD}
-                    visibleScreenType={tabIndex}
-                    onSetScreenTabIndex={setTabIndex}
-                    activePaletteType={activePaletteType} />
+                <div style={{ flex: '0 0 25%', backgroundColor: 'orange', display: 'flex' }}>
+                    <ActionsPalette onActionTypeChange={handleActionTypeChange} 
+                        data={data} 
+                        onSelectedElementChange={setSelectedElement}
+                        onOpenDeckHUD={changeOpenDeckHUD}
+                        visibleScreenType={tabIndex}
+                        onSetScreenTabIndex={setTabIndex}
+                        activePaletteType={activePaletteType} />
+                </div>
             </div>
 
             {
