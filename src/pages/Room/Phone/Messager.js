@@ -769,6 +769,7 @@ function Messenger({ roomId, state, messages }) {
     const [mainHUDPayload, setMainHUDPayload] = useState(null);
     const [visibleMessages, setVisibleMessages] = useState(messages || []);
     const [sliceSize, setSliceSize] = useState(10);
+    const [resizing, setResizing] = useState(true);
     const lastScrollHeight = React.useRef(1);
 
     // const animateScrollRef = useRef();
@@ -805,21 +806,42 @@ function Messenger({ roomId, state, messages }) {
         }
     }, [visibleMessages]);
 
+    useLayoutEffect(() => {
+        const { scrollHeight, scrollTop } = msgcontainerRef.current;
+        msgcontainerRef.current.scrollTop = lastScrollHeight.current;
+        console.log('useLayoutEffect', scrollHeight, scrollTop, lastScrollHeight.current);
+    }, [sliceSize]);
+
+    useEffect(() => {
+        const { scrollHeight, scrollTop } = msgcontainerRef.current;
+
+        console.log('useEffect', scrollHeight, scrollTop, lastScrollHeight.current);
+    }, [sliceSize]);
+
     const handleShowHUDType = (type, payload) => {
         setShowMainHUD(type);
         setMainHUDPayload(payload);
     };
 
-    const handleScroll = e => {
+    // const handleScroll = e => {
+    //     const { scrollHeight, scrollTop } = msgcontainerRef.current;
+    //     console.log("UPDATE", scrollTop, scrollHeight, scrollTop / lastScrollHeight.current, '===', lastScrollHeight.current);
+    //     if (sliceSize < visibleMessages.length && scrollTop / lastScrollHeight.current <= 0.25) {
+    //         lastScrollHeight.current = scrollHeight;
+    //         console.log("LOADING MOAR");
+    //         setSliceSize(prev =>
+    //             prev + 10 < visibleMessages.length ? prev + 10 : visibleMessages.length
+    //         );
+    //     }
+    // };
+
+    const handleLoadMore = () => {
         const { scrollHeight, scrollTop } = msgcontainerRef.current;
-        console.log("UPDATE", scrollTop, scrollHeight, scrollTop / lastScrollHeight.current, '===', lastScrollHeight.current);
-        if (sliceSize < visibleMessages.length && scrollTop / lastScrollHeight.current <= 0.25) {
-            lastScrollHeight.current = scrollHeight;
-            setSliceSize(prev =>
-                prev + 10 < visibleMessages.length ? prev + 10 : visibleMessages.length
-            );
-        }
-    };
+        // lastScrollHeight.current = scrollHeight;
+        setSliceSize(prev =>
+            prev + 10 < visibleMessages.length ? prev + 10 : visibleMessages.length
+        );
+    }
 
     return (
         <div id="msgroot" style={{ flex: 1, position: "relative" }}>
@@ -834,12 +856,19 @@ function Messenger({ roomId, state, messages }) {
                     overflow: "auto",
                     marginBottom: "3rem",
                 }}
-                onScroll={handleScroll}
+                // onScroll={handleScroll}
             >
                 <div
                     id="msgtotalheight"
                     style={{ display: "flex", flexDirection: "column" }}
                 >
+                    {
+                        sliceSize < visibleMessages.length && (
+                            <div style={{ display: 'flex', justifyContent: 'center', margin: '1rem auto'}}>
+                                <Button color="primary" variant="contained" onClick={handleLoadMore}>Load More...</Button>
+                            </div>
+                        )
+                    }
                     {visibleMessages.slice(-sliceSize).map((m, i, arr) => {
                         if (m.type === "INTERACTIVE") {
                             return (

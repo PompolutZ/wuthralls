@@ -107,7 +107,7 @@ export default function Warband({ roomId, myfighters, enemyFighters, onSelectedF
                                     left: 0,
                                     marginLeft: '-1rem',
                                     display: 'flex',
-                                    zIndex: '-1',
+                                    zIndex: '1',
                                 }}>
                                     <Typography style={{ margin: 'auto', fontSize: '.8rem' }}>{fighter.wounds}</Typography>
                                 </div>
