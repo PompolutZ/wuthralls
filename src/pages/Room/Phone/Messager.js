@@ -216,11 +216,11 @@ const CardMessageItem = React.memo(
                 <div style={{ color: "white" }}>
                     <Markdown source={value} />
                 </div>
-                <img
+                {/* <img
                     src={`/assets/cards/${cardId}.png`}
                     style={{ width: "5rem", borderRadius: ".3rem" }}
                     onClick={handleSwitchHighglight}
-                />
+                /> */}
                 {highlight && (
                     <div
                         style={{
@@ -769,6 +769,7 @@ function Messenger({ roomId, state, messages }) {
     const [mainHUDPayload, setMainHUDPayload] = useState(null);
     const [visibleMessages, setVisibleMessages] = useState(messages || []);
     const [sliceSize, setSliceSize] = useState(10);
+    const lastScrollHeight = React.useRef(1);
 
     // const animateScrollRef = useRef();
     const msgcontainerRef = useRef();
@@ -799,6 +800,7 @@ function Messenger({ roomId, state, messages }) {
         ) {
             const nextOffsetTop = scrollHeight - offsetHeight;
             msgcontainerRef.current.scrollTop = nextOffsetTop;
+            lastScrollHeight.current = scrollHeight;
             setSliceSize(10);
         }
     }, [visibleMessages]);
@@ -810,9 +812,9 @@ function Messenger({ roomId, state, messages }) {
 
     const handleScroll = e => {
         const { scrollHeight, scrollTop } = msgcontainerRef.current;
-
-        if (sliceSize < visibleMessages.length && scrollTop / scrollHeight <= 0.25) {
-            console.log();
+        console.log("UPDATE", scrollTop, scrollHeight, scrollTop / lastScrollHeight.current, '===', lastScrollHeight.current);
+        if (sliceSize < visibleMessages.length && scrollTop / lastScrollHeight.current <= 0.25) {
+            lastScrollHeight.current = scrollHeight;
             setSliceSize(prev =>
                 prev + 10 < visibleMessages.length ? prev + 10 : visibleMessages.length
             );

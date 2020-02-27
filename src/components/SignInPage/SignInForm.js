@@ -59,7 +59,7 @@ function SignInForm({ history }) {
                         name="email"
                         value={email}
                         onChange={onChange}
-                        type="text"
+                        type="email"
                         placeholder="Email Address"
                     />
                 </Grid>
