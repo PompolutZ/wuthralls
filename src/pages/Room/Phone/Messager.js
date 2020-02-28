@@ -22,6 +22,7 @@ import boards from "../../../data/boards";
 import ButtonBase from "@material-ui/core/ButtonBase";
 import MoveNextIcon from "@material-ui/icons/LabelImportant";
 import FlipIcon from "@material-ui/icons/RotateRight";
+import VisibilityIcon from "@material-ui/icons/Visibility";
 import useKatophrane from "../../../components/hooks/useKatophrane";
 import Markdown from "react-markdown";
 import AttackDie from "../../../components/AttackDie";
@@ -213,8 +214,13 @@ const CardMessageItem = React.memo(
                             hour12: false,
                         })}`}</Typography>
                 </div>
-                <div style={{ color: "white" }}>
-                    <Markdown source={value} />
+                <div style={{ display: 'flex' }}>
+                    <div style={{ color: "white", flex: 1 }}>
+                        <Markdown source={value} />
+                    </div>
+                    <Button style={{ flex: '0 0 auto', color: 'ghostwhite' }} onClick={handleSwitchHighglight}>
+                        <VisibilityIcon />
+                    </Button>
                 </div>
                 {/* <img
                     src={`/assets/cards/${cardId}.png`}
@@ -239,12 +245,10 @@ const CardMessageItem = React.memo(
                             style={{
                                 position: "relative",
                                 flexShrink: 0,
-                                width: cardDefaultWidth * 0.8,
-                                height: cardDefaultHeight * 0.8,
+                                width: cardDefaultWidth,
+                                height: cardDefaultHeight,
                                 margin: "auto",
                                 borderRadius: "1rem",
-                                // border: '3px dashed black',
-                                // boxSizing: 'border-box',
                                 backgroundPosition: "center center",
                                 backgroundSize: "cover",
                                 backgroundRepeat: "no-repeat",
@@ -279,12 +283,6 @@ const ChatMessageItem = React.memo(
                 className={classes.item}
                 style={{
                     backgroundColor: "#36393F",
-                    // author === 'Katophrane'
-                    //     ? '#36393F'
-                    //     : isMineMessage
-                    //     ? 'rgba(255, 140, 0, 1)'
-                    //     : 'rgba(138, 43, 226, 1)',
-                    // filter: 'drop-shadow(5px 5px 10px black)',
                 }}
             >
                 <div>
@@ -320,124 +318,6 @@ const ChatMessageItem = React.memo(
         );
     }
 );
-
-// function PickFirstBoardHUD({ data, onFirstBoardSelected}) {
-//     const boardsList = Object.entries(boards).map(([k, v]) => ({...v, id: k}));
-//     const [currentIndex, setCurrentIndex] = useState(0);
-
-//     const handleMoveBy = direction => () => {
-//         const next = currentIndex + direction;
-//         setCurrentIndex(next < 0 ? 0 : next > boardsList.length - 1 ? boardsList.length - 1 : next);
-//     }
-
-//     const handleSelectCurrentBoard = () => {
-//         console.log(data);
-//         onFirstBoardSelected({...data, boardId: currentIndex + 1 });
-//     }
-
-//     console.log(window.screen.width);
-//     return (
-//         <div style={{ width: `calc(${window.screen.width}px - 1rem)`, height: `calc(${window.screen.height}px - 1rem)`, boxSizing: 'border-box', padding: '1rem', display: 'flex' }}>
-//             <div style={{ margin: 'auto', display: 'flex', flexFlow: 'column nowrap', alignItems: 'center' }}>
-//                 <Typography>{boardsList[currentIndex].name}</Typography>
-//                 <div style={{ position: 'relative' }}>
-//                     <img src={`/assets/boards/${boardsList[currentIndex].id}.jpg`} style={{ width: window.screen.width * .7 }} alt={boardsList[currentIndex].name} />
-//                     <ButtonBase style={{ backgroundColor: 'teal', color: 'white', width: '2rem', height: '2rem', boxSizing: 'boarder-box', border: '2px solid white', borderRadius: '2rem', position: 'absolute', top: '50%', left: 0, marginTop: '-1rem', marginLeft: '-1rem' }}
-//                         onClick={handleMoveBy(-1)}>
-//                         <MoveNextIcon style={{ transform: 'rotate(180deg)'}} />
-//                     </ButtonBase>
-//                     <ButtonBase style={{ backgroundColor: 'teal', color: 'white', width: '2rem', height: '2rem', boxSizing: 'boarder-box', border: '2px solid white', borderRadius: '2rem', position: 'absolute', top: '50%', right: 0, marginTop: '-1rem', marginRight: '-1rem' }}
-//                         onClick={handleMoveBy(1)}>
-//                         <MoveNextIcon />
-//                     </ButtonBase>
-//                 </div>
-//                 <Button onClick={handleSelectCurrentBoard} color="primary" variant="contained">
-//                     Pick this board
-//                 </Button>
-//             </div>
-//         </div>
-//     )
-// }
-
-// function PickSecondBoard({ data, onSecondBoardSelected }) {
-//     const boardsList = Object.entries(boards).map(([k, v]) => ({...v, id: k}));
-//     const [currentIndex, setCurrentIndex] = useState(0);
-//     const [values, setValues] = useState({
-//         top: {
-//             rotate: 0
-//         },
-//         bottom: {
-//             rotate: 0,
-//         }
-//     })
-
-//     useEffect(() => {
-//         console.log(values);
-//     }, [values]);
-
-//     const handleMoveBy = direction => () => {
-//         const next = currentIndex + direction;
-//         setCurrentIndex(next < 0 ? 0 : next > boardsList.length - 1 ? boardsList.length - 1 : next);
-//     }
-
-//     const handleSelectCurrentBoard = () => {
-//         console.log(data);
-//         onSecondBoardSelected({
-//             ...data,
-//             selectedBoardId: currentIndex + 1,
-//             top: { id: data.opponentBoard, rotate: values.top.rotate },
-//             bottom: { id: currentIndex + 1, rotate: values.bottom.rotate }
-//         });
-//     }
-
-//     const flipBoard = name => () => {
-//         const currentValue = values[name];
-//         const updatedValue = {
-//             ...currentValue,
-//             rotate: currentValue.rotate === 0 ? 180 : 0,
-//         };
-
-//         setValues({
-//             ...values,
-//             [name]: updatedValue,
-//         });
-//     }
-
-//     console.log('SECOND BOARD LOADED', data);
-
-//     return (
-//         <div style={{ width: `calc(${window.screen.width}px - 1rem)`, height: `calc(${window.screen.height}px - 1rem)`, boxSizing: 'border-box', padding: '1rem', display: 'flex' }}>
-//             <div style={{ margin: 'auto', display: 'flex', flexFlow: 'column nowrap', alignItems: 'center' }}>
-//                 <div style={{ position: 'relative' }}>
-//                     <img src={`/assets/boards/${boardsList[data.opponentBoard - 1].id}.jpg`} style={{ width: window.screen.width * .7, transform: `rotate(${values.top.rotate}deg)`, transformOrigin: 'center center' }} alt={boardsList[data.opponentBoard - 1].name} />
-//                     <ButtonBase style={{ backgroundColor: 'teal', color: 'white', width: '2rem', height: '2rem', boxSizing: 'boarder-box', border: '2px solid white', borderRadius: '2rem', position: 'absolute', top: 0, left: '50%', marginTop: '-1rem', marginLeft: '-1rem' }}
-//                         onClick={flipBoard('top')}>
-//                         <FlipIcon style={{ transform: 'rotate(180deg)'}} />
-//                     </ButtonBase>
-//                 </div>
-//                 <div style={{ position: 'relative' }}>
-//                     <img src={`/assets/boards/${boardsList[currentIndex].id}.jpg`} style={{ width: window.screen.width * .7, transform: `rotate(${values.bottom.rotate}deg)`, transformOrigin: 'center center' }} alt={boardsList[currentIndex].name} />
-//                     <ButtonBase style={{ backgroundColor: 'teal', color: 'white', width: '2rem', height: '2rem', boxSizing: 'boarder-box', border: '2px solid white', borderRadius: '2rem', position: 'absolute', top: '50%', left: 0, marginTop: '-1rem', marginLeft: '-1rem' }}
-//                         onClick={handleMoveBy(-1)}>
-//                         <MoveNextIcon style={{ transform: 'rotate(180deg)'}} />
-//                     </ButtonBase>
-//                     <ButtonBase style={{ backgroundColor: 'teal', color: 'white', width: '2rem', height: '2rem', boxSizing: 'boarder-box', border: '2px solid white', borderRadius: '2rem', position: 'absolute', top: '50%', right: 0, marginTop: '-1rem', marginRight: '-1rem' }}
-//                         onClick={handleMoveBy(1)}>
-//                         <MoveNextIcon />
-//                     </ButtonBase>
-//                     <ButtonBase style={{ backgroundColor: 'teal', color: 'white', width: '2rem', height: '2rem', boxSizing: 'boarder-box', border: '2px solid white', borderRadius: '2rem', position: 'absolute', bottom: '0%', left: '50%', marginBottom: '-1rem', marginLeft: '-1rem' }}
-//                         onClick={flipBoard('bottom')}>
-//                         <FlipIcon style={{ transform: 'rotate(180deg)'}} />
-//                     </ButtonBase>
-//                 </div>
-//                 <Typography style={{ marginTop: '1rem' }}>{boardsList[currentIndex].name}</Typography>
-//                 <Button onClick={handleSelectCurrentBoard} color="primary" variant="contained">
-//                     I am happy with this board
-//                 </Button>
-//             </div>
-//         </div>
-//     )
-// }
 
 function InteractiveMessage({
     data,
@@ -762,8 +642,6 @@ function Messenger({ roomId, state, messages }) {
     const classes = useStyles();
     const myself = useAuthUser();
     const containerRef = useRef(null);
-    //const katophrane = useKatophrane(state);
-    // const [messages, setMessages] = useState([]);
     const firebase = useContext(FirebaseContext);
     const [showMainHUD, setShowMainHUD] = useState(null);
     const [mainHUDPayload, setMainHUDPayload] = useState(null);
@@ -772,21 +650,11 @@ function Messenger({ roomId, state, messages }) {
     const [resizing, setResizing] = useState(true);
     const lastScrollHeight = React.useRef(1);
 
-    // const animateScrollRef = useRef();
     const msgcontainerRef = useRef();
 
     useEffect(() => {
         if (!messages) return;
         setVisibleMessages(messages);
-        // const { scrollHeight } = msgcontainerRef.current;
-        // console.log('LETS REQUEST SOME FRAMES ON MESSAGES')
-        // animateScrollRef.current = window.requestAnimationFrame(setScrollToLatestElement(0, scrollHeight));
-
-        // return () => {
-        //     if(animateScrollRef.current) {
-        //         window.cancelAnimationFrame(animateScrollRef.current);
-        //     }
-        // };
     }, [messages]);
 
     useLayoutEffect(() => {

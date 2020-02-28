@@ -1101,40 +1101,14 @@ export default function Board({
                             rotate={state.status.top.rotate}
                             scaleFactor={scaleFactor}
                         />
-                        <img
-                            src={`/assets/boards/10.jpg`}
-                            src={`/assets/boards/${state.status.bottom.id}${
-                                state.status.orientation === "horizontal"
-                                    ? ""
-                                    : "v"
-                            }.jpg`}
-                            alt="board2"
-                            style={{
-                                opacity: 0.8,
-                                width:
-                                    state.status.orientation === "horizontal"
-                                        ? baseBoardWidth * scaleFactor
-                                        : baseBoardHeight * scaleFactor,
-                                height:
-                                    state.status.orientation === "horizontal"
-                                        ? baseBoardHeight * scaleFactor
-                                        : baseBoardWidth * scaleFactor,
-                                position: "absolute",
-                                zIndex: "1",
-                                top:
-                                    state.status.orientation === "horizontal"
-                                        ? baseBoardHeight * scaleFactor
-                                        : baseBoardWidth * scaleFactor,
-                                left:
-                                    state.status.orientation === "horizontal" &&
-                                    state.status.offset > 0
-                                        ? Math.abs(state.status.offset) *
-                                          (94 * scaleFactor)
-                                        : 0,
-                                transformOrigin: "center center",
-                                transform: `rotate(${state.status.bottom.rotate}deg)`,
-                                transform: `rotate(0deg)`,
-                            }}
+                        <BottomBoard
+                            baseBoardWidth={baseBoardWidth}
+                            baseBoardHeight={baseBoardHeight}
+                            boardId={state.status.bottom.id}
+                            orientation={state.status.orientation}
+                            offset={state.status.offset}
+                            rotate={state.status.bottom.rotate}
+                            scaleFactor={scaleFactor}
                         />
                         {startingHexes.map(hex => {
                             const { x, y } = getGrid(
@@ -1589,7 +1563,6 @@ const TopBoard = React.memo(
             src={`/assets/boards/${boardId}${
                 orientation === "horizontal" ? "" : "v"
             }.jpg`}
-            //src={`/assets/boards/1.jpg`}
             alt="board"
             style={{
                 opacity: 0.8,
@@ -1609,7 +1582,52 @@ const TopBoard = React.memo(
                 zIndex: "1",
                 transformOrigin: "center center",
                 transform: `rotate(${rotate}deg)`,
-                // transform: `rotate(0deg)`,
+            }}
+        />
+    )
+);
+
+const BottomBoard = React.memo(
+    ({
+        baseBoardWidth,
+        baseBoardHeight,
+        boardId,
+        orientation,
+        offset,
+        rotate,
+        scaleFactor,
+    }) => (
+        <img
+            src={`/assets/boards/${boardId}${
+                orientation === "horizontal"
+                    ? ""
+                    : "v"
+            }.jpg`}
+            alt="board2"
+            style={{
+                opacity: 0.8,
+                width:
+                    orientation === "horizontal"
+                        ? baseBoardWidth * scaleFactor
+                        : baseBoardHeight * scaleFactor,
+                height:
+                    orientation === "horizontal"
+                        ? baseBoardHeight * scaleFactor
+                        : baseBoardWidth * scaleFactor,
+                position: "absolute",
+                zIndex: "1",
+                top:
+                    orientation === "horizontal"
+                        ? baseBoardHeight * scaleFactor
+                        : baseBoardWidth * scaleFactor,
+                left:
+                    orientation === "horizontal" &&
+                    offset > 0
+                        ? Math.abs(offset) *
+                        (94 * scaleFactor)
+                        : 0,
+                transformOrigin: "center center",
+                transform: `rotate(${rotate}deg)`,
             }}
         />
     )

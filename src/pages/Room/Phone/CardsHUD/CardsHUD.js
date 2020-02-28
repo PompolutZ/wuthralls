@@ -165,7 +165,7 @@ export default ({
                 type: 'INFO',
                 subtype: 'SCORED_OBJECTIVE_CARD',
                 cardId: card.id,
-                value: `${myself.username} scored objective ${card.name} for at least ${card.glory} glory.`,
+                value: `**${myself.username}** scored objective: **${card.name}**(${card.glory}).`,
             })
         } else {
             if(!discardedPowers) {
@@ -179,7 +179,7 @@ export default ({
                 type: 'INFO',
                 subtype: 'PLAYED_POWER_CARD',
                 cardId: card.id,
-                value: `${myself.username} played ${card.name}.`,
+                value: `**${myself.username}** played: **${card.name}**.`,
             })
         }
 
@@ -286,7 +286,7 @@ export default ({
                 type: 'INFO',
                 subtype: 'DISCARDED_OBJECTIVE_CARD',
                 cardId: card.id,
-                value: `${myself.username} discarded objective card: ${card.name}.`,
+                value: `**${myself.username}** discarded objective card: **${card.name}**.`,
             })
         } else {
             if(!discardedPowers) {
@@ -300,7 +300,7 @@ export default ({
                 type: 'INFO',
                 subtype: 'DISCARDED_POWER_CARD',
                 cardId: card.id,
-                value: `${myself.username} discarded power card: ${card.name}.`,
+                value: `**${myself.username}** discarded power card: **${card.name}**.`,
             })
         }
 
