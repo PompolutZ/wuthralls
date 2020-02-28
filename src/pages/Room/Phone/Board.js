@@ -368,6 +368,7 @@ export default function Board({
     const myself = useAuthUser();
     const firebase = useContext(FirebaseContext);
     const rootRef = useRef(null);
+    const boardContainerRef = useRef(null);
     const [svg, setSvg] = React.useState(null);
     const [grid, setGrid] = React.useState(null);
     const [tokenHexes, setTokenHexes] = useState(state.board.tokens);
@@ -608,7 +609,12 @@ export default function Board({
     };
 
     const handleClick = e => {
-        const { offsetX, offsetY } = e.nativeEvent;
+        const { clientX, clientY } = e;
+        const boardContainerBoundingRect = boardContainerRef.current.getBoundingClientRect();
+    
+        const offsetX = clientX - boardContainerBoundingRect.left;
+        const offsetY = clientY - boardContainerBoundingRect.top;
+        // console.log('CLICK', offsetX, offsetY,  );
         const hex = getGridFactory(
             scaleFactor,
             state.status.orientation
@@ -1075,7 +1081,7 @@ export default function Board({
                 }}
             >
                 <div className={classes.boardContainer}>
-                    <div
+                    <div ref={boardContainerRef}
                         style={{
                             position: "relative",
                             width:
