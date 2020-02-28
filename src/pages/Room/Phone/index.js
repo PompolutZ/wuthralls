@@ -12,6 +12,7 @@ import { cardsDb } from '../../../data/index';
 import CardsHUD from './CardsHUD/CardsHUD';
 import useKatophrane from '../../../components/hooks/useKatophrane';
 
+
 // const propertyToCards = (source, property) => {
 //     return source && source[property] && source[property].split(',').map(cardId => ({ ...cardsDb[cardId], id: cardId }));
 // };
@@ -27,8 +28,9 @@ export default function PhoneRoom() {
     const myself = useAuthUser();
     const firebase = useContext(FirebaseContext);
     const { state } = useLocation();
-    //const katophrane = useKatophrane(state);
     const theme = useTheme();
+    const isMd = useMediaQuery(theme.breakpoints.up('md'));
+    //const katophrane = useKatophrane(state);
     const [tabIndex, setTabIndex] = useState(0);
     const [selectedElement, setSelectedElement] = useState(null);
     const [data, setData] = useState(state);
@@ -159,19 +161,31 @@ export default function PhoneRoom() {
     return (
         <div style={{ width: '100%', height: '100%', backgroundColor: 'dimgray' }}>
             <div style={{ filter: isHUDOpen ? 'blur(3px)' : '', width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
-                <div style={{ flex: 1, display: 'flex', backgroundColor: 'dimgray' }}>
                 {
-                    tabIndex === 0 && (
-                        <Messenger roomId={state.id} state={data} messages={messages} />
+                    isMd && (
+                        <div style={{ flex: 1, display: 'flex' }}>
+                            <Messenger roomId={state.id} state={data} messages={messages} />
+                            <Board roomId={state.id} state={data} selectedElement={selectedElement} scaleFactor={boardScaleFactor} onScaleFactorChange={setBoardScaleFactor} />
+                        </div>
                     )
                 }
                 {
-                    tabIndex === 1 && (
-                        <Board roomId={state.id} state={data} selectedElement={selectedElement} scaleFactor={boardScaleFactor} onScaleFactorChange={setBoardScaleFactor} />
+                    !isMd && (
+                        <div style={{ flex: 1, display: 'flex', backgroundColor: 'dimgray' }}>
+                        {
+                            tabIndex === 0 && (
+                                <Messenger roomId={state.id} state={data} messages={messages} />
+                            )
+                        }
+                        {
+                            tabIndex === 1 && (
+                                <Board roomId={state.id} state={data} selectedElement={selectedElement} scaleFactor={boardScaleFactor} onScaleFactorChange={setBoardScaleFactor} />
+                            )
+                        }
+                        </div>
                     )
                 }
-                </div>
-                <div style={{ flex: '0 0 25%', backgroundColor: 'orange', display: 'flex' }}>
+                <div style={{ flex: '0 0 25%', display: 'flex' }}>
                     <ActionsPalette onActionTypeChange={handleActionTypeChange} 
                         data={data} 
                         onSelectedElementChange={setSelectedElement}

@@ -42,12 +42,13 @@ export default function RoomSizePicker({}) {
     if(data.status.stage === "SETUP") {
         return <InitiativeAndBoardsSetup data={data} />
     } else {
-        if(isLg) {
-            console.log('DESKTOP ROOM');
-            return <DesktopRoom />
-        } else {
-            console.log('PHONE ROOM');
-            return <PhoneRoom />
-        }
+        return <PhoneRoom />
+        // if(isLg) {
+        //     console.log('DESKTOP ROOM');
+        //     return <DesktopRoom />
+        // } else {
+        //     console.log('PHONE ROOM');
+            
+        // }
     }
 }

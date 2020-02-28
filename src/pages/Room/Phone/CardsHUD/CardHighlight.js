@@ -115,9 +115,9 @@ const CardHighlight = ({
                 style={{ zIndex: '100100' }}
             >
                 {myFighters.map(([fighterId, fighter]) => (
-                    <MenuItem key={fighterId} onClick={upgradeFighter({ ...fighter, id: fighterId })}>
+                    <MenuItem key={fighterId} disabled={!fighter.isOnBoard} onClick={upgradeFighter({ ...fighter, id: fighterId })}>
                         <div style={{ display: 'flex', alignItems: 'center' }}>
-                            <img style={{ width: '2rem', height: '2rem', marginRight: '.5rem' }} src={`/assets/fighters/${fighter.icon}-icon.png`} />
+                            <img style={{ width: '2rem', height: '2rem', marginRight: '.5rem', filter: !fighter.isOnBoard ? 'grayscale(100%)' : '' }} src={`/assets/fighters/${fighter.icon}-icon.png`} />
                             <Typography>{fighter.name}</Typography>
                         </div>
                     </MenuItem>

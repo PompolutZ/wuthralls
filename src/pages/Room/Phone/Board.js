@@ -1224,6 +1224,7 @@ export default function Board({
                                                 style={{
                                                     position: "absolute",
                                                     zIndex: 500,
+                                                    transition: 'all .17s ease-out',
                                                     width:
                                                         pointyTokenBaseWidth *
                                                         scaleFactor,
@@ -1308,6 +1309,7 @@ export default function Board({
                                                 style={{
                                                     position: "absolute",
                                                     zIndex: 500,
+                                                    transition: 'all .17s ease-out',
                                                     width:
                                                         pointyTokenBaseWidth *
                                                         scaleFactor,
@@ -1403,11 +1405,13 @@ export default function Board({
                                             key={k}
                                             style={{
                                                 position: "absolute",
+                                                opacity: selectedElement && selectedElement.type === 'FEATURE_HEX' ? .5 : 1,
                                                 zIndex: !fighter.subtype
                                                     ? 600
                                                     : 599,
                                                 width: 80 * scaleFactor,
                                                 height: 80 * scaleFactor,
+                                                transition: 'all .17s ease-out',
                                                 top:
                                                     state.status.orientation ===
                                                     "horizontal"
