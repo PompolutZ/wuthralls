@@ -104,6 +104,12 @@ export default function ObjectiveHexesPile({
                             marginRight: "1rem",
                             paddingTop: "1rem",
                             paddingLeft: "1rem",
+                            filter:
+                                        selectedToken &&
+                                        selectedToken.id === token.id
+                                            ? "drop-shadow(0 0 10px OrangeRed)"
+                                            : "",
+                            transition: "all .175s ease-out",
                         }}
                         onClick={handleTokenClick(token)}
                     >
@@ -120,26 +126,6 @@ export default function ObjectiveHexesPile({
                                         : `/assets/tokens/feature_back.png`
                                 }
                                 style={{ width: "100%" }}
-                            />
-                            <div
-                                style={{
-                                    boxShadow:
-                                        selectedToken &&
-                                        selectedToken.id === token.id
-                                            ? "0 0 25px 10px OrangeRed"
-                                            : "",
-                                    borderRadius: pointyTokenBaseWidth,
-                                    width: pointyTokenBaseWidth * 0.5,
-                                    height: pointyTokenBaseWidth * 0.5,
-                                    position: "absolute",
-                                    zIndex: -1,
-                                    top: "50%",
-                                    left: "50%",
-                                    marginTop:
-                                        (-pointyTokenBaseWidth * 0.5) / 2,
-                                    marginLeft:
-                                        (-pointyTokenBaseWidth * 0.5) / 2,
-                                }}
                             />
                             {selectedToken && selectedToken.id === token.id && (
                                 <ButtonBase

@@ -81,6 +81,8 @@ export default function Warband({ roomId, myfighters, enemyFighters, onSelectedF
                                 boxSizing: 'border-box',
                                 position: 'relative',
                                 border: fighter.id.startsWith(myself.uid) ? selectedFighter && selectedFighter.id === fighter.id ? '3px dashed green' : '3px solid green' : selectedFighter && selectedFighter.id === fighter.id ? '3px dashed red' : '3px solid red',
+                                filter: selectedFighter && selectedFighter.id === fighter.id ? fighter.id.startsWith(myself.uid) ? 'drop-shadow(0 0 .5rem green)' : 'drop-shadow(0 0 .5rem crimson)' : '',
+                                transition: 'all .175s ease-out',
                                 }}>
 
                                 <img src={fighter.isInspired 
@@ -113,32 +115,15 @@ export default function Warband({ roomId, myfighters, enemyFighters, onSelectedF
                                 </div>
 
                                 <div style={{
-                                    width: '70%',
-                                    height: '70%',
+                                    width: '100%',
+                                    height: '100%',
                                     position: 'absolute',
-                                    top: '50%',
-                                    left: '50%',
-                                    marginTop: '-35%',
-                                    marginLeft: '-35%',
-                                    zIndex: -2,
+                                    top: 0,
+                                    zIndex: 1,
                                     boxSizing: 'border-box',
                                     // border: fighter.id.startsWith(myself.uid) ? '3px solid green' : '3px dashed red',
                                     borderRadius: '70%',
-                                    boxShadow: selectedFighter && selectedFighter.id === fighter.id ? fighter.id.startsWith(myself.uid) ? '0 0 25px 10px green' : '0 0 25px 10px red' : ''
-                                }} />    
-                                <div style={{
-                                    width: '70%',
-                                    height: '70%',
-                                    position: 'absolute',
-                                    top: '50%',
-                                    left: '50%',
-                                    marginTop: '-35%',
-                                    marginLeft: '-35%',
-                                    zIndex: -1,
-                                    boxSizing: 'border-box',
-                                    // border: fighter.id.startsWith(myself.uid) ? '3px solid green' : '3px dashed red',
-                                    borderRadius: '70%',
-                                    boxShadow: fighter.isInspired ? '0 0 35px 15px yellow' : ''
+                                    boxShadow: fighter.isInspired ? 'inset 0px 0px 15px yellow' : ''
                                 }} />    
                                 {
                                     selectedFighter && selectedFighter.id === fighter.id && fighter.isOnBoard && (
