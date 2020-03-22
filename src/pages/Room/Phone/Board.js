@@ -233,9 +233,9 @@ const renderHex = (hex, svg, color, lethals, blocked) => {
         if (element) {
             element
                 .stop(true, true)
-                .attr({ "stroke-width": 1 })
+                .attr({ "stroke-width": isLethal ? 3 : 1 })
                 .animate(175)
-                .attr({ "stroke-width": 3 });
+                .attr({ "stroke-width": isLethal ? 5 : 3 });
         }
     };
 
@@ -244,9 +244,9 @@ const renderHex = (hex, svg, color, lethals, blocked) => {
         if (element) {
             element
                 .stop(true, true)
-                .attr({ "stroke-width": 3 })
+                .attr({ "stroke-width": isLethal ? 5 : 3 })
                 .animate(175)
-                .attr({ "stroke-width": 1 });
+                .attr({ "stroke-width": isLethal ? 3 : 1 });
         }
     };
 
@@ -357,6 +357,7 @@ export default function Board({
     state,
     selectedElement,
     scaleFactor,
+    boardMeta,
     onScaleFactorChange,
 }) {
     const baseBoardWidth = 757;
@@ -391,45 +392,6 @@ export default function Board({
             ? state[state.players.find(p => p !== myself.uid)]
             : null
     );
-    const [startingHexes, setStartingHexes] = useState(
-        state.status.stage === "READY"
-            ? state.status.orientation === "horizontal"
-                ? [
-                      ...boardsData[state.status.top.id][
-                          state.status.orientation
-                      ].startingHexes[state.status.top.rotate].map(([x, y]) =>
-                          state.status.offset < 0
-                              ? [x + Math.abs(state.status.offset), y]
-                              : [x, y]
-                      ),
-                      ...boardsData[state.status.bottom.id][
-                          state.status.orientation
-                      ].startingHexes[
-                          state.status.bottom.rotate
-                      ].map(([x, y]) =>
-                          state.status.offset > 0
-                              ? [x + state.status.offset, y + 6]
-                              : [x, y + 6]
-                      ),
-                  ]
-                : [
-                      ...boardsData[state.status.top.id][
-                          state.status.orientation
-                      ].startingHexes[state.status.top.rotate], // .map(([x, y]) => offset < 0 ? [x + Math.abs(offset), y] : [x, y])
-                      ...boardsData[state.status.bottom.id][
-                          state.status.orientation
-                      ].startingHexes[
-                          state.status.bottom.rotate
-                      ].map(([x, y]) => [x, y + 8]),
-                  ]
-            : []
-    );
-
-    useEffect(() => {
-        if (state.status.stage !== "READY") return;
-
-        const mainContainer = document.getElementById("mainContainer");
-    }, []);
 
     useEffect(() => {
         if (state.status.stage !== "READY") return;
@@ -443,79 +405,19 @@ export default function Board({
             state.status.offset
         );
 
-        const lethals =
-            state.status.orientation === "horizontal"
-                ? [
-                      ...boardsData[state.status.top.id][
-                          state.status.orientation
-                      ].lethalHexes[state.status.top.rotate].map(([x, y]) =>
-                          state.status.offset < 0
-                              ? [x + Math.abs(state.status.offset), y]
-                              : [x, y]
-                      ),
-                      ...boardsData[state.status.bottom.id][
-                          state.status.orientation
-                      ].lethalHexes[state.status.bottom.rotate].map(([x, y]) =>
-                          state.status.offset > 0
-                              ? [x + state.status.offset, y + 6]
-                              : [x, y + 6]
-                      ),
-                  ]
-                : [
-                      ...boardsData[state.status.top.id][
-                          state.status.orientation
-                      ].lethalHexes[state.status.top.rotate], // .map(([x, y]) => offset < 0 ? [x + Math.abs(offset), y] : [x, y])
-                      ...boardsData[state.status.bottom.id][
-                          state.status.orientation
-                      ].lethalHexes[
-                          state.status.bottom.rotate
-                      ].map(([x, y]) => [x, y + 8]),
-                  ];
-
-        const blocked =
-            state.status.orientation === "horizontal"
-                ? [
-                      ...boardsData[state.status.top.id][
-                          state.status.orientation
-                      ].blockedHexes[state.status.top.rotate].map(([x, y]) =>
-                          state.status.offset < 0
-                              ? [x + Math.abs(state.status.offset), y]
-                              : [x, y]
-                      ),
-                      ...boardsData[state.status.bottom.id][
-                          state.status.orientation
-                      ].blockedHexes[state.status.bottom.rotate].map(([x, y]) =>
-                          state.status.offset > 0
-                              ? [x + state.status.offset, y + 6]
-                              : [x, y + 6]
-                      ),
-                  ]
-                : [
-                      ...boardsData[state.status.top.id][
-                          state.status.orientation
-                      ].blockedHexes[state.status.top.rotate], // .map(([x, y]) => offset < 0 ? [x + Math.abs(offset), y] : [x, y])
-                      ...boardsData[state.status.bottom.id][
-                          state.status.orientation
-                      ].blockedHexes[
-                          state.status.bottom.rotate
-                      ].map(([x, y]) => [x, y + 8]),
-                  ];
-
         initGrid.forEach(hex => {
             renderHex(
                 hex,
                 currentSvg,
                 "rgba(255,255,255, 1)",
-                lethals,
-                blocked
+                boardMeta.lethalHexes,
+                boardMeta.blockedHexes
             );
         });
         setGrid(initGrid);
     }, [scaleFactor]);
 
     useEffect(() => {
-        //console.log('Board.OnSelectedElementChange', selectedElement);
-
         if (selectedElement && selectedElement.type === "SCATTER_TOKEN") {
             setScatterToken({
                 ...scatterToken,
@@ -534,42 +436,6 @@ export default function Board({
     useEffect(() => {
         setTokenHexes(state.board.tokens);
         setFighters(state.board.fighters);
-
-        if (state.status.stage === "READY") {
-            setStartingHexes(
-                state.status.orientation === "horizontal"
-                    ? [
-                          ...boardsData[state.status.top.id][
-                              state.status.orientation
-                          ].startingHexes[
-                              state.status.top.rotate
-                          ].map(([x, y]) =>
-                              state.status.offset < 0
-                                  ? [x + Math.abs(state.status.offset), y]
-                                  : [x, y]
-                          ),
-                          ...boardsData[state.status.bottom.id][
-                              state.status.orientation
-                          ].startingHexes[
-                              state.status.bottom.rotate
-                          ].map(([x, y]) =>
-                              state.status.offset > 0
-                                  ? [x + state.status.offset, y + 6]
-                                  : [x, y + 6]
-                          ),
-                      ]
-                    : [
-                          ...boardsData[state.status.top.id][
-                              state.status.orientation
-                          ].startingHexes[state.status.top.rotate], // .map(([x, y]) => offset < 0 ? [x + Math.abs(offset), y] : [x, y])
-                          ...boardsData[state.status.bottom.id][
-                              state.status.orientation
-                          ].startingHexes[
-                              state.status.bottom.rotate
-                          ].map(([x, y]) => [x, y + 8]),
-                      ]
-            );
-        }
     }, [state]);
 
     useEffect(() => {
@@ -591,7 +457,6 @@ export default function Board({
         };
         setTokenHexes(update);
 
-        // console.log('TOKEN HEXES', tokenHexes);
         firebase.updateBoardProperty(state.id, "board.tokens", update);
         firebase.addGenericMessage2(state.id, {
             author: "Katophrane",
@@ -614,11 +479,11 @@ export default function Board({
     
         const offsetX = clientX - boardContainerBoundingRect.left;
         const offsetY = clientY - boardContainerBoundingRect.top;
-        // console.log('CLICK', offsetX, offsetY,  );
         const hex = getGridFactory(
             scaleFactor,
             state.status.orientation
         ).pointToHex([offsetX, offsetY]);
+
         const hexes =
             state.status.orientation === "horizontal"
                 ? [
@@ -652,67 +517,10 @@ export default function Board({
         const isHexOnBoard = hexes.find(([x, y]) => hex.x === x && hex.y === y);
 
         if (!isHexOnBoard) return;
-        const lethals =
-            state.status.orientation === "horizontal"
-                ? [
-                      ...boardsData[state.status.top.id][
-                          state.status.orientation
-                      ].lethalHexes[state.status.top.rotate].map(([x, y]) =>
-                          state.status.offset < 0
-                              ? [x + Math.abs(state.status.offset), y]
-                              : [x, y]
-                      ),
-                      ...boardsData[state.status.bottom.id][
-                          state.status.orientation
-                      ].lethalHexes[state.status.bottom.rotate].map(([x, y]) =>
-                          state.status.offset > 0
-                              ? [x + state.status.offset, y + 6]
-                              : [x, y + 6]
-                      ),
-                  ]
-                : [
-                      ...boardsData[state.status.top.id][
-                          state.status.orientation
-                      ].lethalHexes[state.status.top.rotate], // .map(([x, y]) => offset < 0 ? [x + Math.abs(offset), y] : [x, y])
-                      ...boardsData[state.status.bottom.id][
-                          state.status.orientation
-                      ].lethalHexes[
-                          state.status.bottom.rotate
-                      ].map(([x, y]) => [x, y + 8]),
-                  ];
-
-        const blocked =
-            state.status.orientation === "horizontal"
-                ? [
-                      ...boardsData[state.status.top.id][
-                          state.status.orientation
-                      ].blockedHexes[state.status.top.rotate].map(([x, y]) =>
-                          state.status.offset < 0
-                              ? [x + Math.abs(state.status.offset), y]
-                              : [x, y]
-                      ),
-                      ...boardsData[state.status.bottom.id][
-                          state.status.orientation
-                      ].blockedHexes[state.status.bottom.rotate].map(([x, y]) =>
-                          state.status.offset > 0
-                              ? [x + state.status.offset, y + 6]
-                              : [x, y + 6]
-                      ),
-                  ]
-                : [
-                      ...boardsData[state.status.top.id][
-                          state.status.orientation
-                      ].blockedHexes[state.status.top.rotate], // .map(([x, y]) => offset < 0 ? [x + Math.abs(offset), y] : [x, y])
-                      ...boardsData[state.status.bottom.id][
-                          state.status.orientation
-                      ].blockedHexes[
-                          state.status.bottom.rotate
-                      ].map(([x, y]) => [x, y + 8]),
-                  ];
 
         if (hex) {
             // console.log("ping")
-            highlightHex(hex, svg, lethals, blocked);
+            highlightHex(hex, svg, boardMeta.lethalHexes, boardMeta.blockedHexes);
             if (selectedTokenId) {
                 if (selectedElement.type === "SCATTER_TOKEN") {
                     console.log("SCATTER", hex);
@@ -1116,7 +924,7 @@ export default function Board({
                             rotate={state.status.bottom.rotate}
                             scaleFactor={scaleFactor}
                         />
-                        {startingHexes.map(hex => {
+                        {boardMeta.startingHexes.map(hex => {
                             const { x, y } = getGrid(
                                 scaleFactor,
                                 state.status.orientation,
