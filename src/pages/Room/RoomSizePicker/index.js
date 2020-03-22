@@ -6,6 +6,7 @@ import PhoneRoom from '../Phone';
 import { useLocation } from 'react-router-dom';
 import InitiativeAndBoardsSetup from './InitiativeAndBoardsSetup';
 import { FirebaseContext } from '../../../firebase';
+import { MessagesProvider } from '../contexts/messagesContext';
 
 export default function RoomSizePicker({}) {
     const theme = useTheme();
@@ -42,7 +43,11 @@ export default function RoomSizePicker({}) {
     if(data.status.stage === "SETUP") {
         return <InitiativeAndBoardsSetup data={data} />
     } else {
-        return <PhoneRoom />
+        return (
+            <MessagesProvider roomId={state.id}>
+                <PhoneRoom />
+            </MessagesProvider>
+        )
         // if(isLg) {
         //     console.log('DESKTOP ROOM');
         //     return <DesktopRoom />

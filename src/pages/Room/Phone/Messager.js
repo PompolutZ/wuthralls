@@ -30,6 +30,7 @@ import DefenceDie from "../../../components/DefenceDie";
 import MagicDie from "../../../components/MagicDie";
 import Scrollbar from "react-scrollbars-custom";
 import { warbandColors, boards as boardsInfo } from "../../../data";
+import { useMessages } from "../contexts/messagesContext";
 
 const useStyles = makeStyles(theme => ({
     item: {
@@ -638,8 +639,9 @@ function InteractiveMessage({
     );
 }
 
-function Messenger({ roomId, state, messages }) {
+function Messenger({ roomId, state }) {
     const classes = useStyles();
+    const messages = useMessages();
     const myself = useAuthUser();
     const containerRef = useRef(null);
     const firebase = useContext(FirebaseContext);

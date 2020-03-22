@@ -53,7 +53,7 @@ export default function PhoneRoom() {
     const [enemyScoredObjectivesPile, setEnemyScoredObjectivesPile] = useState(opponent && opponent.sObjs); 
     const [enemyObjectivesDiscardPile, setEnemyObjectivesDiscardPile] = useState(opponent && opponent.dObjs); 
     const [enemyPowersDiscardPile, setEnemyPowersDiscardPile] = useState(opponent && opponent.dPws); 
-    const [messages, setMessages] = useState(null);
+    // const [messages, setMessages] = useState(null);
 
     const [boardScaleFactor, setBoardScaleFactor] = useState(.5);
 
@@ -66,16 +66,16 @@ export default function PhoneRoom() {
             }
         });
 
-        const unsubscribeFromMessages = firebase.fstore.collection('messages').doc(state.id).onSnapshot(s => {
-            if(!s.data()) return;
-            const msgs = Object.entries(s.data()).map(([key, value]) => ({...value, id: Number(key) }));
-            console.log('MESSAGES', msgs);
-            setMessages(msgs);
-        });
+        // const unsubscribeFromMessages = firebase.fstore.collection('messages').doc(state.id).onSnapshot(s => {
+        //     if(!s.data()) return;
+        //     const msgs = Object.entries(s.data()).map(([key, value]) => ({...value, id: Number(key) }));
+        //     console.log('MESSAGES', msgs);
+        //     setMessages(msgs);
+        // });
 
         return () => {
             unsubscribe();
-            unsubscribeFromMessages();
+            // unsubscribeFromMessages();
             window.removeEventListener("keydown", handleHotkeyDown);
         };
     }, []);
@@ -164,7 +164,7 @@ export default function PhoneRoom() {
                 {
                     isMd && (
                         <div style={{ flex: 1, display: 'flex' }}>
-                            <Messenger roomId={state.id} state={data} messages={messages} />
+                            <Messenger roomId={state.id} state={data} />
                             <Board roomId={state.id} state={data} selectedElement={selectedElement} scaleFactor={boardScaleFactor} onScaleFactorChange={setBoardScaleFactor} />
                         </div>
                     )
@@ -174,7 +174,7 @@ export default function PhoneRoom() {
                         <div style={{ flex: 1, display: 'flex', backgroundColor: 'dimgray' }}>
                         {
                             tabIndex === 0 && (
-                                <Messenger roomId={state.id} state={data} messages={messages} />
+                                <Messenger roomId={state.id} state={data} />
                             )
                         }
                         {
