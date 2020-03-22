@@ -1,15 +1,19 @@
 import React, { useEffect, useState, useRef, useContext } from "react";
 import { defineGrid, extendHex } from "honeycomb-grid";
 import * as SVG from "svg.js";
-import { FirebaseContext } from "../../../firebase";
-import { useAuthUser } from "../../../components/Session";
+import { FirebaseContext } from "../../../../firebase";
+import { useAuthUser } from "../../../../components/Session";
 import { Typography } from "@material-ui/core";
-import { cardsDb, boards as boardsData } from "../../../data";
+import { cardsDb, boards as boardsData } from "../../../../data";
 import ZoomInIcon from "@material-ui/icons/ZoomIn";
 import ZoomOutIcon from "@material-ui/icons/ZoomOut";
 import ButtonBase from "@material-ui/core/ButtonBase";
 import StartingHexElement from "./StartingHexElement";
 import { makeStyles } from "@material-ui/core/styles";
+import BottomBoard from "./BottomBoard";
+import TopBoard from "./TopBoard";
+import LethalHex from "./LethalHex";
+import FeatureHex from "./FeatureHex";
 
 const useStyles = makeStyles(theme => ({
     boardContainer: {
@@ -476,7 +480,7 @@ export default function Board({
     const handleClick = e => {
         const { clientX, clientY } = e;
         const boardContainerBoundingRect = boardContainerRef.current.getBoundingClientRect();
-    
+
         const offsetX = clientX - boardContainerBoundingRect.left;
         const offsetY = clientY - boardContainerBoundingRect.top;
         const hex = getGridFactory(
@@ -520,7 +524,12 @@ export default function Board({
 
         if (hex) {
             // console.log("ping")
-            highlightHex(hex, svg, boardMeta.lethalHexes, boardMeta.blockedHexes);
+            highlightHex(
+                hex,
+                svg,
+                boardMeta.lethalHexes,
+                boardMeta.blockedHexes
+            );
             if (selectedTokenId) {
                 if (selectedElement.type === "SCATTER_TOKEN") {
                     console.log("SCATTER", hex);
@@ -889,7 +898,8 @@ export default function Board({
                 }}
             >
                 <div className={classes.boardContainer}>
-                    <div ref={boardContainerRef}
+                    <div
+                        ref={boardContainerRef}
                         style={{
                             position: "relative",
                             width:
@@ -1006,77 +1016,24 @@ export default function Board({
                                         )
                                             .get(hex.onBoard)
                                             .toPoint();
+
                                         return (
-                                            <div
+                                            <LethalHex
                                                 key={k}
-                                                style={{
-                                                    position: "absolute",
-                                                    zIndex: 500,
-                                                    transition: 'all .17s ease-out',
-                                                    width:
-                                                        pointyTokenBaseWidth *
-                                                        scaleFactor,
-                                                    top:
-                                                        state.status
-                                                            .orientation ===
-                                                        "horizontal"
-                                                            ? y +
-                                                              (baseSize *
-                                                                  scaleFactor) /
-                                                                  2
-                                                            : y - 4,
-                                                    left:
-                                                        state.status
-                                                            .orientation ===
-                                                        "horizontal"
-                                                            ? x
-                                                            : x +
-                                                              (baseSize *
-                                                                  scaleFactor) /
-                                                                  2 +
-                                                              4,
-                                                    transform: `rotate(${
-                                                        state.status
-                                                            .orientation ===
-                                                        "horizontal"
-                                                            ? 0
-                                                            : 30
-                                                    }deg)`,
-                                                    transformOrigin:
-                                                        "center center",
-                                                }}
-                                            >
-                                                <img
-                                                    src={`/assets/tokens/lethal.png`}
-                                                    style={{
-                                                        width:
-                                                            pointyTokenBaseWidth *
-                                                            scaleFactor,
-                                                    }}
-                                                />
-                                                <div
-                                                    style={{
-                                                        position: "absolute",
-                                                        zIndex: 501,
-                                                        width:
-                                                            pointyTokenBaseWidth *
-                                                            scaleFactor,
-                                                        height:
-                                                            pointyTokenBaseWidth *
-                                                            scaleFactor,
-                                                        borderRadius: `${(pointyTokenBaseWidth *
-                                                            scaleFactor) /
-                                                            2}px`,
-                                                        top: "5px",
-                                                        left: 0,
-                                                        boxShadow:
-                                                            k ===
-                                                            selectedTokenId
-                                                                ? "0 0 35px 13px rgba(255,0,0, .7)"
-                                                                : "0 0 12.5px 5px rgba(255,0,0, .7)",
-                                                    }}
-                                                />
-                                            </div>
+                                                x={x}
+                                                y={y}
+                                                pointyTokenBaseWidth={
+                                                    pointyTokenBaseWidth
+                                                }
+                                                baseSize={baseSize}
+                                                scaleFactor={scaleFactor}
+                                                orientation={
+                                                    state.status.orientation
+                                                }
+                                                isSelected={
+                                                    k === selectedTokenId
+                                                }
+                                            />
                                         );
                                     }
 
@@ -1091,88 +1048,26 @@ export default function Board({
                                         )
                                             .get(hex.onBoard)
                                             .toPoint();
+
                                         return (
-                                            <div
+                                            <FeatureHex
                                                 key={k}
-                                                style={{
-                                                    position: "absolute",
-                                                    zIndex: 500,
-                                                    transition: 'all .17s ease-out',
-                                                    width:
-                                                        pointyTokenBaseWidth *
-                                                        scaleFactor,
-                                                    top:
-                                                        state.status
-                                                            .orientation ===
-                                                        "horizontal"
-                                                            ? y +
-                                                              (baseSize *
-                                                                  scaleFactor) /
-                                                                  2
-                                                            : y - 4,
-                                                    left:
-                                                        state.status
-                                                            .orientation ===
-                                                        "horizontal"
-                                                            ? x
-                                                            : x +
-                                                              (baseSize *
-                                                                  scaleFactor) /
-                                                                  2,
-                                                    transform: `rotate(${
-                                                        state.status
-                                                            .orientation ===
-                                                        "horizontal"
-                                                            ? 0
-                                                            : 30
-                                                    }deg)`,
-                                                    transformOrigin:
-                                                        "center center",
-                                                }}
-                                            >
-                                                <img
-                                                    src={
-                                                        hex.isLethal
-                                                            ? `/assets/tokens/feature_back.png`
-                                                            : `/assets/tokens/feature_front_${hex.number}.png`
-                                                    }
-                                                    style={{
-                                                        width:
-                                                            pointyTokenBaseWidth *
-                                                            scaleFactor,
-                                                    }}
-                                                />
-                                                <div
-                                                    style={{
-                                                        position: "absolute",
-                                                        zIndex: 501,
-                                                        width:
-                                                            pointyTokenBaseWidth *
-                                                            scaleFactor,
-                                                        height:
-                                                            pointyTokenBaseWidth *
-                                                            scaleFactor,
-                                                        borderRadius: `${(pointyTokenBaseWidth *
-                                                            scaleFactor) /
-                                                            2}px`,
-                                                        top: "5px",
-                                                        left: 0,
-                                                        boxShadow:
-                                                            k ===
-                                                            selectedTokenId
-                                                                ? `0 0 35px 13px ${
-                                                                      hex.isLethal
-                                                                          ? "rgba(255,0,0, .7)"
-                                                                          : "rgba(255,215,0, .7)"
-                                                                  }`
-                                                                : `0 0 12.5px 5px ${
-                                                                      hex.isLethal
-                                                                          ? "rgba(255,0,0, .7)"
-                                                                          : "rgba(255,215,0, .7)"
-                                                                  }`,
-                                                    }}
-                                                />
-                                            </div>
+                                                x={x}
+                                                y={y}
+                                                pointyTokenBaseWidth={
+                                                    pointyTokenBaseWidth
+                                                }
+                                                baseSize={baseSize}
+                                                scaleFactor={scaleFactor}
+                                                orientation={
+                                                    state.status.orientation
+                                                }
+                                                isSelected={
+                                                    k === selectedTokenId
+                                                }
+                                                isLethal={hex.isLethal}
+                                                number={hex.number}
+                                            />
                                         );
                                     }
                                 }
@@ -1193,13 +1088,18 @@ export default function Board({
                                             key={k}
                                             style={{
                                                 position: "absolute",
-                                                opacity: selectedElement && selectedElement.type === 'FEATURE_HEX' ? .5 : 1,
+                                                opacity:
+                                                    selectedElement &&
+                                                    selectedElement.type ===
+                                                        "FEATURE_HEX"
+                                                        ? 0.7
+                                                        : 1,
                                                 zIndex: !fighter.subtype
                                                     ? 600
                                                     : 599,
                                                 width: 80 * scaleFactor,
                                                 height: 80 * scaleFactor,
-                                                transition: 'all .17s ease-out',
+                                                transition: "all .17s ease-out",
                                                 top:
                                                     state.status.orientation ===
                                                     "horizontal"
@@ -1361,92 +1261,4 @@ export default function Board({
             <div style={{ flex: "0 0 auto", height: "3rem" }}></div>
         </div>
     );
-}
-
-const TopBoard = React.memo(
-    ({
-        baseBoardWidth,
-        baseBoardHeight,
-        boardId,
-        orientation,
-        offset,
-        rotate,
-        scaleFactor,
-    }) => (
-        <img
-            src={`/assets/boards/${boardId}${
-                orientation === "horizontal" ? "" : "v"
-            }.jpg`}
-            alt="board"
-            style={{
-                opacity: 0.8,
-                width:
-                    orientation === "horizontal"
-                        ? baseBoardWidth * scaleFactor
-                        : baseBoardHeight * scaleFactor,
-                height:
-                    orientation === "horizontal"
-                        ? baseBoardHeight * scaleFactor
-                        : baseBoardWidth * scaleFactor,
-                position: "absolute",
-                left:
-                    orientation === "horizontal" && offset < 0
-                        ? Math.abs(offset) * (94 * scaleFactor)
-                        : 0,
-                zIndex: "1",
-                transformOrigin: "center center",
-                transform: `rotate(${rotate}deg)`,
-            }}
-        />
-    )
-);
-
-const BottomBoard = React.memo(
-    ({
-        baseBoardWidth,
-        baseBoardHeight,
-        boardId,
-        orientation,
-        offset,
-        rotate,
-        scaleFactor,
-    }) => (
-        <img
-            src={`/assets/boards/${boardId}${
-                orientation === "horizontal"
-                    ? ""
-                    : "v"
-            }.jpg`}
-            alt="board2"
-            style={{
-                opacity: 0.8,
-                width:
-                    orientation === "horizontal"
-                        ? baseBoardWidth * scaleFactor
-                        : baseBoardHeight * scaleFactor,
-                height:
-                    orientation === "horizontal"
-                        ? baseBoardHeight * scaleFactor
-                        : baseBoardWidth * scaleFactor,
-                position: "absolute",
-                zIndex: "1",
-                top:
-                    orientation === "horizontal"
-                        ? baseBoardHeight * scaleFactor
-                        : baseBoardWidth * scaleFactor,
-                left:
-                    orientation === "horizontal" &&
-                    offset > 0
-                        ? Math.abs(offset) *
-                        (94 * scaleFactor)
-                        : 0,
-                transformOrigin: "center center",
-                transform: `rotate(${rotate}deg)`,
-            }}
-        />
-    )
-);
-
-{
-    /*  */
 }
