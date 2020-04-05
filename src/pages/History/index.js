@@ -7,6 +7,7 @@ import { useHistory } from 'react-router-dom';
 
 export default function History() {
     const [gamesPlayed, setGamesPlayed] = useState(null);
+    const [quotaLimitReached, setQuotaLimitReached] = useState(false);
     const firebase = useContext(FirebaseContext);
     const history = useHistory();
 
@@ -17,11 +18,21 @@ export default function History() {
                 console.log(data);
                 setGamesPlayed(data.sort((a, b) => b.finishied.seconds - a.finishied.seconds));
             })
-            .catch(e => console.log(e))
+            .catch(error => setQuotaLimitReached(error.message.includes("Quota")))
     }, []);
 
     const handleCheckPlayerInfo = pid => () => {
         history.push(`/player-info`, { pid: pid });
+    }
+
+    if(quotaLimitReached) {
+        return (
+            <div style={{ margin: '1rem', width: "100%", height: "100%", display: "flex" }}>
+                <div style={{ margin: "auto", padding: "3vmin" }}>
+                    <Typography color="primary" style={{ fontSize: "3vmax" }}>Sorry, but we have reached database reading free quota for today. Games could be resumed tomorrow.</Typography>
+                </div>
+            </div>    
+        )
     }
 
     return (

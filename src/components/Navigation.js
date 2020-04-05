@@ -26,6 +26,7 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import Slide from '@material-ui/core/Slide';
 import useScrollTrigger from '@material-ui/core/useScrollTrigger';
+import packageJson from "../../package.json";
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -343,7 +344,7 @@ function Navigation(props) {
                             className={classes.title}
                             onClick={goToMainPage}
                         >
-                            WUnderworlds Club <sup><span style={{ fontSize: '.7rem'}}><i>ver 0.20.5</i></span></sup>
+                            WUnderworlds Club <sup><span style={{ fontSize: '.7rem'}}><i>ver 0.20.6</i></span></sup>
                         </Typography>
                         {authUser ? <AuthMenu authUser={authUser} /> : <AnonMenu />}
                     </Toolbar>

@@ -284,7 +284,7 @@ class Firebase {
         }
     }
 
-    setRoomsListener = onSnapshot => this.fstore.collection('rooms').onSnapshot(onSnapshot);
+    setRoomsListener = (onSnapshot, onError) => this.fstore.collection('rooms').onSnapshot(onSnapshot, onError);
     setRoomListener = (roomId, onSnapshot) => this.fstore.collection('rooms').doc(roomId).onSnapshot(onSnapshot);
     setMessagesListener = (roomId, handler) => this.fstore.collection('messages').doc(roomId).onSnapshot(handler);
 
@@ -628,35 +628,6 @@ class Firebase {
 
     setTableListener = (tableId, onSnapshot) => this.fstore.collection('tables').doc(tableId).onSnapshot(onSnapshot);
 
-    addGame = async payload => {
-        try {
-            const gameRef = await this.fstore.collection("games").add(payload);
-            return gameRef.id;
-        } catch(error) {
-            console.error('Error in addGame: ', error);
-        }
-    }
-
-    getGame = async gameId => {
-        try {
-            const snap = await this.fstore.collection("games").doc(gameId).get();
-            return snap.data();
-        } catch(error) {
-            console.error('Error in getGame: ', error);
-        }
-    }
-
-    updateGame = async (payload, id) => {
-        try {
-            const ref = this.fstore.collection("games").doc(id);
-            await ref.update(payload);
-        } catch(error) {
-            console.error(error);
-        }
-    }
-
-    setGameListener = (gameId, onSnaphot) => this.fstore.collection('games').doc(gameId).onSnapshot(onSnaphot);
-
     addHistoryItem = async (payload, gameId) => {
         try {
             await this.fstore.collection("history").doc(gameId).set(payload);
@@ -664,36 +635,6 @@ class Firebase {
             console.error('Error in addGame: ', error);
         }
     }
-
-    getActiveStep = async gameId => {
-        try {
-            const snap = await this.fstore.collection("activeSteps").doc(gameId).get();
-            return snap.data();
-        } catch(error) {
-            console.error('Error in getGame: ', error);
-        }
-    }
-
-    addActiveStep = async (gameId, payload) => {
-        try {
-            await this.fstore.collection("activeSteps").doc(gameId).set(payload);
-        } catch(error) {
-            console.error('Error in addActiveStep: ', error);
-        }
-    }
-
-    updateActiveStepForPlayer = async (gameId, playerId, payload) => {
-        try {
-            const ref = this.fstore.collection("activeSteps").doc(gameId);
-            await ref.update({
-                [playerId] : payload
-            })
-        } catch(error) {
-            console.error('Error in addActiveStep: ', error);
-        }
-    }
-
-    setActiveStepListener = (gameId, onSnaphot) => this.fstore.collection('activeSteps').doc(gameId).onSnapshot(onSnaphot);
 }
 
 export default Firebase;

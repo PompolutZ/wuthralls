@@ -32,16 +32,18 @@ function Rooms() {
     const [roomName, setRoomName] = useState('');
     const [myRooms, setMyRooms] = useState([]);
     const [otherRooms, setOtherRooms] = useState([]);
+    const [quotaLimitReached, setQuotaLimitReached] = useState(false);
 
     useEffect(() => {
         if(!myself) return;
 
         const unsubscribe = firebase.setRoomsListener(snapshot => {
+            console.log(snapshot);
             setRooms(snapshot.docs.map(doc => ({
                 id: doc.id,
                 ...doc.data()
             })));
-        });
+        }, error => setQuotaLimitReached(error.message.includes("Quota")));
 
         return () => unsubscribe();
     }, []);
@@ -85,6 +87,16 @@ function Rooms() {
 
     const handleCheckPlayerInfo = pid => () => {
         history.push(`/player-info`, { pid: pid });
+    }
+
+    if(quotaLimitReached) {
+        return (
+            <div style={{ margin: '1rem', width: "100%", height: "100%", display: "flex" }}>
+                <div style={{ margin: "auto", padding: "3vmin" }}>
+                    <Typography color="primary" style={{ fontSize: "3vmax" }}>Sorry, but we have reached database reading free quota for today. Games could be resumed tomorrow.</Typography>
+                </div>
+            </div>    
+        )
     }
 
     return myself ? (
