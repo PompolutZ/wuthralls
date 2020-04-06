@@ -301,6 +301,7 @@ class Firebase {
                 [playerId]: playerInfo,
                 // add player to boards initiative rolloff
                 [`status.waitingFor`]: this.firestoreArrayUnion(playerId),
+                [`status.waitingReason`]: "INITIATIVE_ROLL",
                 [`status.rollOffs.${playerId}_1`]: "", 
             });
             // await roomRef.update({

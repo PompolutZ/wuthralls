@@ -172,7 +172,7 @@ export default function SpawnRoom() {
                 round: 1,
                 stage: "SETUP",
                 waitingFor: [myself.uid],
-                waitingReason: 'INITIATIVE_ROLL',
+                waitingReason: 'WAITING_FOR_OPPONENT',
                 rollOffs: {
                     [`${myself.uid}_1`]: "",
                 },

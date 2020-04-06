@@ -344,7 +344,7 @@ function Navigation(props) {
                             className={classes.title}
                             onClick={goToMainPage}
                         >
-                            WUnderworlds Club <sup><span style={{ fontSize: '.7rem'}}><i>ver 0.20.6</i></span></sup>
+                            WUnderworlds Club <sup><span style={{ fontSize: '.7rem'}}><i>ver {packageJson.version}</i></span></sup>
                         </Typography>
                         {authUser ? <AuthMenu authUser={authUser} /> : <AnonMenu />}
                     </Toolbar>
