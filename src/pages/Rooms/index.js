@@ -112,7 +112,7 @@ function Rooms() {
 
     const handleDeleteRoom = (id) => async () => {
         await firebase.deleteRoom(id);
-        setRooms((rooms) => rooms.filter((r) => r.id !== id));
+        //setRooms((rooms) => rooms.filter((r) => r.id !== id));
     };
 
     const handleJoinRoom = (room) => () => {
@@ -163,6 +163,13 @@ function Rooms() {
                     Spawn New Room
                 </Button>
             </div>
+            {
+                myRooms && myRooms.length > 1 && (
+                    <div style={{ display: "flex", justifyContent: "center", margin: '1rem auto' }}>
+                        <Typography variant="body2" color="primary">Note, you won't be able to spawn rooms or join other rooms if you already have a room.</Typography>
+                    </div>
+                )
+            }
             <Grid container spacing={3} justify="center">
                 <Grid item xs={12} lg={4}>
                     <Typography variant="h6">My rooms</Typography>
@@ -318,7 +325,7 @@ function Rooms() {
                 <Grid item xs={12} lg={4}>
                     <Typography variant="h6">Rooms looking for an opponent</Typography>
                     <Divider />
-                    {otherRooms.map((r, i) => {
+                    {otherRooms.filter(r => !myRooms.map(myroom => myroom.id).includes(r.id)).map((r, i) => {
                         const participants = r.players.map((pid) => ({
                             ...r[pid],
                             pid: pid,
@@ -428,7 +435,7 @@ function Rooms() {
                                     <Grid item xs={12}>
                                         <Button
                                             onClick={handleJoinRoom(r)}
-                                            disabled={!(r.players.length < 2)}
+                                            disabled={!(r.players.length < 2) || myRooms.length > 1}
                                             variant="contained"
                                             color="primary"
                                         >
