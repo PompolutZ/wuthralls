@@ -112,6 +112,7 @@ function Rooms() {
 
     const handleDeleteRoom = (id) => async () => {
         await firebase.deleteRoom(id);
+        setMyRooms(prev => prev.filter(r => r.id !== id));
         //setRooms((rooms) => rooms.filter((r) => r.id !== id));
     };
 
@@ -294,7 +295,7 @@ function Rooms() {
                                         >
                                             Get In
                                         </Button>
-                                        {(r.createdBy === myself.uid ||
+                                        {(r.players.includes(myself.uid) ||
                                             (myself.roles &&
                                                 myself.roles["ADMIN"])) && (
                                             <Button
