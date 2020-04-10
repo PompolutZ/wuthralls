@@ -14,7 +14,9 @@ export default function Usersummaryr() {
         const playedGames = firebase.fstore.collection('gameResults').get()
             .then(snapshot => {
                 const data = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
-                console.log(data.filter(gr => gr.result.map(r => r.glory).join() === "0,0"));
+                //console.log("data");
+                console.log("DUP!", data.filter(g => g.gameName === "Biomasa en tu casa!").sort((a, b) => a.finishied.seconds - b.finishied.seconds))
+                //console.log(data.filter(gr => gr.result.map(r => r.glory).join() === "0,0"));
                 setGamesPlayed(data.sort((a, b) => b.finishied.seconds - a.finishied.seconds));
                 const players = data.flatMap(d => d.players).reduce((r, c) => r.includes(c) ? r : [...r, c], []);
                 firebase.users().once('value').then(snapshot => {

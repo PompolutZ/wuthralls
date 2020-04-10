@@ -111,8 +111,8 @@ function Rooms() {
     };
 
     const handleDeleteRoom = (id) => async () => {
-        await firebase.deleteRoom(id);
         setMyRooms(prev => prev.filter(r => r.id !== id));
+        await firebase.deleteRoom(id);
         //setRooms((rooms) => rooms.filter((r) => r.id !== id));
     };
 
@@ -121,8 +121,8 @@ function Rooms() {
     };
 
     const handleFinishAndRecord = (room) => () => {
-        console.log(room);
         if (room.status.round >= 3) {
+            setMyRooms(prev => prev.filter(r => r.id !== room.id));
             firebase.recordGameResult(room.id, room);
         }
     };
