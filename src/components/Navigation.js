@@ -93,7 +93,7 @@ function NavigationAuth({ authUser }) {
     );
 }
 
-function MenuDrawer() {
+function MenuDrawer({ items }) {
     const classes = useStyles();
     const history = useHistory();
     const [state, setState] = React.useState({
@@ -122,32 +122,10 @@ function MenuDrawer() {
             onKeyDown={toggleDrawer(side, false)}
         >
             <List>
-                {[
-                    {
-                        id: 'all_rooms',
-                        label: 'All rooms',
-                        action: () => history.push(ROUTES.LANDING),
-                    },
-                    {
-                        id: 'history',
-                        label: 'History',
-                        action: () => history.push('/history'),
-                    },
-                    {
-                        id: 'upcoming',
-                        label: 'Upcoming',
-                        action: () => history.push('/future'),
-                    },
-                ].map((item, index) => (
+                {items.map(item => (
                     <ListItem button key={item.id} onClick={item.action}>
                         <ListItemIcon>
-                            {item.id === 'all_rooms' ? (
-                                <MeetingRoomIcon />
-                            ) : item.id === 'history' ? (
-                                <EmojiEventsIcon />
-                            ) : (
-                                <HourglassEmptyIcon />
-                            )}
+                            {item.icon}
                         </ListItemIcon>
                         <ListItemText primary={item.label} />
                     </ListItem>
@@ -305,6 +283,27 @@ function AuthMenu({ authUser }) {
     );
 }
 
+const menuItems = history => [
+    {
+        id: 'all_rooms',
+        label: 'All rooms',
+        icon: <MeetingRoomIcon />,
+        action: () => history.push(ROUTES.LANDING),
+    },
+    {
+        id: 'history',
+        label: 'History',
+        icon: <EmojiEventsIcon />,
+        action: () => history.push('/history'),
+    },
+    {
+        id: 'upcoming',
+        label: 'Upcoming',
+        icon: <HourglassEmptyIcon />,
+        action: () => history.push('/future'),
+    },
+];
+
 function HideOnScroll(props) {
     const { children, window } = props;
     // Note that you normally won't need to set the window ref as useScrollTrigger
@@ -323,22 +322,17 @@ function Navigation(props) {
     const classes = useStyles();
     const history = useHistory();
     const authUser = useAuthUser();
-    const { pathname } = useLocation();
 
     const goToMainPage = () => {
         history.push(ROUTES.LANDING);
     };
-
-    // if (pathname.includes('/v1/room')) {
-    //     return <span></span>;
-    // }
 
     return (
         <div className={classes.root}>
             <HideOnScroll {...props}>
                 <AppBar position="static">
                     <Toolbar>
-                        <MenuDrawer />
+                        <MenuDrawer items={menuItems(history)} />
                         <Typography
                             variant="body1"
                             className={classes.title}
@@ -352,6 +346,6 @@ function Navigation(props) {
             </HideOnScroll>
         </div>
     );
-    // return <div>{authUser ? <NavigationAuth authUser={authUser} /> : <NavigationNonAuth />}</div>
 }
+
 export default Navigation;
