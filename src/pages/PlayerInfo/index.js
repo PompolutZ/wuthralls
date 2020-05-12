@@ -26,7 +26,6 @@ function PlayerInfoPage() {
 
     useEffect(() => {
         firebase.user(state.pid).once('value').then(snapshot => {
-            console.log(snapshot.val());
             setData(snapshot.val());
         });
     }, [state]);

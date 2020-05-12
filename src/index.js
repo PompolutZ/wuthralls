@@ -7,8 +7,6 @@ import Firebase, { FirebaseContext } from './firebase';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import { useTheme } from '@material-ui/core/styles';
 
-
-
 function Root() {
     const defaultTheme = useTheme();
     const theme = createMuiTheme({
