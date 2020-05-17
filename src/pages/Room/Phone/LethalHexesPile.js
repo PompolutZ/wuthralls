@@ -1,12 +1,13 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useContext } from "react";
 import ButtonBase from "@material-ui/core/ButtonBase";
 import Typography from "@material-ui/core/Typography";
 import DeleteIcon from "@material-ui/icons/Delete";
 import { FirebaseContext } from "../../../firebase";
 import { useAuthUser } from "../../../components/Session";
 import { makeStyles } from "@material-ui/core/styles";
+import PropTypes from "prop-types";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
     root: {
         flexGrow: 1,
         position: "relative",
@@ -28,28 +29,19 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-export default function LethalHexesPile({
-    roomId,
-    tokens,
-    onSelectedTokenChange,
-}) {
+function LethalHexesPile({ roomId, tokens, onSelectedTokenChange }) {
     const classes = useStyles();
     const myself = useAuthUser();
     const firebase = useContext(FirebaseContext);
     const pointyTokenBaseWidth = 95;
     const [selectedToken, setSelectedToken] = useState(null);
 
-    const handleTokenClick = token => () => {
+    const handleTokenClick = (token) => () => {
         setSelectedToken(token);
         onSelectedTokenChange(token);
     };
 
-    useEffect(() => {
-        console.log("LethalHexesPile.OnUpdated", selectedToken);
-    }, [selectedToken]);
-
-    const handleRemoveFromBoard = token => e => {
-        console.log("Request remove token", token);
+    const handleRemoveFromBoard = (token) => (e) => {
         e.preventDefault();
         firebase.updateBoardProperty(roomId, `board.tokens.${token.id}`, {
             ...token,
@@ -69,7 +61,7 @@ export default function LethalHexesPile({
     return (
         <div className={classes.root}>
             <div className={classes.itemsContainer}>
-                {tokens.map(token => (
+                {tokens.map((token) => (
                     <div
                         key={token.id}
                         style={{
@@ -77,10 +69,9 @@ export default function LethalHexesPile({
                             paddingTop: "1rem",
                             paddingLeft: "1rem",
                             filter:
-                            selectedToken &&
-                            selectedToken.id === token.id
-                                ? "drop-shadow(0 0 10px magenta)"
-                                : "",
+                                selectedToken && selectedToken.id === token.id
+                                    ? "drop-shadow(0 0 10px magenta)"
+                                    : "",
                             transition: "all .175s ease-out",
                         }}
                         onClick={handleTokenClick(token)}
@@ -92,6 +83,7 @@ export default function LethalHexesPile({
                             }}
                         >
                             <img
+                                alt="lethal_hex"
                                 src={`/assets/tokens/lethal.png`}
                                 style={{ width: "100%" }}
                             />
@@ -127,3 +119,11 @@ export default function LethalHexesPile({
         </div>
     );
 }
+
+LethalHexesPile.propTypes = {
+    roomId: PropTypes.string,
+    tokens: PropTypes.array,
+    onSelectedTokenChange: PropTypes.func,
+};
+
+export default LethalHexesPile;

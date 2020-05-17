@@ -4,13 +4,14 @@ import { FirebaseContext } from "../../../firebase";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import SendIcon from "@material-ui/icons/Send";
+import PropTypes from "prop-types";
 
-export default function SendMessageAction({ roomId }) {
+function SendMessageAction({ roomId }) {
     const myself = useAuthUser();
     const firebase = useContext(FirebaseContext);
     const [currentMessage, setCurrentMessage] = useState("");
 
-    const handleTyping = e => {
+    const handleTyping = (e) => {
         setCurrentMessage(e.target.value);
     };
 
@@ -51,3 +52,9 @@ export default function SendMessageAction({ roomId }) {
         </div>
     );
 }
+
+SendMessageAction.propTypes = {
+    roomId: PropTypes.string,
+};
+
+export default SendMessageAction;

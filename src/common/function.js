@@ -1,7 +1,10 @@
-import seedrandom from 'seedrandom';
-const rng = seedrandom('7v1IePLKA7oRefKddVznOklLczjSIDdaMeE0SUx7WPKAi8GUbAgDGfvgjswt', { entropy: true });
+import seedrandom from "seedrandom";
+const rng = seedrandom(
+    "7v1IePLKA7oRefKddVznOklLczjSIDdaMeE0SUx7WPKAi8GUbAgDGfvgjswt",
+    { entropy: true }
+);
 
-export const shuffle = a => {
+export const shuffle = (a) => {
     var j, x, i;
     for (i = a.length - 1; i > 0; i--) {
         j = Math.floor(rng() * (i + 1));
@@ -10,7 +13,7 @@ export const shuffle = a => {
         a[j] = x;
     }
     return a;
-}
+};
 
 export function getDieRollResult() {
     const min = 1;

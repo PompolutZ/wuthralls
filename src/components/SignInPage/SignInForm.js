@@ -1,58 +1,55 @@
-import React, { Component } from 'react'
-import { withRouter } from 'react-router-dom'
+import React from "react";
+import { withRouter } from "react-router-dom";
 
-import * as ROUTES from '../../constants/routes'
-import { FirebaseContext } from '../../firebase';
-import TextField from '@material-ui/core/TextField';
-import Grid from '@material-ui/core/Grid';
-import Button from '@material-ui/core/Button';
-import Divider from '@material-ui/core/Divider';
-import Typography from '@material-ui/core/Typography';
+import * as ROUTES from "../../constants/routes";
+import { FirebaseContext } from "../../firebase";
+import TextField from "@material-ui/core/TextField";
+import Grid from "@material-ui/core/Grid";
+import Button from "@material-ui/core/Button";
+import Divider from "@material-ui/core/Divider";
+import Typography from "@material-ui/core/Typography";
+import PropTypes from "prop-types";
 
 const INITIAL_STATE = {
-    email: '',
-    password: '',
+    email: "",
+    password: "",
     error: null,
-}
+};
 
 function SignInForm({ history }) {
-    const [{ email, password, error }, setSignInFormState] = React.useState(INITIAL_STATE);
+    const [{ email, password, error }, setSignInFormState] = React.useState(
+        INITIAL_STATE
+    );
     const firebase = React.useContext(FirebaseContext);
 
-    const isInvalid = password === '' || email === ''
+    const isInvalid = password === "" || email === "";
 
-    const onChange = event => {
+    const onChange = (event) => {
         const { name, value } = event.target;
-        setSignInFormState(prev => ({...prev, [name]: value}));
-    }
+        setSignInFormState((prev) => ({ ...prev, [name]: value }));
+    };
 
-    const onSubmit = event => {
+    const onSubmit = (event) => {
         firebase
             .signInWithEmailAndPassword(email, password)
             .then(() => {
                 setSignInFormState(INITIAL_STATE);
-                history.push(ROUTES.LANDING)
+                history.push(ROUTES.LANDING);
             })
-            .catch(error => {
-                setSignInFormState(prev => ({ ...prev, error: error }));
+            .catch((error) => {
+                setSignInFormState((prev) => ({ ...prev, error: error }));
             });
 
         event.preventDefault();
-    }
-
-    const handleAnonSignIn = () => {
-        firebase.signInAnonymously()
-            .then(() => history.push("/"))
-            .catch(e => setSignInFormState(prev => ({ ...prev, error: e })));
-    }
+    };
 
     const handleJoinTheClub = () => {
         history.push(ROUTES.SIGN_UP);
-    }
+    };
 
     return (
         <form onSubmit={onSubmit}>
-            <Grid container spacing={3} style={{ padding: '1rem'}}>
+            <Grid container spacing={3} style={{ padding: "1rem" }}>
                 <Grid item xs={12}>
                     <TextField
                         fullWidth
@@ -74,7 +71,12 @@ function SignInForm({ history }) {
                     />
                 </Grid>
                 <Grid item xs={12}>
-                    <Button disabled={isInvalid} type="submit" color="primary" variant="contained">
+                    <Button
+                        disabled={isInvalid}
+                        type="submit"
+                        color="primary"
+                        variant="contained"
+                    >
                         Knock knock
                     </Button>
                 </Grid>
@@ -92,8 +94,15 @@ function SignInForm({ history }) {
                     </Grid>
                 </Grid>
                 <Grid item xs={12}>
-                    <Button variant="contained" style={{ background: 'orangered', color: 'white', width: '100%' }}
-                        onClick={handleJoinTheClub}>
+                    <Button
+                        variant="contained"
+                        style={{
+                            background: "orangered",
+                            color: "white",
+                            width: "100%",
+                        }}
+                        onClick={handleJoinTheClub}
+                    >
                         Join The Club
                     </Button>
                     {/* <Button color="primary" variant="contained" onClick={handleAnonSignIn}>
@@ -105,9 +114,12 @@ function SignInForm({ history }) {
                     {error && <p>{error.message}</p>}
                 </Grid>
             </Grid>
-
         </form>
-    )
+    );
 }
+
+SignInForm.propTypes = {
+    history: PropTypes.object,
+};
 
 export default withRouter(SignInForm);

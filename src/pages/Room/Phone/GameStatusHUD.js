@@ -1,213 +1,339 @@
-import React, { useContext, useState, useEffect } from 'react';
-import Grid from '@material-ui/core/Grid';
-import { useAuthUser } from '../../../components/Session';
-import { FirebaseContext } from '../../../firebase';
-import ButtonBase from '@material-ui/core/ButtonBase';
-import Typography from '@material-ui/core/Typography';
-import Divider from '@material-ui/core/Divider';
-import Paper from '@material-ui/core/Paper';
-import AddIcon from '@material-ui/icons/Add';
-import RemoveIcon from '@material-ui/icons/Remove';
-import InspireIcon from '@material-ui/icons/TrendingUp';
-import {useThrottle, useThrottleCallback} from '@react-hook/throttle'
-
+import React, { useContext, useState, useEffect } from "react";
+import Grid from "@material-ui/core/Grid";
+import { useAuthUser } from "../../../components/Session";
+import { FirebaseContext } from "../../../firebase";
+import ButtonBase from "@material-ui/core/ButtonBase";
+import Typography from "@material-ui/core/Typography";
+import Divider from "@material-ui/core/Divider";
+import AddIcon from "@material-ui/icons/Add";
+import RemoveIcon from "@material-ui/icons/Remove";
+import PropTypes from "prop-types";
 
 function RoundCounter({ round, onRoundChange }) {
     const [value, setValue] = useState(round);
 
-    const handleChangeValue = changeBy => () => {
+    const handleChangeValue = (changeBy) => () => {
         const nextValue = value + changeBy > 1 ? value + changeBy : 1;
         setValue(nextValue);
-        if(value === nextValue) return;
+        if (value === nextValue) return;
         onRoundChange(nextValue);
-    }
+    };
 
     return (
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-            <ButtonBase onClick={handleChangeValue(-1)} style={{ backgroundColor: 'green', width: '3rem', height: '3rem', borderRadius: '1.5rem', border: '3px solid white', color: 'white', boxSizing: 'border-box' }}>
+        <div style={{ display: "flex", alignItems: "center" }}>
+            <ButtonBase
+                onClick={handleChangeValue(-1)}
+                style={{
+                    backgroundColor: "green",
+                    width: "3rem",
+                    height: "3rem",
+                    borderRadius: "1.5rem",
+                    border: "3px solid white",
+                    color: "white",
+                    boxSizing: "border-box",
+                }}
+            >
                 <RemoveIcon />
             </ButtonBase>
-            <div style={{ 
-                    display: 'flex',
-                    position: 'relative', 
-                    width: '8rem', 
-                    height: '8rem', 
-                    borderRadius: '4rem', 
-                    border: '2px solid white', }}>
-                <div style={{ margin: '-1rem auto 1rem auto', color: 'white', fontSize: '7rem', fontWeight: 'bold', }}>
-                    { value }
+            <div
+                style={{
+                    display: "flex",
+                    position: "relative",
+                    width: "8rem",
+                    height: "8rem",
+                    borderRadius: "4rem",
+                    border: "2px solid white",
+                }}
+            >
+                <div
+                    style={{
+                        margin: "-1rem auto 1rem auto",
+                        color: "white",
+                        fontSize: "7rem",
+                        fontWeight: "bold",
+                    }}
+                >
+                    {value}
                 </div>
-                <div style={{ 
-                    backgroundImage: `url(/assets/other/roundToken.png)`, 
-                    backgroundPosition: 'center, center', 
-                    backgroundSize: 'cover',
-                    width: '8rem', 
-                    height: '8rem', 
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    bottom: 0,
-                    right: 0,
-                    opacity: '.9',
-                    zIndex: -1 }} />
+                <div
+                    style={{
+                        backgroundImage: `url(/assets/other/roundToken.png)`,
+                        backgroundPosition: "center, center",
+                        backgroundSize: "cover",
+                        width: "8rem",
+                        height: "8rem",
+                        position: "absolute",
+                        top: 0,
+                        left: 0,
+                        bottom: 0,
+                        right: 0,
+                        opacity: ".9",
+                        zIndex: -1,
+                    }}
+                />
             </div>
-            <ButtonBase onClick={handleChangeValue(1)} style={{ backgroundColor: 'red', width: '3rem', height: '3rem', borderRadius: '1.5rem', border: '3px solid white', color: 'white', boxSizing: 'border-box' }}>
+            <ButtonBase
+                onClick={handleChangeValue(1)}
+                style={{
+                    backgroundColor: "red",
+                    width: "3rem",
+                    height: "3rem",
+                    borderRadius: "1.5rem",
+                    border: "3px solid white",
+                    color: "white",
+                    boxSizing: "border-box",
+                }}
+            >
                 <AddIcon />
             </ButtonBase>
         </div>
-    )
+    );
 }
 
-function GloryCounter({ canEdit, imgUri, glory, OnGloryCountChanged }) {
-    const [value, setValue] = useState(glory);
+RoundCounter.propTypes = {
+    round: PropTypes.number,
+    onRoundChange: PropTypes.func,
+};
 
-    const handleChangeValue = changeBy => () => {
-        if(!canEdit) return;
-        
-        const nextValue = value + changeBy;
-        setValue(nextValue >= 0 ? nextValue : 0);
-        OnGloryCountChanged(nextValue >= 0 ? nextValue : 0);
-    }
-
-    return (
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-            {
-                canEdit && (
-                    <ButtonBase onClick={handleChangeValue(-1)} style={{ backgroundColor: 'green', width: '3rem', height: '3rem', borderRadius: '1.5rem', border: '3px solid white', color: 'white', boxSizing: 'border-box' }}>
-                        <RemoveIcon />
-                    </ButtonBase>
-                )
-            }
-            <div style={{ display: 'flex', backgroundImage: `url(${imgUri})`, backgroundPosition: 'center, center', backgroundSize: 'cover', width: '4rem', height: '4rem', borderRadius: '2rem', border: '2px solid white', }}>
-                <div style={{ margin: 'auto', color: 'white', fontSize: '2.5rem' }}>
-                    { value }
-                </div>
-            </div>
-            {
-                canEdit && (
-                    <ButtonBase onClick={handleChangeValue(1)} style={{ backgroundColor: 'red', width: '3rem', height: '3rem', borderRadius: '1.5rem', border: '3px solid white', color: 'white', boxSizing: 'border-box' }}>
-                        <AddIcon />
-                    </ButtonBase>
-                )
-            }
-        </div>
-    )
-}
-
-function CombinedGloryCounter({ canEdit, glory = 0, glorySpent = 0, onGloryChange }) {
+function CombinedGloryCounter({
+    canEdit,
+    glory = 0,
+    glorySpent = 0,
+    onGloryChange,
+}) {
     const [gloryEarned, setGloryEarned] = useState(glory);
     const [gloryUsed, setGloryUsed] = useState(glorySpent);
 
-    const handleChangeEarnedGlory = mod => () => {
+    const handleChangeEarnedGlory = (mod) => () => {
         const nextValue = gloryEarned + mod >= 0 ? gloryEarned + mod : 0;
         setGloryEarned(nextValue);
         onGloryChange({ earned: nextValue, spent: gloryUsed });
-    }
+    };
 
-    const handleChangeGloryUsed = mod => () => {
+    const handleChangeGloryUsed = (mod) => () => {
         const nextValue = gloryUsed + mod;
         setGloryUsed(nextValue >= 0 ? nextValue : 0);
         setGloryEarned(gloryEarned - mod >= 0 ? gloryEarned - mod : 0);
-        onGloryChange({ earned: gloryEarned - mod >= 0 ? gloryEarned - mod : 0, spent: nextValue });
-    }
+        onGloryChange({
+            earned: gloryEarned - mod >= 0 ? gloryEarned - mod : 0,
+            spent: nextValue,
+        });
+    };
 
     return (
         <Grid container spacing={3} justify="center" alignItems="center">
-            {
-                canEdit && (
-                    <Grid item xs={4}>
-                        <div style={{ display: 'flex', alignItems: 'center', marginLeft: '.5rem' }}>
-                            <ButtonBase style={{ width: '3rem', height: '3rem', backgroundColor: 'darkred', color: 'white', boxSizing: 'border-box', border: '3px solid white', borderRadius: '1.5rem' }}
-                                onClick={handleChangeEarnedGlory(-1)}>
-                                <RemoveIcon />
-                            </ButtonBase>
-        
-                            <ButtonBase style={{ width: '3rem', height: '3rem', backgroundColor: 'teal', color: 'white', boxSizing: 'border-box', border: '3px solid white', borderRadius: '1.5rem' }}
-                                onClick={handleChangeEarnedGlory(1)}>
-                                <AddIcon />
-                            </ButtonBase>
-                        </div>
-                    </Grid>
-                )
-            }
+            {canEdit && (
+                <Grid item xs={4}>
+                    <div
+                        style={{
+                            display: "flex",
+                            alignItems: "center",
+                            marginLeft: ".5rem",
+                        }}
+                    >
+                        <ButtonBase
+                            style={{
+                                width: "3rem",
+                                height: "3rem",
+                                backgroundColor: "darkred",
+                                color: "white",
+                                boxSizing: "border-box",
+                                border: "3px solid white",
+                                borderRadius: "1.5rem",
+                            }}
+                            onClick={handleChangeEarnedGlory(-1)}
+                        >
+                            <RemoveIcon />
+                        </ButtonBase>
+
+                        <ButtonBase
+                            style={{
+                                width: "3rem",
+                                height: "3rem",
+                                backgroundColor: "teal",
+                                color: "white",
+                                boxSizing: "border-box",
+                                border: "3px solid white",
+                                borderRadius: "1.5rem",
+                            }}
+                            onClick={handleChangeEarnedGlory(1)}
+                        >
+                            <AddIcon />
+                        </ButtonBase>
+                    </div>
+                </Grid>
+            )}
             <Grid item xs={4}>
-                <div style={{ position: 'relative' }}>
-                    <img src={`/assets/other/gloryCounter.png`} alt="glory counter" style={{ width: '100%' }} />
-                    <div style={{ position: 'absolute', width: '100%', height: '100%', top: 0, left: 0, display: 'flex', alignItems: 'center', color: 'white'  }}>
-                        <div style={{ flex: 1, display: 'flex' }}>
-                            <Typography style={{ fontSize: '2.5rem', margin: 'auto' }}>{gloryEarned}</Typography>
+                <div style={{ position: "relative" }}>
+                    <img
+                        src={`/assets/other/gloryCounter.png`}
+                        alt="glory counter"
+                        style={{ width: "100%" }}
+                    />
+                    <div
+                        style={{
+                            position: "absolute",
+                            width: "100%",
+                            height: "100%",
+                            top: 0,
+                            left: 0,
+                            display: "flex",
+                            alignItems: "center",
+                            color: "white",
+                        }}
+                    >
+                        <div style={{ flex: 1, display: "flex" }}>
+                            <Typography
+                                style={{ fontSize: "2.5rem", margin: "auto" }}
+                            >
+                                {gloryEarned}
+                            </Typography>
                         </div>
-                        <div style={{ flex: 1, display: 'flex' }}>
-                            <Typography style={{ fontSize: '2.5rem', margin: 'auto' }}>{gloryUsed}</Typography>
+                        <div style={{ flex: 1, display: "flex" }}>
+                            <Typography
+                                style={{ fontSize: "2.5rem", margin: "auto" }}
+                            >
+                                {gloryUsed}
+                            </Typography>
                         </div>
                     </div>
-                    <div style={{ position: 'absolute', width: '2rem', height: '2rem', boxSizing: 'border-box', border: '2px solid white', borderRadius: '1rem', backgroundColor: 'goldenrod', color: 'white', zIndex: 1, bottom: '0%', left: '50%', marginLeft: '-1rem', marginBottom: '-1rem', display: 'flex' }}>
-                        <Typography style={{ margin: 'auto' }}>{gloryEarned + gloryUsed}</Typography>
+                    <div
+                        style={{
+                            position: "absolute",
+                            width: "2rem",
+                            height: "2rem",
+                            boxSizing: "border-box",
+                            border: "2px solid white",
+                            borderRadius: "1rem",
+                            backgroundColor: "goldenrod",
+                            color: "white",
+                            zIndex: 1,
+                            bottom: "0%",
+                            left: "50%",
+                            marginLeft: "-1rem",
+                            marginBottom: "-1rem",
+                            display: "flex",
+                        }}
+                    >
+                        <Typography style={{ margin: "auto" }}>
+                            {gloryEarned + gloryUsed}
+                        </Typography>
                     </div>
                 </div>
             </Grid>
-            {
-                canEdit && (
-                    <Grid item xs={4}>
-                        <div style={{ display: 'flex', alignItems: 'center', marginRight: '.5rem' }}>
-                            <ButtonBase style={{ width: '3rem', height: '3rem', backgroundColor: 'teal', color: 'white', boxSizing: 'border-box', border: '3px solid white', borderRadius: '1.5rem' }}
-                                onClick={handleChangeGloryUsed(1)}>
-                                <AddIcon />
-                            </ButtonBase>
-        
-                            <ButtonBase style={{ width: '3rem', height: '3rem', backgroundColor: 'darkred', color: 'white', boxSizing: 'border-box', border: '3px solid white', borderRadius: '1.5rem' }}
-                                onClick={handleChangeGloryUsed(-1)} disabled={gloryUsed === 0}>
-                                <RemoveIcon />
-                            </ButtonBase>
-                        </div>
-                    </Grid>
-                )
-            }
+            {canEdit && (
+                <Grid item xs={4}>
+                    <div
+                        style={{
+                            display: "flex",
+                            alignItems: "center",
+                            marginRight: ".5rem",
+                        }}
+                    >
+                        <ButtonBase
+                            style={{
+                                width: "3rem",
+                                height: "3rem",
+                                backgroundColor: "teal",
+                                color: "white",
+                                boxSizing: "border-box",
+                                border: "3px solid white",
+                                borderRadius: "1.5rem",
+                            }}
+                            onClick={handleChangeGloryUsed(1)}
+                        >
+                            <AddIcon />
+                        </ButtonBase>
+
+                        <ButtonBase
+                            style={{
+                                width: "3rem",
+                                height: "3rem",
+                                backgroundColor: "darkred",
+                                color: "white",
+                                boxSizing: "border-box",
+                                border: "3px solid white",
+                                borderRadius: "1.5rem",
+                            }}
+                            onClick={handleChangeGloryUsed(-1)}
+                            disabled={gloryUsed === 0}
+                        >
+                            <RemoveIcon />
+                        </ButtonBase>
+                    </div>
+                </Grid>
+            )}
         </Grid>
-    )
+    );
 }
 
+CombinedGloryCounter.propTypes = {
+    canEdit: PropTypes.bool,
+    glory: PropTypes.number,
+    glorySpent: PropTypes.number,
+    onGloryChange: PropTypes.func,
+};
 
-
-function ActivationsCounter({ activationsToMake, canEdit, onActivationsCounterChanged }) {
+function ActivationsCounter({
+    activationsToMake,
+    canEdit,
+    onActivationsCounterChanged,
+}) {
     const [value, setValue] = useState(activationsToMake);
 
     const handleMakeActivation = () => {
-        if(!canEdit) return;
+        if (!canEdit) return;
 
         const nextValue = value - 1;
         setValue(nextValue);
         onActivationsCounterChanged(nextValue);
-    }
+    };
 
     const handleUndoActivation = () => {
-        if(!canEdit) return;
+        if (!canEdit) return;
 
         const nextValue = value + 1;
         setValue(nextValue);
         onActivationsCounterChanged(nextValue);
-    }
+    };
 
     return (
-        <div style={{ display: 'flex' }}>
-            {
-                new Array(4 - value).fill(1).map((_, idx) => (
-                    <img key={idx} src={`/assets/other/activationTokenSpent.png`} style={{ width: '5rem', height: '5rem', margin: 'auto .1rem' }}
-                            onClick={handleUndoActivation} />
-                ))
-            }
-            {
-                new Array(value).fill(1).map((v, idx) => (
-                    <img key={idx} src={`/assets/other/activationToken_universal.png`} style={{ width: '5rem', height: '5rem', margin: 'auto .1rem' }}
-                            onClick={handleMakeActivation} />
-                ))
-            }
+        <div style={{ display: "flex" }}>
+            {new Array(4 - value).fill(1).map((_, idx) => (
+                <img
+                    key={idx}
+                    src={`/assets/other/activationTokenSpent.png`}
+                    style={{
+                        width: "5rem",
+                        height: "5rem",
+                        margin: "auto .1rem",
+                    }}
+                    onClick={handleUndoActivation}
+                />
+            ))}
+            {new Array(value).fill(1).map((v, idx) => (
+                <img
+                    key={idx}
+                    src={`/assets/other/activationToken_universal.png`}
+                    style={{
+                        width: "5rem",
+                        height: "5rem",
+                        margin: "auto .1rem",
+                    }}
+                    onClick={handleMakeActivation}
+                />
+            ))}
         </div>
-    )
+    );
 }
 
+ActivationsCounter.propTypes = {
+    activationsToMake: PropTypes.number,
+    canEdit: PropTypes.bool,
+    onActivationsCounterChanged: PropTypes.func,
+};
 
-export default function GameStatusHUD({ data, onModified }) {
+function GameStatusHUD({ data, onModified }) {
     const myself = useAuthUser();
     const firebase = useContext(FirebaseContext);
     const [myValues, setMyValues] = useState({
@@ -216,7 +342,7 @@ export default function GameStatusHUD({ data, onModified }) {
         glorySpent: data[myself.uid].glorySpent,
     });
 
-    const [opponent, setOpponent] = useState(data.players.find(p => p !== myself.uid));
+    const opponent = data.players.find((p) => p !== myself.uid);
     const [opponentValues, setOpponentValues] = useState({
         activationsLeft: opponent ? data[opponent].activationsLeft : 0,
         gloryScored: opponent ? data[opponent].gloryScored : 0,
@@ -224,8 +350,6 @@ export default function GameStatusHUD({ data, onModified }) {
     });
 
     useEffect(() => {
-        console.log('=== GameStatusHUD.onData ===');
-        const opponent = data.players.find(p => p !== myself.uid);
         setOpponentValues({
             activationsLeft: opponent ? data[opponent].activationsLeft : 0,
             gloryScored: opponent ? data[opponent].gloryScored : 0,
@@ -233,51 +357,48 @@ export default function GameStatusHUD({ data, onModified }) {
         });
     }, [data]);
 
-    const handleOnGloryChange = value => {
-        console.log('GLORY CHANGED', value);
+    const handleOnGloryChange = (value) => {
         setMyValues({
             ...myValues,
             gloryScored: value.earned,
-            glorySpent: value.spent
-        })
-        
-        onModified({ save: () => {
-            firebase.updateRoom(
-                data.id,
-                {
+            glorySpent: value.spent,
+        });
+
+        onModified({
+            save: () => {
+                firebase.updateRoom(data.id, {
                     [`${myself.uid}.activationsLeft`]: myValues.activationsLeft,
                     [`${myself.uid}.gloryScored`]: value.earned,
                     [`${myself.uid}.glorySpent`]: value.spent,
-                }
-            );
-        }});
-    }
+                });
+            },
+        });
+    };
 
-    const handleActivationsLeftChanged = value => {
+    const handleActivationsLeftChanged = (value) => {
         setMyValues({
             ...myValues,
-            activationsLeft: value
+            activationsLeft: value,
         });
 
         firebase.addGenericMessage2(data.id, {
-            author: 'Katophrane',
-            type: 'INFO',
+            author: "Katophrane",
+            type: "INFO",
             value: `${myself.username} flipped activation token and has ${value} activations left.`,
         });
 
-        onModified({ save: () => {
-            firebase.updateRoom(
-                data.id,
-                {
+        onModified({
+            save: () => {
+                firebase.updateRoom(data.id, {
                     [`${myself.uid}.activationsLeft`]: value,
                     [`${myself.uid}.gloryScored`]: myValues.gloryScored,
                     [`${myself.uid}.glorySpent`]: myValues.glorySpent,
-                }
-            );
-        }});
-    }
+                });
+            },
+        });
+    };
 
-    const handleRoundCounterChange = value => {
+    const handleRoundCounterChange = (value) => {
         setMyValues({
             ...myValues,
             activationsLeft: 4,
@@ -286,23 +407,34 @@ export default function GameStatusHUD({ data, onModified }) {
         setOpponentValues({
             ...opponentValues,
             activationsLeft: 4,
-        })
+        });
 
-        const fightersWithoutTokens = Object.entries(data.board.fighters).reduce((r, [fighterId, fighterData]) => ({...r, [fighterId]: { ...fighterData, tokens: '' }}), {});
+        const fightersWithoutTokens = Object.entries(
+            data.board.fighters
+        ).reduce(
+            (r, [fighterId, fighterData]) => ({
+                ...r,
+                [fighterId]: { ...fighterData, tokens: "" },
+            }),
+            {}
+        );
 
         firebase.updateRoom(data.id, {
             [`status.round`]: value,
-            ...data.players.reduce((r, p) => ({ ...r, [`${p}.activationsLeft`]: 4 }), {}),
+            ...data.players.reduce(
+                (r, p) => ({ ...r, [`${p}.activationsLeft`]: 4 }),
+                {}
+            ),
             [`board.fighters`]: fightersWithoutTokens,
-        })
+        });
 
         firebase.addGenericMessage2(data.id, {
-            author: 'Katophrane',
-            type: 'INFO',
+            author: "Katophrane",
+            type: "INFO",
             value: `${myself.username} has started round ${value}.`,
         });
-    }
-    
+    };
+
     return (
         <Grid container>
             <Grid container justify="center">
@@ -311,42 +443,74 @@ export default function GameStatusHUD({ data, onModified }) {
                 </Grid>
             </Grid>
             <Grid item xs={12}>
-                <CombinedGloryCounter canEdit glory={myValues.gloryScored} glorySpent={myValues.glorySpent} onGloryChange={handleOnGloryChange} />
+                <CombinedGloryCounter
+                    canEdit
+                    glory={myValues.gloryScored}
+                    glorySpent={myValues.glorySpent}
+                    onGloryChange={handleOnGloryChange}
+                />
             </Grid>
-            <Grid item xs={12} style={{ marginTop: '1rem' }}>
+            <Grid item xs={12} style={{ marginTop: "1rem" }}>
                 <Grid container justify="center">
-                    <ActivationsCounter activationsToMake={myValues.activationsLeft} onActivationsCounterChanged={handleActivationsLeftChanged} canEdit />
+                    <ActivationsCounter
+                        activationsToMake={myValues.activationsLeft}
+                        onActivationsCounterChanged={
+                            handleActivationsLeftChanged
+                        }
+                        canEdit
+                    />
                 </Grid>
             </Grid>
             <Grid item xs={12}>
                 <br />
                 <Divider />
                 <Grid container justify="center">
-                    <RoundCounter round={data.status.round} onRoundChange={handleRoundCounterChange} />
+                    <RoundCounter
+                        round={data.status.round}
+                        onRoundChange={handleRoundCounterChange}
+                    />
                 </Grid>
                 <Divider />
                 <br />
             </Grid>
-            {
-                Boolean(opponent) && (
-                    <Grid item xs={12}>
-                        <Grid container justify="center">
-                            <ActivationsCounter activationsToMake={opponentValues.activationsLeft} canEdit={false} />
-                        </Grid>
+            {Boolean(opponent) && (
+                <Grid item xs={12}>
+                    <Grid container justify="center">
+                        <ActivationsCounter
+                            activationsToMake={opponentValues.activationsLeft}
+                            canEdit={false}
+                        />
+                    </Grid>
 
-                        <Grid container justify="center">
-                            <Grid item xs={12} style={{ marginTop: '1rem' }}>
-                                <CombinedGloryCounter canEdit={false} glory={opponentValues.gloryScored} glorySpent={opponentValues.glorySpent} />
-                            </Grid>
-                        </Grid>
-                        <Grid container justify="center" style={{ marginTop: '1rem' }}>
-                            <Grid item>
-                                <Typography variant="h6">{data[opponent].name}</Typography>
-                            </Grid>
+                    <Grid container justify="center">
+                        <Grid item xs={12} style={{ marginTop: "1rem" }}>
+                            <CombinedGloryCounter
+                                canEdit={false}
+                                glory={opponentValues.gloryScored}
+                                glorySpent={opponentValues.glorySpent}
+                            />
                         </Grid>
                     </Grid>
-                )
-            }
+                    <Grid
+                        container
+                        justify="center"
+                        style={{ marginTop: "1rem" }}
+                    >
+                        <Grid item>
+                            <Typography variant="h6">
+                                {data[opponent].name}
+                            </Typography>
+                        </Grid>
+                    </Grid>
+                </Grid>
+            )}
         </Grid>
-    )
+    );
 }
+
+GameStatusHUD.propTypes = {
+    data: PropTypes.object,
+    onModified: PropTypes.func,
+};
+
+export default GameStatusHUD;

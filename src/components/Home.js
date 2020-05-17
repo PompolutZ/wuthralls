@@ -1,6 +1,5 @@
-import React from 'react';
-import { withAuthorization } from './Session';
-import DiceTray from './DiceTray';
+import React from "react";
+import { withAuthorization } from "./Session";
 
 function Home() {
     return (
@@ -8,9 +7,9 @@ function Home() {
             Home
             {/* <DiceTray defaultAmount={4} /> */}
         </div>
-    )
+    );
 }
 
-const condition = authUser => !!authUser;
+const condition = (authUser) => !!authUser;
 
 export default withAuthorization(condition)(Home);

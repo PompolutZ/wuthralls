@@ -1,11 +1,11 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './components/App';
-import * as serviceWorker from './serviceWorker';
-import Firebase, { FirebaseContext } from './firebase';
-import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
-import { useTheme } from '@material-ui/core/styles';
+import React from "react";
+import ReactDOM from "react-dom";
+import "./index.css";
+import App from "./components/App";
+import * as serviceWorker from "./serviceWorker";
+import Firebase, { FirebaseContext } from "./firebase";
+import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
+import { useTheme } from "@material-ui/core/styles";
 
 function Root() {
     const defaultTheme = useTheme();
@@ -14,18 +14,18 @@ function Root() {
         palette: {
             ...defaultTheme.palette,
             primary: {
-                main: 'rgba(255,69,0,1)',
+                main: "rgba(255,69,0,1)",
             },
             success: {
-                main: "#4caf50", 
+                main: "#4caf50",
             },
             info: {
                 main: "#2196f3",
             },
             warning: {
                 main: "#ff9800",
-            }
-        }
+            },
+        },
     });
 
     return (
@@ -34,12 +34,10 @@ function Root() {
                 <App />
             </ThemeProvider>
         </FirebaseContext.Provider>
-    )
+    );
 }
 
-ReactDOM.render(
-    <Root />, 
-    document.getElementById('root'));
+ReactDOM.render(<Root />, document.getElementById("root"));
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.

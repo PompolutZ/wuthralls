@@ -1,34 +1,31 @@
-import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import * as ROUTES from '../constants/routes';
-import * as ROLES from '../constants/roles';
-import SignOut from './SignOut';
-import { useAuthUser } from './Session';
-import { makeStyles } from '@material-ui/core/styles';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
-import IconButton from '@material-ui/core/IconButton';
-import MenuIcon from '@material-ui/icons/Menu';
-import AccountCircle from '@material-ui/icons/AccountCircle';
-import MeetingRoomIcon from '@material-ui/icons/MeetingRoom';
-import EmojiEventsIcon from '@material-ui/icons/EmojiEvents';
-import HourglassEmptyIcon from '@material-ui/icons/HourglassEmpty';
-import MenuItem from '@material-ui/core/MenuItem';
-import Menu from '@material-ui/core/Menu';
-import { FirebaseContext } from '../firebase';
-import { useHistory } from 'react-router-dom';
-import Drawer from '@material-ui/core/Drawer';
-import List from '@material-ui/core/List';
-import Divider from '@material-ui/core/Divider';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import Slide from '@material-ui/core/Slide';
-import useScrollTrigger from '@material-ui/core/useScrollTrigger';
+import React from "react";
+import * as ROUTES from "../constants/routes";
+import { useAuthUser } from "./Session";
+import { makeStyles } from "@material-ui/core/styles";
+import AppBar from "@material-ui/core/AppBar";
+import Toolbar from "@material-ui/core/Toolbar";
+import Typography from "@material-ui/core/Typography";
+import IconButton from "@material-ui/core/IconButton";
+import MenuIcon from "@material-ui/icons/Menu";
+import AccountCircle from "@material-ui/icons/AccountCircle";
+import MeetingRoomIcon from "@material-ui/icons/MeetingRoom";
+import EmojiEventsIcon from "@material-ui/icons/EmojiEvents";
+import HourglassEmptyIcon from "@material-ui/icons/HourglassEmpty";
+import MenuItem from "@material-ui/core/MenuItem";
+import Menu from "@material-ui/core/Menu";
+import { FirebaseContext } from "../firebase";
+import { useHistory } from "react-router-dom";
+import Drawer from "@material-ui/core/Drawer";
+import List from "@material-ui/core/List";
+import ListItem from "@material-ui/core/ListItem";
+import ListItemIcon from "@material-ui/core/ListItemIcon";
+import ListItemText from "@material-ui/core/ListItemText";
+import Slide from "@material-ui/core/Slide";
+import useScrollTrigger from "@material-ui/core/useScrollTrigger";
 import packageJson from "../../package.json";
+import PropTypes from "prop-types";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
     root: {
         flexGrow: 1,
     },
@@ -41,61 +38,12 @@ const useStyles = makeStyles(theme => ({
 
     title: {
         flexGrow: 1,
-        cursor: 'pointer',
+        cursor: "pointer",
     },
 }));
 
-function NavigationAuth({ authUser }) {
-    return (
-        <div>
-            <ul>
-                <li>
-                    <Link to={ROUTES.LANDING}>Rooms</Link>
-                </li>
-                <li>
-                    <Link to={`/history`}>History</Link>
-                </li>
-                <li>
-                    <Link to={`/future`}>Upcoming changes</Link>
-                </li>
-                {/* <li>
-                    <Link to={ROUTES.HOME}>Home</Link>
-                </li>
-                <li>
-                    <Link to={ROUTES.ACCOUNT}>Account</Link>
-                </li>
-                <li>
-                    <Link to="/playground">Playground</Link>
-                </li> */}
-                {/* {
-                    !!authUser.roles[ROLES.ADMIN] && (
-                        <li>
-                            <Link to={ROUTES.ADMIN}>Admin</Link>
-                        </li>
-                    )
-                } */}
-                {!!authUser.roles[ROLES.ADMIN] && (
-                    <li>
-                        <Link to="/playground">Playground</Link>
-                    </li>
-                )}
-                {!!authUser.roles[ROLES.ADMIN] && (
-                    <li>
-                        <Link to="/users-updater">Users Updater</Link>
-                    </li>
-                )}
-                <li>
-                    <SignOut />
-                </li>
-            </ul>
-            <div>Welcome {authUser.username} to the Club (ver. 0.17.1)</div>
-        </div>
-    );
-}
-
 function MenuDrawer({ items }) {
     const classes = useStyles();
-    const history = useHistory();
     const [state, setState] = React.useState({
         top: false,
         left: false,
@@ -103,10 +51,10 @@ function MenuDrawer({ items }) {
         right: false,
     });
 
-    const toggleDrawer = (side, open) => event => {
+    const toggleDrawer = (side, open) => (event) => {
         if (
-            event.type === 'keydown' &&
-            (event.key === 'Tab' || event.key === 'Shift')
+            event.type === "keydown" &&
+            (event.key === "Tab" || event.key === "Shift")
         ) {
             return;
         }
@@ -114,7 +62,7 @@ function MenuDrawer({ items }) {
         setState({ ...state, [side]: open });
     };
 
-    const sideList = side => (
+    const sideList = (side) => (
         <div
             className={classes.list}
             role="presentation"
@@ -122,11 +70,9 @@ function MenuDrawer({ items }) {
             onKeyDown={toggleDrawer(side, false)}
         >
             <List>
-                {items.map(item => (
+                {items.map((item) => (
                     <ListItem button key={item.id} onClick={item.action}>
-                        <ListItemIcon>
-                            {item.icon}
-                        </ListItemIcon>
+                        <ListItemIcon>{item.icon}</ListItemIcon>
                         <ListItemText primary={item.label} />
                     </ListItem>
                 ))}
@@ -141,16 +87,20 @@ function MenuDrawer({ items }) {
                 className={classes.menuButton}
                 color="inherit"
                 aria-label="menu"
-                onClick={toggleDrawer('left', true)}
+                onClick={toggleDrawer("left", true)}
             >
                 <MenuIcon />
             </IconButton>
-            <Drawer open={state.left} onClose={toggleDrawer('left', false)}>
-                {sideList('left')}
+            <Drawer open={state.left} onClose={toggleDrawer("left", false)}>
+                {sideList("left")}
             </Drawer>
         </div>
     );
 }
+
+MenuDrawer.propTypes = {
+    items: PropTypes.array,
+};
 
 function AnonMenu() {
     const classes = useStyles();
@@ -158,7 +108,7 @@ function AnonMenu() {
     const [anchorEl, setAnchorEl] = React.useState(null);
     const open = Boolean(anchorEl);
 
-    const handleMenu = event => {
+    const handleMenu = (event) => {
         setAnchorEl(event.currentTarget);
     };
 
@@ -188,13 +138,13 @@ function AnonMenu() {
                 id="menu-appbar"
                 anchorEl={anchorEl}
                 anchorOrigin={{
-                    vertical: 'top',
-                    horizontal: 'right',
+                    vertical: "top",
+                    horizontal: "right",
                 }}
                 keepMounted
                 transformOrigin={{
-                    vertical: 'top',
-                    horizontal: 'right',
+                    vertical: "top",
+                    horizontal: "right",
                 }}
                 open={open}
                 onClose={handleClose}
@@ -212,7 +162,7 @@ function AuthMenu({ authUser }) {
     const [anchorEl, setAnchorEl] = React.useState(null);
     const open = Boolean(anchorEl);
 
-    const handleMenu = event => {
+    const handleMenu = (event) => {
         setAnchorEl(event.currentTarget);
     };
 
@@ -234,18 +184,18 @@ function AuthMenu({ authUser }) {
         <div>
             <div
                 style={{
-                    display: 'flex',
-                    alignItems: 'center',
+                    display: "flex",
+                    alignItems: "center",
                 }}
             >
                 <div
                     style={{
-                        borderRight: '1px solid white',
-                        paddingRight: '.5rem',
+                        borderRight: "1px solid white",
+                        paddingRight: ".5rem",
                         marginRight: 0,
                     }}
                 >
-                    <Typography style={{ fontSize: '.7rem' }}>
+                    <Typography style={{ fontSize: ".7rem" }}>
                         {authUser.username}
                     </Typography>
                 </div>
@@ -265,13 +215,13 @@ function AuthMenu({ authUser }) {
                 id="menu-appbar"
                 anchorEl={anchorEl}
                 anchorOrigin={{
-                    vertical: 'top',
-                    horizontal: 'right',
+                    vertical: "top",
+                    horizontal: "right",
                 }}
                 keepMounted
                 transformOrigin={{
-                    vertical: 'top',
-                    horizontal: 'right',
+                    vertical: "top",
+                    horizontal: "right",
                 }}
                 open={open}
                 onClose={handleClose}
@@ -283,24 +233,28 @@ function AuthMenu({ authUser }) {
     );
 }
 
-const menuItems = history => [
+AuthMenu.propTypes = {
+    authUser: PropTypes.object,
+};
+
+const menuItems = (history) => [
     {
-        id: 'all_rooms',
-        label: 'All rooms',
+        id: "all_rooms",
+        label: "All rooms",
         icon: <MeetingRoomIcon />,
         action: () => history.push(ROUTES.LANDING),
     },
     {
-        id: 'history',
-        label: 'History',
+        id: "history",
+        label: "History",
         icon: <EmojiEventsIcon />,
-        action: () => history.push('/history'),
+        action: () => history.push("/history"),
     },
     {
-        id: 'upcoming',
-        label: 'Upcoming',
+        id: "upcoming",
+        label: "Upcoming",
         icon: <HourglassEmptyIcon />,
-        action: () => history.push('/future'),
+        action: () => history.push("/future"),
     },
 ];
 
@@ -310,13 +264,18 @@ function HideOnScroll(props) {
     // will default to window.
     // This is only being set here because the demo is in an iframe.
     const trigger = useScrollTrigger({ target: window ? window() : undefined });
-  
+
     return (
-      <Slide appear={false} direction="down" in={!trigger}>
-        {children}
-      </Slide>
+        <Slide appear={false} direction="down" in={!trigger}>
+            {children}
+        </Slide>
     );
-  }
+}
+
+HideOnScroll.propTypes = {
+    window: PropTypes.func,
+    children: PropTypes.object,
+};
 
 function Navigation(props) {
     const classes = useStyles();
@@ -338,9 +297,18 @@ function Navigation(props) {
                             className={classes.title}
                             onClick={goToMainPage}
                         >
-                            WUnderworlds Club <sup><span style={{ fontSize: '.7rem'}}><i>ver {packageJson.version}</i></span></sup>
+                            WUnderworlds Club{" "}
+                            <sup>
+                                <span style={{ fontSize: ".7rem" }}>
+                                    <i>ver {packageJson.version}</i>
+                                </span>
+                            </sup>
                         </Typography>
-                        {authUser ? <AuthMenu authUser={authUser} /> : <AnonMenu />}
+                        {authUser ? (
+                            <AuthMenu authUser={authUser} />
+                        ) : (
+                            <AnonMenu />
+                        )}
                     </Toolbar>
                 </AppBar>
             </HideOnScroll>

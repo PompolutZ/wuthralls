@@ -15,21 +15,11 @@ import { cardsDb } from "../../data";
 import { FirebaseContext } from "../../firebase";
 import { useAuthUser } from "../Session";
 import DrawCardsIcon from "@material-ui/icons/GetApp";
-import PlayIcon from "@material-ui/icons/PlayArrow";
 import DeleteIcon from "@material-ui/icons/Delete";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
+import PropTypes from "prop-types";
 
-// [`${myself.uid}_F3`]: {
-//     type: 'FIGHTER',
-//     icon: 'ironsouls-condemners-f3',
-//     name: 'Tavian',
-//     from: {x: -1, y: -1},
-//     onBoard: {x: -1, y: -1},
-//     isOnBoard: false,
-//     isInspired: false,
-//     wounds: 0,
-// },
 const cardImageWidth = 300;
 const cardImageHeight = 420;
 
@@ -40,8 +30,8 @@ function WoundsCounter({ wounds, onWoundsCounterChange }) {
         onWoundsCounterChange(value);
     }, [value]);
 
-    const handleChangeValue = changeBy => () => {
-        setValue(prev => {
+    const handleChangeValue = (changeBy) => () => {
+        setValue((prev) => {
             const nextValue = prev + changeBy;
             return nextValue >= 0 ? nextValue : 0;
         });
@@ -111,6 +101,11 @@ function WoundsCounter({ wounds, onWoundsCounterChange }) {
     );
 }
 
+WoundsCounter.propTypes = {
+    wounds: PropTypes.number,
+    onWoundsCounterChange: PropTypes.func,
+};
+
 function UpgradePicker({
     playerInfo,
     onUpgradePickerOpen,
@@ -122,39 +117,30 @@ function UpgradePicker({
             playerInfo.hand &&
             playerInfo.hand
                 .split(",")
-                .map(cardId => ({ ...cardsDb[cardId], id: cardId }))
-                .filter(c => c.type === 2)
+                .map((cardId) => ({ ...cardsDb[cardId], id: cardId }))
+                .filter((c) => c.type === 2)
     );
     const [currentIndex, setCurrentIndex] = useState(0);
-    const [canMoveRight, setCanMoveRight] = useState(
-        availableUpgrades ? currentIndex < availableUpgrades.length : false
-    );
-    const [canMoveLeft, setCanMoveLeft] = useState(currentIndex > 0);
 
     const handleClickAway = () => {
         onUpgradePickerOpen(false);
     };
 
-    const handleClickAdd = () => {
-        console.log("HEre");
-    };
-
     const handleMoverSelectionToRight = () => {
-        console.log(availableUpgrades);
         if (currentIndex < availableUpgrades.length - 1) {
-            setCurrentIndex(prev => prev + 1);
+            setCurrentIndex((prev) => prev + 1);
         }
     };
 
     const handleMoveSelectionToLeft = () => {
         if (currentIndex > 0) {
-            setCurrentIndex(prev => prev - 1);
+            setCurrentIndex((prev) => prev - 1);
         }
     };
 
-    const selectUpgrade = card => () => {
+    const selectUpgrade = (card) => () => {
         onUpgradeSelected(card);
-        setAvailableUpgrades(prev => prev.filter(c => c.id !== card.id));
+        setAvailableUpgrades((prev) => prev.filter((c) => c.id !== card.id));
         onUpgradePickerOpen(false);
     };
 
@@ -258,13 +244,20 @@ function UpgradePicker({
     );
 }
 
-export default function FighterHUD({ data }) {
+UpgradePicker.propTypes = {
+    playerInfo: PropTypes.object,
+    onUpgradePickerOpen: PropTypes.func,
+    isOpen: PropTypes.bool,
+    onUpgradeSelected: PropTypes.func,
+};
+
+function FighterHUD({ data }) {
     const myself = useAuthUser();
     const firebase = useContext(FirebaseContext);
     const { roomId } = data;
     const [playerInfo, setPlayerInfo] = useState(data.playerInfo);
     const [upgrades, setUpgrades] = useState(
-        Boolean(data.upgrades) ? data.upgrades.split(",") : []
+        data.upgrades ? data.upgrades.split(",") : []
     ); //Object.keys(data.upgrades)
     const [selectedCardId, setSelectedCardId] = useState(null);
     const [upgradePickerOpen, setUpgradePickerOpen] = useState(false);
@@ -272,20 +265,11 @@ export default function FighterHUD({ data }) {
     const [addTokenAnchor, setAddTokenAnchor] = useState(null);
     const [addCounterAnchor, setAddCounterAnchor] = useState(null);
     const [tokens, setTokens] = useState(
-        Boolean(data.tokens) ? data.tokens.split(",") : []
+        data.tokens ? data.tokens.split(",") : []
     );
     const [counters, setCounters] = useState(
-        Boolean(data.counters) ? data.counters.split(",") : []
+        data.counters ? data.counters.split(",") : []
     );
-
-    useEffect(() => {
-        // setUpgrades(Object.keys(data.upgrades));
-        console.log("FIGHTER HUD ON DATA", upgrades);
-    }, [data]);
-
-    useEffect(() => {
-        console.log("TOKENS", tokens);
-    }, [tokens]);
 
     useEffect(() => {
         firebase.updateBoardProperty(
@@ -295,11 +279,11 @@ export default function FighterHUD({ data }) {
         );
     }, [isInspired]);
 
-    const handleOpenAddTokenMenu = e => {
+    const handleOpenAddTokenMenu = (e) => {
         setAddTokenAnchor(e.currentTarget);
     };
 
-    const handleOpenAddCounterMenu = e => {
+    const handleOpenAddCounterMenu = (e) => {
         setAddCounterAnchor(e.currentTarget);
     };
 
@@ -311,7 +295,7 @@ export default function FighterHUD({ data }) {
         setAddCounterAnchor(null);
     };
 
-    const handleAddTokenAndCloseMenu = token => () => {
+    const handleAddTokenAndCloseMenu = (token) => () => {
         setAddTokenAnchor(null);
         const updatedTokens = [...tokens, token];
         setTokens(updatedTokens);
@@ -331,7 +315,7 @@ export default function FighterHUD({ data }) {
         });
     };
 
-    const handleAddCounterAndCloseMenu = counter => () => {
+    const handleAddCounterAndCloseMenu = (counter) => () => {
         setAddCounterAnchor(null);
         const updatedCounters = [...counters, counter];
         setCounters(updatedCounters);
@@ -351,7 +335,7 @@ export default function FighterHUD({ data }) {
         });
     };
 
-    const handleRemoveTokenAt = index => () => {
+    const handleRemoveTokenAt = (index) => () => {
         const tokenToRemove = tokens[index];
         if (!tokenToRemove) return;
 
@@ -376,7 +360,7 @@ export default function FighterHUD({ data }) {
         });
     };
 
-    const handleRemoveCounterAt = index => () => {
+    const handleRemoveCounterAt = (index) => () => {
         const counterToRemove = counters[index];
         if (!counterToRemove) return;
 
@@ -401,7 +385,7 @@ export default function FighterHUD({ data }) {
         });
     };
 
-    const handleBringToFront = id => () => {
+    const handleBringToFront = (id) => () => {
         setSelectedCardId(id);
     };
 
@@ -410,13 +394,11 @@ export default function FighterHUD({ data }) {
     };
 
     const openUpgradePicker = () => {
-        if(!data.isOnBoard) return;
+        if (!data.isOnBoard) return;
         setUpgradePickerOpen(true);
     };
 
-    const handleUpgradeFighter = card => {
-        console.log(card);
-
+    const handleUpgradeFighter = (card) => {
         const fightersUpgrades = [...upgrades, card.id];
         setUpgrades(fightersUpgrades);
 
@@ -424,7 +406,7 @@ export default function FighterHUD({ data }) {
             ...playerInfo,
             hand: playerInfo.hand
                 .split(",")
-                .filter(cardId => cardId !== card.id)
+                .filter((cardId) => cardId !== card.id)
                 .join(),
             glorySpent: playerInfo.glorySpent + 1,
             gloryScored: playerInfo.gloryScored - 1,
@@ -453,7 +435,7 @@ export default function FighterHUD({ data }) {
         });
     };
 
-    const handleUpdateWounds = value => {
+    const handleUpdateWounds = (value) => {
         firebase.updateBoardProperty(
             roomId,
             `board.fighters.${data.id}.wounds`,
@@ -462,22 +444,21 @@ export default function FighterHUD({ data }) {
     };
 
     const changeInspire = async () => {
-        setIsInspired(prev => !prev);
+        setIsInspired((prev) => !prev);
     };
 
-    const returnUpgradeToHand = cardId => () => {
-        console.log("return to hand", cardId, playerInfo);
+    const returnUpgradeToHand = (cardId) => () => {
         const updatedPlayerInfo = {
             ...playerInfo,
             glorySpent: playerInfo.glorySpent - 1,
             gloryScored: playerInfo.gloryScored + 1,
-            hand: Boolean(playerInfo.hand)
+            hand: playerInfo.hand
                 ? [...playerInfo.hand.split(","), cardId].join()
                 : [cardId].join(),
         };
 
         const fightersUpgrades = upgrades.filter(
-            upgradeId => upgradeId !== cardId
+            (upgradeId) => upgradeId !== cardId
         );
 
         setUpgrades(fightersUpgrades);
@@ -502,17 +483,16 @@ export default function FighterHUD({ data }) {
         });
     };
 
-    const discardCard = cardId => () => {
-        console.log("discard", cardId, playerInfo);
+    const discardCard = (cardId) => () => {
         const updatedPlayerInfo = {
             ...playerInfo,
-            dPws: Boolean(playerInfo.dPws)
+            dPws: playerInfo.dPws
                 ? [...playerInfo.dPws.split(","), cardId].join()
                 : [cardId].join(),
         };
 
         const fightersUpgrades = upgrades.filter(
-            upgradeId => upgradeId !== cardId
+            (upgradeId) => upgradeId !== cardId
         );
 
         setUpgrades(fightersUpgrades);
@@ -652,7 +632,7 @@ export default function FighterHUD({ data }) {
                                 {data.extraTokens &&
                                     data.extraTokens
                                         .split(",")
-                                        .map(token => (
+                                        .map((token) => (
                                             <MenuItem
                                                 key={token}
                                                 onClick={handleAddTokenAndCloseMenu(
@@ -672,7 +652,7 @@ export default function FighterHUD({ data }) {
                                 {data.counterTypes &&
                                     data.counterTypes
                                         .split(",")
-                                        .map(counter => (
+                                        .map((counter) => (
                                             <MenuItem
                                                 key={counter}
                                                 onClick={handleAddCounterAndCloseMenu(
@@ -817,7 +797,6 @@ export default function FighterHUD({ data }) {
                                             </div>
                                         </div>
                                     ))}
-                                }
                             </div>
                         </div>
                     </Grid>
@@ -834,7 +813,7 @@ export default function FighterHUD({ data }) {
                         }}
                     >
                         {upgrades.length > 0 &&
-                            upgrades.map(u => (
+                            upgrades.map((u) => (
                                 <Paper
                                     id={u}
                                     key={u}
@@ -858,14 +837,23 @@ export default function FighterHUD({ data }) {
                                 flexShrink: 0,
                                 width: cardImageWidth * 0.25,
                                 height: cardImageHeight * 0.25,
-                                border: data.isOnBoard ? "3px dashed black" : "3px dashed lightgray",
+                                border: data.isOnBoard
+                                    ? "3px dashed black"
+                                    : "3px dashed lightgray",
                                 boxSizing: "border-box",
                                 borderRadius: ".5rem",
                                 display: "flex",
                             }}
                             onClick={openUpgradePicker}
                         >
-                            <AddIcon style={{ margin: "auto", color: data.isOnBoard ? 'black' : 'lightgray' }} />
+                            <AddIcon
+                                style={{
+                                    margin: "auto",
+                                    color: data.isOnBoard
+                                        ? "black"
+                                        : "lightgray",
+                                }}
+                            />
                         </div>
                     </div>
                 </Grid>
@@ -961,3 +949,9 @@ export default function FighterHUD({ data }) {
         </>
     );
 }
+
+FighterHUD.propTypes = {
+    data: PropTypes.object,
+};
+
+export default FighterHUD;

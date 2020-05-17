@@ -4,7 +4,7 @@ import * as SVG from "svg.js";
 import { FirebaseContext } from "../../../../firebase";
 import { useAuthUser } from "../../../../components/Session";
 import { Typography } from "@material-ui/core";
-import { cardsDb, boards as boardsData } from "../../../../data";
+import { cardsDb } from "../../../../data";
 import ZoomInIcon from "@material-ui/icons/ZoomIn";
 import ZoomOutIcon from "@material-ui/icons/ZoomOut";
 import ButtonBase from "@material-ui/core/ButtonBase";
@@ -14,8 +14,9 @@ import BottomBoard from "./BottomBoard";
 import TopBoard from "./TopBoard";
 import LethalHex from "./LethalHex";
 import FeatureHex from "./FeatureHex";
+import PropTypes from "prop-types";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
     boardContainer: {
         position: "absolute",
         top: 0,
@@ -28,95 +29,6 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const baseSize = 55;
-
-const boardHexesArray = [
-    // first territory
-    [0, 0],
-    [1, 0],
-    [2, 0],
-    [3, 0],
-    [4, 0],
-    [5, 0],
-    [6, 0],
-    [7, 0],
-    [0, 1],
-    [1, 1],
-    [2, 1],
-    [3, 1],
-    [4, 1],
-    [5, 1],
-    [6, 1],
-    [0, 2],
-    [1, 2],
-    [2, 2],
-    [3, 2],
-    [4, 2],
-    [5, 2],
-    [6, 2],
-    [7, 2],
-    [0, 3],
-    [1, 3],
-    [2, 3],
-    [3, 3],
-    [4, 3],
-    [5, 3],
-    [6, 3],
-    [0, 4],
-    [1, 4],
-    [2, 4],
-    [3, 4],
-    [4, 4],
-    [5, 4],
-    [6, 4],
-    [7, 4],
-    // no one territory
-    [0, 5],
-    [1, 5],
-    [2, 5],
-    [3, 5],
-    [4, 5],
-    [5, 5],
-    [6, 5],
-    //second territory
-    [0, 6],
-    [1, 6],
-    [2, 6],
-    [3, 6],
-    [4, 6],
-    [5, 6],
-    [6, 6],
-    [7, 6],
-    [0, 7],
-    [1, 7],
-    [2, 7],
-    [3, 7],
-    [4, 7],
-    [5, 7],
-    [6, 7],
-    [0, 8],
-    [1, 8],
-    [2, 8],
-    [3, 8],
-    [4, 8],
-    [5, 8],
-    [6, 8],
-    [7, 8],
-    [0, 9],
-    [1, 9],
-    [2, 9],
-    [3, 9],
-    [4, 9],
-    [5, 9],
-    [6, 9],
-    [0, 10],
-    [1, 10],
-    [2, 10],
-    [3, 10],
-    [4, 10],
-    [5, 10],
-    [6, 10],
-    [7, 10],
-];
 
 const verticalBoardHexes = [
     [0, 0],
@@ -218,19 +130,11 @@ const modifyNoOnesArray = (array, offset) => {
 
 const renderHex = (hex, svg, color, lethals, blocked) => {
     // render(draw, color) {
-    //console.log('RENDER isLethal', hex, lethals.some(([x, y]) => x === hex.x && y === hex.y), blocked)
 
     const { x, y } = hex.toPoint();
     const corners = hex.corners();
     const isLethal = lethals.some(([x, y]) => x === hex.x && y === hex.y);
     const isBlocked = blocked.some(([x, y]) => x === hex.x && y === hex.y);
-
-    const log = () => {
-        const element = SVG.get(`hex${hex.x}${hex.y}`); //svg.children().find(c => c.node.id === `hex${hex.x}${hex.y}`);
-        //console.log('HEX', element, hex, `hex${hex.x}${hex.y}`);
-        console.log(svg.children().length, element);
-        //this.style({ cursor: 'pointer', fill: 'red'})
-    };
 
     const handleMouseOver = () => {
         const element = SVG.get(`hex${hex.x}${hex.y}`); //svg.children().find(c => c.node.id === `hex${hex.x}${hex.y}`);
@@ -267,14 +171,11 @@ const renderHex = (hex, svg, color, lethals, blocked) => {
         .id(`hex${hex.x}${hex.y}`);
 };
 
-const highlightHex = (hex, svg, lethals, blocked) => {
-    const { x, y } = hex.toPoint();
-    const corners = hex.corners();
+const highlightHex = (hex, lethals, blocked) => {
     const isLethal = lethals.some(([x, y]) => x === hex.x && y === hex.y);
     const isBlocked = blocked.some(([x, y]) => x === hex.x && y === hex.y);
 
     const hexElement = SVG.get(`hex${hex.x}${hex.y}`);
-    console.log(hexElement, hex.x);
     if (hexElement) {
         hexElement
             .stop(true, true)
@@ -357,7 +258,7 @@ const getGrid = (scaleFactor, orientation, offset) => {
     );
 };
 
-export default function Board({
+function Board({
     state,
     selectedElement,
     scaleFactor,
@@ -375,7 +276,6 @@ export default function Board({
     const rootRef = useRef(null);
     const boardContainerRef = useRef(null);
     const [svg, setSvg] = React.useState(null);
-    const [grid, setGrid] = React.useState(null);
     const [tokenHexes, setTokenHexes] = useState(state.board.tokens);
     const [fighters, setFighters] = useState(state.board.fighters);
     const [scatterToken, setScatterToken] = useState({
@@ -389,13 +289,17 @@ export default function Board({
     });
     const [selectedTokenId, setSelectedTokenId] = useState(null);
     //const [scaleFactor, setScaleFactor] = useState(.5);
-    const [scaleFactorModifier, setScaleFactorModifier] = useState(1);
-    const [myData, setMyData] = useState(state[myself.uid]);
-    const [opponentData, setOpponentData] = useState(
+    const myData = state[myself.uid];
+    const opponentData =
         state.players.length > 1
-            ? state[state.players.find(p => p !== myself.uid)]
-            : null
-    );
+            ? state[state.players.find((p) => p !== myself.uid)]
+            : null;
+    // const [myData, setMyData] = useState(state[myself.uid]);
+    // const [opponentData, setOpponentData] = useState(
+    //     state.players.length > 1
+    //         ? state[state.players.find((p) => p !== myself.uid)]
+    //         : null
+    // );
 
     useEffect(() => {
         if (state.status.stage !== "READY") return;
@@ -409,7 +313,7 @@ export default function Board({
             state.status.offset
         );
 
-        initGrid.forEach(hex => {
+        initGrid.forEach((hex) => {
             renderHex(
                 hex,
                 currentSvg,
@@ -418,7 +322,6 @@ export default function Board({
                 boardMeta.blockedHexes
             );
         });
-        setGrid(initGrid);
     }, [scaleFactor]);
 
     useEffect(() => {
@@ -470,14 +373,14 @@ export default function Board({
     }, [tokenHexes]);
 
     const handleIncreazeScaleFactor = () => {
-        onScaleFactorChange(prev => prev * 1.1);
+        onScaleFactorChange((prev) => prev * 1.1);
     };
 
     const handleDecreaseScaleFactor = () => {
-        onScaleFactorChange(prev => prev * 0.9);
+        onScaleFactorChange((prev) => prev * 0.9);
     };
 
-    const handleClick = e => {
+    const handleClick = (e) => {
         const { clientX, clientY } = e;
         const boardContainerBoundingRect = boardContainerRef.current.getBoundingClientRect();
 
@@ -523,16 +426,10 @@ export default function Board({
         if (!isHexOnBoard) return;
 
         if (hex) {
-            // console.log("ping")
-            highlightHex(
-                hex,
-                svg,
-                boardMeta.lethalHexes,
-                boardMeta.blockedHexes
-            );
+            highlightHex(svg, boardMeta.lethalHexes, boardMeta.blockedHexes);
+
             if (selectedTokenId) {
                 if (selectedElement.type === "SCATTER_TOKEN") {
-                    console.log("SCATTER", hex);
                     setScatterToken({
                         ...scatterToken,
                         onBoard: { x: hex.x, y: hex.y },
@@ -570,7 +467,6 @@ export default function Board({
                         }).`,
                     });
                 } else {
-                    // console.log("ping");
                     const updatedToken = {
                         ...tokenHexes[selectedTokenId],
                         from: tokenHexes[selectedTokenId].isOnBoard
@@ -595,12 +491,6 @@ export default function Board({
                         [selectedTokenId]: updatedToken,
                     });
                 }
-            } else {
-                const anyFighter = Object.entries(fighters).find(
-                    ([fighterId, f]) =>
-                        f.onBoard.x === hex.x && f.onBoard.y === hex.y
-                );
-                console.log("ANY FIGHTER?:", anyFighter);
             }
         }
     };
@@ -630,13 +520,13 @@ export default function Board({
         myData && myData.hand
             ? myData.hand
                   .split(",")
-                  .map(cardId => ({ ...cardsDb[cardId], id: cardId }))
+                  .map((cardId) => ({ ...cardsDb[cardId], id: cardId }))
             : [];
     const opponentHand =
         opponentData && opponentData.hand
             ? opponentData.hand
                   .split(",")
-                  .map(cardId => ({ ...cardsDb[cardId], id: cardId }))
+                  .map((cardId) => ({ ...cardsDb[cardId], id: cardId }))
             : [];
 
     return (
@@ -741,7 +631,7 @@ export default function Board({
                             <Typography
                                 style={{ margin: "auto", fontSize: ".7rem" }}
                             >
-                                {myHand.filter(c => c.type === 0).length}
+                                {myHand.filter((c) => c.type === 0).length}
                             </Typography>
                         </div>
                         <div
@@ -758,7 +648,7 @@ export default function Board({
                             <Typography
                                 style={{ margin: "auto", fontSize: ".7rem" }}
                             >
-                                {myHand.filter(c => c.type !== 0).length}
+                                {myHand.filter((c) => c.type !== 0).length}
                             </Typography>
                         </div>
                         <ButtonBase
@@ -864,7 +754,10 @@ export default function Board({
                             <Typography
                                 style={{ margin: "auto", fontSize: ".7rem" }}
                             >
-                                {opponentHand.filter(c => c.type === 0).length}
+                                {
+                                    opponentHand.filter((c) => c.type === 0)
+                                        .length
+                                }
                             </Typography>
                         </div>
                         <div
@@ -881,7 +774,10 @@ export default function Board({
                             <Typography
                                 style={{ margin: "auto", fontSize: ".7rem" }}
                             >
-                                {opponentHand.filter(c => c.type !== 0).length}
+                                {
+                                    opponentHand.filter((c) => c.type !== 0)
+                                        .length
+                                }
                             </Typography>
                         </div>
                         <ButtonBase onClick={handleDecreaseScaleFactor}>
@@ -934,7 +830,7 @@ export default function Board({
                             rotate={state.status.bottom.rotate}
                             scaleFactor={scaleFactor}
                         />
-                        {boardMeta.startingHexes.map(hex => {
+                        {boardMeta.startingHexes.map((hex) => {
                             const { x, y } = getGrid(
                                 scaleFactor,
                                 state.status.orientation,
@@ -1003,75 +899,63 @@ export default function Board({
                             onClick={handleClick}
                         />
                         {tokenHexes &&
-                            Object.entries(tokenHexes).map(
-                                ([k, hex], index) => {
-                                    if (
-                                        k.startsWith("Lethal") &&
-                                        hex.isOnBoard
-                                    ) {
-                                        const { x, y } = getGrid(
-                                            scaleFactor,
-                                            state.status.orientation,
-                                            state.status.offset
-                                        )
-                                            .get(hex.onBoard)
-                                            .toPoint();
+                            Object.entries(tokenHexes).map(([k, hex]) => {
+                                if (k.startsWith("Lethal") && hex.isOnBoard) {
+                                    const { x, y } = getGrid(
+                                        scaleFactor,
+                                        state.status.orientation,
+                                        state.status.offset
+                                    )
+                                        .get(hex.onBoard)
+                                        .toPoint();
 
-                                        return (
-                                            <LethalHex
-                                                key={k}
-                                                x={x}
-                                                y={y}
-                                                pointyTokenBaseWidth={
-                                                    pointyTokenBaseWidth
-                                                }
-                                                baseSize={baseSize}
-                                                scaleFactor={scaleFactor}
-                                                orientation={
-                                                    state.status.orientation
-                                                }
-                                                isSelected={
-                                                    k === selectedTokenId
-                                                }
-                                            />
-                                        );
-                                    }
-
-                                    if (
-                                        k.startsWith("Feature") &&
-                                        hex.isOnBoard
-                                    ) {
-                                        const { x, y } = getGrid(
-                                            scaleFactor,
-                                            state.status.orientation,
-                                            state.status.offset
-                                        )
-                                            .get(hex.onBoard)
-                                            .toPoint();
-
-                                        return (
-                                            <FeatureHex
-                                                key={k}
-                                                x={x}
-                                                y={y}
-                                                pointyTokenBaseWidth={
-                                                    pointyTokenBaseWidth
-                                                }
-                                                baseSize={baseSize}
-                                                scaleFactor={scaleFactor}
-                                                orientation={
-                                                    state.status.orientation
-                                                }
-                                                isSelected={
-                                                    k === selectedTokenId
-                                                }
-                                                isLethal={hex.isLethal}
-                                                number={hex.number}
-                                            />
-                                        );
-                                    }
+                                    return (
+                                        <LethalHex
+                                            key={k}
+                                            x={x}
+                                            y={y}
+                                            pointyTokenBaseWidth={
+                                                pointyTokenBaseWidth
+                                            }
+                                            baseSize={baseSize}
+                                            scaleFactor={scaleFactor}
+                                            orientation={
+                                                state.status.orientation
+                                            }
+                                            isSelected={k === selectedTokenId}
+                                        />
+                                    );
                                 }
-                            )}
+
+                                if (k.startsWith("Feature") && hex.isOnBoard) {
+                                    const { x, y } = getGrid(
+                                        scaleFactor,
+                                        state.status.orientation,
+                                        state.status.offset
+                                    )
+                                        .get(hex.onBoard)
+                                        .toPoint();
+
+                                    return (
+                                        <FeatureHex
+                                            key={k}
+                                            x={x}
+                                            y={y}
+                                            pointyTokenBaseWidth={
+                                                pointyTokenBaseWidth
+                                            }
+                                            baseSize={baseSize}
+                                            scaleFactor={scaleFactor}
+                                            orientation={
+                                                state.status.orientation
+                                            }
+                                            isSelected={k === selectedTokenId}
+                                            isLethal={hex.isLethal}
+                                            number={hex.number}
+                                        />
+                                    );
+                                }
+                            })}
                         {fighters &&
                             Object.entries(fighters).map(([k, fighter]) => {
                                 if (fighter.isOnBoard) {
@@ -1262,3 +1146,13 @@ export default function Board({
         </div>
     );
 }
+
+Board.propTypes = {
+    state: PropTypes.object,
+    selectedElement: PropTypes.object,
+    scaleFactor: PropTypes.number,
+    boardMeta: PropTypes.object,
+    onScaleFactorChange: PropTypes.func,
+};
+
+export default Board;

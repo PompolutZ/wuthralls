@@ -15,7 +15,10 @@ parserOptions:
   sourceType: module
 plugins:
   - react
-rules: {}
+rules: {
+  "no-console": "warn",
+  "no-undef": "warn", 
+}
 settings: 
   react: 
     version: 'detect'

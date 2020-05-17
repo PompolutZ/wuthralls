@@ -1,44 +1,26 @@
-import React, { useEffect, useContext, useState, useRef, useMemo } from "react";
+import React, { useEffect, useContext, useState, useMemo } from "react";
 import { useLocation } from "react-router-dom";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { useTheme } from "@material-ui/core/styles";
-import { makeStyles } from "@material-ui/core/styles";
 import { FirebaseContext } from "../../../firebase";
 import Messenger from "./Messager";
 import ActionsPalette from "./ActionsPalette";
 import Board from "./Board";
 import { useAuthUser } from "../../../components/Session";
-import { cardsDb, boards as boardsData } from "../../../data/index";
+import { boards as boardsData } from "../../../data/index";
 import CardsHUD from "./CardsHUD/CardsHUD";
-import useKatophrane from "../../../components/hooks/useKatophrane";
-
-// const propertyToCards = (source, property) => {
-//     return source && source[property] && source[property].split(',').map(cardId => ({ ...cardsDb[cardId], id: cardId }));
-// };
-
-const useStyles = makeStyles(theme => ({
-    tabs: {
-        width: "100%",
-    },
-}));
 
 export default function PhoneRoom() {
-    const classes = useStyles();
     const myself = useAuthUser();
     const firebase = useContext(FirebaseContext);
     const { state } = useLocation();
     const theme = useTheme();
     const isMd = useMediaQuery(theme.breakpoints.up("md"));
-    //const katophrane = useKatophrane(state);
     const [tabIndex, setTabIndex] = useState(0);
     const [selectedElement, setSelectedElement] = useState(null);
     const [data, setData] = useState(state);
     const [activePaletteType, setActivePaletteType] = useState(null);
-    const navigationRef = useRef(null);
-    const [stickHeader, setStickHeader] = useState(false);
-    const [actionsPanelOffsetHeight, setActionsPanelOffsetHeight] = useState(
-        4 * 16
-    );
+    const [, setActionsPanelOffsetHeight] = useState(4 * 16);
     const [isHUDOpen, setIsHUDOpen] = useState(false);
 
     const [hand, setHand] = useState(data[myself.uid] && data[myself.uid].hand);
@@ -58,8 +40,8 @@ export default function PhoneRoom() {
         data[myself.uid] && data[myself.uid].dPws
     );
 
-    const [opponent, setOpponent] = useState(
-        data[data.players.find(p => p !== myself.uid)]
+    const [opponent] = useState(
+        data[data.players.find((p) => p !== myself.uid)]
     );
 
     const [enemyHand, setEnemyHand] = useState(opponent && opponent.hand);
@@ -154,14 +136,13 @@ export default function PhoneRoom() {
                       ],
         };
 
-        console.log("Calc memo boardMeta", meta);
         return meta;
     }, [boardScaleFactor, data.status.stage]);
 
     useEffect(() => {
         window.addEventListener("keydown", handleHotkeyDown);
 
-        const unsubscribe = firebase.setRoomListener(state.id, snapshot => {
+        const unsubscribe = firebase.setRoomListener(state.id, (snapshot) => {
             if (snapshot.exists) {
                 setData({ ...snapshot.data(), id: snapshot.id });
             }
@@ -186,14 +167,6 @@ export default function PhoneRoom() {
     // }, [katophrane]);
 
     useEffect(() => {
-        console.log("Room.OnDataUpdated", data);
-        const serverHand = data[myself.uid].hand;
-        console.log(
-            "My Current Hand",
-            serverHand,
-            objectiveDrawPile,
-            powersDrawPile
-        );
         if (data[myself.uid].hand !== hand) {
             setHand(data[myself.uid] && data[myself.uid].hand);
         }
@@ -223,25 +196,19 @@ export default function PhoneRoom() {
         }
 
         // enemy stuff
-        const opponent = data[data.players.find(p => p !== myself.uid)];
+        const opponent = data[data.players.find((p) => p !== myself.uid)];
         setEnemyHand(opponent && opponent.hand);
         setEnemyScoredObjectivesPile(opponent && opponent.sObjs);
         setEnemyObjectivesDiscardPile(opponent && opponent.dObjs);
         setEnemyPowersDiscardPile(opponent && opponent.dPws);
     }, [data]);
 
-    useEffect(() => {
-        console.log("Room.onSelectedElementChange", selectedElement);
-    }, [selectedElement]);
-
-    const handleHotkeyDown = event => {
+    const handleHotkeyDown = (event) => {
         if (event && event.target.type === "textarea") return;
-
-        console.log("event", event);
 
         // switch main tab
         if (event.key === "q") {
-            setTabIndex(current => Number(!Boolean(current)));
+            setTabIndex((current) => Number(!current));
             return;
         }
 
@@ -254,11 +221,9 @@ export default function PhoneRoom() {
             setActivePaletteType("ROLL_DICE");
             return;
         }
-
-        console.log("Hotkey", event);
     };
 
-    const handleActionTypeChange = offsetHeight => {
+    const handleActionTypeChange = (offsetHeight) => {
         setActionsPanelOffsetHeight(offsetHeight);
     };
 
@@ -338,9 +303,7 @@ export default function PhoneRoom() {
                     myData={data[myself.uid]}
                     myFighters={Object.entries(
                         data.board.fighters
-                    ).filter(([fighterId, fighter]) =>
-                        fighterId.startsWith(myself.uid)
-                    )}
+                    ).filter(([fighterId]) => fighterId.startsWith(myself.uid))}
                     objectivesPile={objectiveDrawPile}
                     powerCardsPile={powersDrawPile}
                     serverHand={hand}

@@ -3,12 +3,11 @@ import * as SVG from "svg.js";
 import { defineGrid, extendHex } from "honeycomb-grid";
 import ButtonBase from "@material-ui/core/ButtonBase";
 import Typography from "@material-ui/core/Typography";
-import MoveNextIcon from "@material-ui/icons/LabelImportant";
-import FlipIcon from "@material-ui/icons/RotateRight";
 import Button from "@material-ui/core/Button";
-import { cardsDb, boards as boardsData } from "../../../data";
+import MoveNextIcon from "@material-ui/icons/LabelImportant";
+import { boards as boardsData } from "../../../data";
+import PropTypes from "prop-types";
 
-const baseSize = 55;
 const baseBoardWidth = 757;
 const baseBoardHeight = 495;
 
@@ -97,8 +96,6 @@ function BoardPlacer({ hexes }) {
 
     useEffect(() => {
         const { offsetHeight, offsetWidth } = mainContainerRef.current;
-        console.log(offsetHeight, offsetWidth);
-        let nextScaleFactor;
         const widthBasedScaleFactor = offsetWidth / baseBoardWidth;
         const heightBasedScaleFactor = offsetHeight / baseBoardHeight;
 
@@ -107,24 +104,11 @@ function BoardPlacer({ hexes }) {
         const widthBaseWillFitVertically =
             baseBoardHeight * widthBasedScaleFactor <= offsetHeight;
 
-        const heightBasedWillFitHorizontally =
-            baseBoardWidth * heightBasedScaleFactor <= offsetWidth;
-        const heightBasedWillFitVertically =
-            baseBoardHeight * heightBasedScaleFactor <= offsetHeight;
-
-        console.log(widthBaseWillFitHorizontally, widthBaseWillFitVertically);
-        console.log(
-            heightBasedWillFitHorizontally,
-            heightBasedWillFitVertically
-        );
-
         if (widthBaseWillFitHorizontally && widthBaseWillFitVertically) {
             setScaleFactor(widthBasedScaleFactor);
         } else {
             setScaleFactor(heightBasedScaleFactor);
         }
-
-        console.log("LOAD", nextScaleFactor);
     }, []);
 
     useEffect(() => {
@@ -142,7 +126,7 @@ function BoardPlacer({ hexes }) {
         });
 
         const Grid = defineGrid(Hex);
-        Grid(...horizontalBoardHexes).forEach(hex =>
+        Grid(...horizontalBoardHexes).forEach((hex) =>
             renderHex(
                 hex,
                 svgRef.current,
@@ -181,7 +165,11 @@ function BoardPlacer({ hexes }) {
     );
 }
 
-export default function FirstBoardPicker({ onBoardPicked }) {
+BoardPlacer.propTypes = {
+    hexes: PropTypes.object,
+};
+
+function FirstBoardPicker({ onBoardPicked }) {
     const [selectedIndex, setSelectedIndex] = useState(1);
     const [startingHexes, setStartingHexes] = useState(
         boardsData[selectedIndex].horizontal.startingHexes[0]
@@ -313,3 +301,9 @@ export default function FirstBoardPicker({ onBoardPicked }) {
         </div>
     );
 }
+
+FirstBoardPicker.propTypes = {
+    onBoardPicked: PropTypes.func,
+};
+
+export default FirstBoardPicker;

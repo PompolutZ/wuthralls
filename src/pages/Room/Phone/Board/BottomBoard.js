@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 
 const BottomBoard = React.memo(
     ({
@@ -12,9 +13,7 @@ const BottomBoard = React.memo(
     }) => (
         <img
             src={`/assets/boards/${boardId}${
-                orientation === "horizontal"
-                    ? ""
-                    : "v"
+                orientation === "horizontal" ? "" : "v"
             }.jpg`}
             alt="board2"
             style={{
@@ -34,10 +33,8 @@ const BottomBoard = React.memo(
                         ? baseBoardHeight * scaleFactor
                         : baseBoardWidth * scaleFactor,
                 left:
-                    orientation === "horizontal" &&
-                    offset > 0
-                        ? Math.abs(offset) *
-                        (94 * scaleFactor)
+                    orientation === "horizontal" && offset > 0
+                        ? Math.abs(offset) * (94 * scaleFactor)
                         : 0,
                 transformOrigin: "center center",
                 transform: `rotate(${rotate}deg)`,
@@ -45,5 +42,16 @@ const BottomBoard = React.memo(
         />
     )
 );
+
+BottomBoard.displayName = "BottomBoard";
+BottomBoard.propTypes = {
+    baseBoardWidth: PropTypes.number,
+    baseBoardHeight: PropTypes.number,
+    boardId: PropTypes.number,
+    orientation: PropTypes.string,
+    offset: PropTypes.number,
+    rotate: PropTypes.number,
+    scaleFactor: PropTypes.number,
+};
 
 export default BottomBoard;

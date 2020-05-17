@@ -1,107 +1,138 @@
-import React, { useState, useRef } from 'react';
-import Grid from '@material-ui/core/Grid';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import ButtonBase from '@material-ui/core/ButtonBase';
-import AddCircleIcon from '@material-ui/icons/AddCircle';
-import RotateLeftIcon from '@material-ui/icons/RotateLeft';
-import RotateRightIcon from '@material-ui/icons/RotateRight';
-import MessengerScreenIcon from '@material-ui/icons/QuestionAnswer';
-import BoardScreenIcon from '@material-ui/icons/ViewStream';
-import GameOverviewIcon from '@material-ui/icons/EmojiEvents';
-import SendMessageAction from './SendMessageAction';
-import RollDiceAction from './RollDiceAction';
-import LethalHexesPile from './LethalHexesPile';
-import ObjectiveHexesPile from './ObjectiveHexesPile';
-import Warband from './Warband';
-import { useAuthUser } from '../../../components/Session';
-import HUDOverlay from '../../../components/HUDOverlay';
-import FighterHUD from '../../../components/FighterHUD';
-import GameStatusHUD from './GameStatusHUD';
+import React, { useState } from "react";
+import Grid from "@material-ui/core/Grid";
+import ButtonBase from "@material-ui/core/ButtonBase";
+import RotateLeftIcon from "@material-ui/icons/RotateLeft";
+import RotateRightIcon from "@material-ui/icons/RotateRight";
+import PropTypes from "prop-types";
 
-export default function ScatterToken({ onSelectionChange, orientation }) {
-    console.log("SCATTER TOKEN RENDER", orientation);
-    const [rotateAngle, setRotateAngle] = useState(orientation === 'horizontal' ? 0 : 30);
+function ScatterToken({ onSelectionChange, orientation }) {
+    const [rotateAngle, setRotateAngle] = useState(
+        orientation === "horizontal" ? 0 : 30
+    );
     const [isSelected, setIsSelected] = useState(false);
     const [values, setValues] = useState({
-        id: 'SCATTER_TOKEN',
-        type: 'SCATTER_TOKEN',
+        id: "SCATTER_TOKEN",
+        type: "SCATTER_TOKEN",
         isOnBoard: false,
         rotationAngle: rotateAngle,
-        onBoard: {x: -1, y: -1}
-    })
+        onBoard: { x: -1, y: -1 },
+    });
 
-    const handleRotateLeft = e => {
+    const handleRotateLeft = (e) => {
         setRotateAngle(rotateAngle - 60);
         const updated = {
             ...values,
-            rotationAngle: rotateAngle - 60
+            rotationAngle: rotateAngle - 60,
         };
-        setValues(updated)
+        setValues(updated);
         onSelectionChange(updated);
 
         e.preventDefault();
-    }
+    };
 
-    const handleRotateRight = e => {
+    const handleRotateRight = (e) => {
         setRotateAngle(rotateAngle + 60);
         const updated = {
             ...values,
-            rotationAngle: rotateAngle + 60
+            rotationAngle: rotateAngle + 60,
         };
-        setValues(updated)
+        setValues(updated);
         onSelectionChange(updated);
 
         e.preventDefault();
-    }
+    };
 
     const handleTokenClick = () => {
-        if(!isSelected) {
+        if (!isSelected) {
             setIsSelected(true);
             const updated = {
                 ...values,
                 isOnBoard: true,
             };
-            setValues(updated)
+            setValues(updated);
             onSelectionChange(updated);
-        } else  {
+        } else {
             setIsSelected(false);
             const updated = {
                 ...values,
                 isOnBoard: false,
             };
-            setValues(updated)
+            setValues(updated);
             onSelectionChange(updated);
         }
-    }
+    };
 
     return (
         <Grid container justify="center" spacing={3}>
             <Grid item xs={4}>
-                <div style={{ 
-                    position: 'relative',
-                    width: '4rem',
-                    height: '4rem',
-                    marginTop: '2rem', 
-                    filter:
-                    isSelected
-                        ? "drop-shadow(0 0 10px purple)"
-                        : "",
-        transition: "all .175s ease-out",
-}}>
-                    <img src={`/assets/other/scatter.png`} style={{ width: '4rem', transform: `rotate(${rotateAngle}deg)`, transformOrigin: 'center center', }} 
-                        onClick={handleTokenClick} />
-                    <ButtonBase style={{ position: 'absolute', width: '2.5rem', height: '2.5rem', top: '50%', marginTop: '-1rem', left: 0, marginLeft: '-3rem', backgroundColor: 'teal', color: 'white', boxSizing: 'border-box', border: '1px solid white', borderRadius: '1rem' }}
-                        onClick={handleRotateLeft}>
+                <div
+                    style={{
+                        position: "relative",
+                        width: "4rem",
+                        height: "4rem",
+                        marginTop: "2rem",
+                        filter: isSelected
+                            ? "drop-shadow(0 0 10px purple)"
+                            : "",
+                        transition: "all .175s ease-out",
+                    }}
+                >
+                    <img
+                        src={`/assets/other/scatter.png`}
+                        style={{
+                            width: "4rem",
+                            transform: `rotate(${rotateAngle}deg)`,
+                            transformOrigin: "center center",
+                        }}
+                        onClick={handleTokenClick}
+                    />
+                    <ButtonBase
+                        style={{
+                            position: "absolute",
+                            width: "2.5rem",
+                            height: "2.5rem",
+                            top: "50%",
+                            marginTop: "-1rem",
+                            left: 0,
+                            marginLeft: "-3rem",
+                            backgroundColor: "teal",
+                            color: "white",
+                            boxSizing: "border-box",
+                            border: "1px solid white",
+                            borderRadius: "1rem",
+                        }}
+                        onClick={handleRotateLeft}
+                    >
                         <RotateLeftIcon />
                     </ButtonBase>
-                    <ButtonBase style={{ position: 'absolute', width: '2.5rem', height: '2.5rem', top: '50%', marginTop: '-1rem', right: 0, marginRight: '-3rem', backgroundColor: 'teal', color: 'white', boxSizing: 'border-box', border: '1px solid white', borderRadius: '1rem'}}
-                        onClick={handleRotateRight}>
+                    <ButtonBase
+                        style={{
+                            position: "absolute",
+                            width: "2.5rem",
+                            height: "2.5rem",
+                            top: "50%",
+                            marginTop: "-1rem",
+                            right: 0,
+                            marginRight: "-3rem",
+                            backgroundColor: "teal",
+                            color: "white",
+                            boxSizing: "border-box",
+                            border: "1px solid white",
+                            borderRadius: "1rem",
+                        }}
+                        onClick={handleRotateRight}
+                    >
                         <RotateRightIcon />
                     </ButtonBase>
                 </div>
             </Grid>
         </Grid>
-
-    )
+    );
 }
+
+ScatterToken.propTypes = {
+    onSelectionChange: PropTypes.func,
+    orientation: PropTypes.string,
+};
+
+export default ScatterToken;

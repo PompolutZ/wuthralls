@@ -1,7 +1,6 @@
 import React, { useState, useContext, useEffect } from "react";
 import { useAuthUser } from "../../../components/Session";
 import { FirebaseContext } from "../../../firebase";
-import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import ButtonBase from "@material-ui/core/ButtonBase";
 import ButtonGroup from "@material-ui/core/ButtonGroup";
@@ -9,15 +8,15 @@ import AddIcon from "@material-ui/icons/Add";
 import RemoveIcon from "@material-ui/icons/Remove";
 import Grid from "@material-ui/core/Grid";
 import SendIcon from "@material-ui/icons/Send";
-import Die from "../../../components/Die";
 import { getDieRollResult } from "../../../common/function";
 import AttackDie from "../../../components/AttackDie";
 import DefenceDie from "../../../components/DefenceDie";
 import MagicDie from "../../../components/MagicDie";
 import { warbandColors } from "../../../data";
 import { makeStyles } from "@material-ui/core/styles";
+import PropTypes from "prop-types";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
     root: {
         flexGrow: 1,
         position: "relative",
@@ -34,17 +33,12 @@ const useStyles = makeStyles(theme => ({
         right: 0,
         bottom: 0,
         display: "flex",
-        flexDirection: 'column',
+        flexDirection: "column",
         overflow: "auto",
     },
 }));
 
-export default function RollDiceAction({
-    roomId,
-    rollResult,
-    defaultAmount,
-    myFaction,
-}) {
+function RollDiceAction({ roomId, rollResult, defaultAmount, myFaction }) {
     const classes = useStyles();
     const myself = useAuthUser();
     const firebase = useContext(FirebaseContext);
@@ -60,7 +54,7 @@ export default function RollDiceAction({
     );
 
     const handleSendTextMessage = async () => {
-        const updated = values.map(_ => getDieRollResult());
+        const updated = values.map(getDieRollResult);
         setValues(updated);
 
         await firebase.addDiceRoll2(roomId, {
@@ -70,7 +64,7 @@ export default function RollDiceAction({
         });
     };
 
-    const handleSwitchTo = type => () => {
+    const handleSwitchTo = (type) => () => {
         setSelectedType(type);
         setCanIncrease(true);
         setCanReduce(true);
@@ -89,23 +83,18 @@ export default function RollDiceAction({
     };
 
     const handleAddMore = () => {
-        setValues(prev => [...prev, 1]);
+        setValues((prev) => [...prev, 1]);
     };
 
     const handleMakeLess = () => {
-        setValues(prev => prev.slice(1));
+        setValues((prev) => prev.slice(1));
     };
 
     useEffect(() => {
-        console.log("Dice Tray Updated", rollResult);
         if (rollResult) {
             setValues(rollResult.split(","));
         }
     }, [rollResult]);
-
-    useEffect(() => {
-        console.log("Dice Tray Values Updated", values);
-    }, [values]);
 
     return (
         <div className={classes.root}>
@@ -172,7 +161,7 @@ export default function RollDiceAction({
                         display: "flex",
                         flex: 1,
                         alignItems: "center",
-                        alignSelf: 'center',
+                        alignSelf: "center",
                     }}
                 >
                     {canReduce && (
@@ -292,7 +281,11 @@ export default function RollDiceAction({
                 </div>
                 <Button
                     onClick={handleSendTextMessage}
-                    style={{ flex: "0 0 auto", alignSelf: "flex-end", margin: '0 1rem 1.5rem 0' }}
+                    style={{
+                        flex: "0 0 auto",
+                        alignSelf: "flex-end",
+                        margin: "0 1rem 1.5rem 0",
+                    }}
                 >
                     <SendIcon />
                 </Button>
@@ -300,3 +293,12 @@ export default function RollDiceAction({
         </div>
     );
 }
+
+RollDiceAction.propTypes = {
+    roomId: PropTypes.string,
+    rollResult: PropTypes.string,
+    defaultAmount: PropTypes.number,
+    myFaction: PropTypes.string,
+};
+
+export default RollDiceAction;

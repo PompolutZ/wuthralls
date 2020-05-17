@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 
 const TopBoard = React.memo(
     ({
@@ -37,5 +38,16 @@ const TopBoard = React.memo(
         />
     )
 );
+
+TopBoard.displayName = "TopBoard";
+TopBoard.propTypes = {
+    baseBoardWidth: PropTypes.number,
+    baseBoardHeight: PropTypes.number,
+    boardId: PropTypes.number,
+    orientation: PropTypes.string,
+    offset: PropTypes.number,
+    rotate: PropTypes.number,
+    scaleFactor: PropTypes.number,
+};
 
 export default TopBoard;

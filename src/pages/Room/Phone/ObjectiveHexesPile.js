@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useContext } from "react";
 import ButtonBase from "@material-ui/core/ButtonBase";
 import DeleteIcon from "@material-ui/icons/Delete";
 import FlipIcon from "@material-ui/icons/Loop";
@@ -6,8 +6,9 @@ import { FirebaseContext } from "../../../firebase";
 import { useAuthUser } from "../../../components/Session";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
+import PropTypes from "prop-types";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
     root: {
         flexGrow: 1,
         position: "relative",
@@ -29,18 +30,14 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-export default function ObjectiveHexesPile({
-    roomId,
-    tokens,
-    onSelectedTokenChange,
-}) {
+function ObjectiveHexesPile({ roomId, tokens, onSelectedTokenChange }) {
     const classes = useStyles();
     const myself = useAuthUser();
     const firebase = useContext(FirebaseContext);
     const pointyTokenBaseWidth = 95;
     const [selectedToken, setSelectedToken] = useState(null);
 
-    const handleTokenClick = token => () => {
+    const handleTokenClick = (token) => () => {
         if (!selectedToken || selectedToken.id !== token.id) {
             setSelectedToken(token);
             onSelectedTokenChange(token);
@@ -50,8 +47,7 @@ export default function ObjectiveHexesPile({
         }
     };
 
-    const handleRemoveFromBoard = token => e => {
-        console.log("Request remove token", token);
+    const handleRemoveFromBoard = (token) => (e) => {
         e.preventDefault();
         firebase.updateBoardProperty(roomId, `board.tokens.${token.id}`, {
             ...token,
@@ -68,7 +64,7 @@ export default function ObjectiveHexesPile({
         });
     };
 
-    const handleFlipFeature = token => e => {
+    const handleFlipFeature = (token) => (e) => {
         const updated = {
             ...token,
             isLethal: !token.isLethal,
@@ -90,14 +86,10 @@ export default function ObjectiveHexesPile({
         });
     };
 
-    useEffect(() => {
-        console.log("ObjectiveHexesPile.OnUpdated", selectedToken);
-    }, [selectedToken]);
-
     return (
         <div className={classes.root}>
             <div className={classes.itemsContainer}>
-                {tokens.map(token => (
+                {tokens.map((token) => (
                     <div
                         key={token.id}
                         style={{
@@ -105,10 +97,9 @@ export default function ObjectiveHexesPile({
                             paddingTop: "1rem",
                             paddingLeft: "1rem",
                             filter:
-                                        selectedToken &&
-                                        selectedToken.id === token.id
-                                            ? "drop-shadow(0 0 10px OrangeRed)"
-                                            : "",
+                                selectedToken && selectedToken.id === token.id
+                                    ? "drop-shadow(0 0 10px OrangeRed)"
+                                    : "",
                             transition: "all .175s ease-out",
                         }}
                         onClick={handleTokenClick(token)}
@@ -191,3 +182,11 @@ export default function ObjectiveHexesPile({
         </div>
     );
 }
+
+ObjectiveHexesPile.propTypes = {
+    roomId: PropTypes.string,
+    tokens: PropTypes.array,
+    onSelectedTokenChange: PropTypes.func,
+};
+
+export default ObjectiveHexesPile;

@@ -1,1 +1,1 @@
-export const PICK_FACTION = 'PICK_FACTION';
+export const PICK_FACTION = "PICK_FACTION";
