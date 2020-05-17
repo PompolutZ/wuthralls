@@ -27,6 +27,7 @@ src/firebase/config.js
 
 # variables
 .env
+.eslintcache
 
 # some assets
 
