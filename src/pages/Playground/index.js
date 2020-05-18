@@ -1,9 +1,10 @@
 import React from "react";
-
 import ButtonBase from "@material-ui/core/ButtonBase";
 import AddIcon from "@material-ui/icons/Add";
+import { withAuthorization } from "../../components/Session";
+import { ADMIN } from "../../constants/roles";
 
-export default function Playground() {
+function Playground() {
     return (
         <div
             style={{
@@ -51,3 +52,7 @@ export default function Playground() {
         </div>
     );
 }
+
+const condition = (authUser) => authUser && !!authUser.roles[ADMIN];
+
+export default withAuthorization(condition)(Playground);

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
 import { withAuthorization } from "./Session";
 import * as ROLES from "../constants/roles";
 import { FirebaseContext } from "../firebase";
@@ -9,6 +9,12 @@ function AdminPage() {
     const firebase = useContext(FirebaseContext);
     const [rooms, setRooms] = useState([]);
     const [error, setError] = useState(null);
+    const isMountedRef = useRef(true);
+
+    useEffect(() => {
+        return () => (isMountedRef.current = false);
+    }, []);
+
     useEffect(() => {
         firebase.fstore
             .collection("rooms")
@@ -48,6 +54,7 @@ function AdminPage() {
                 })
             )
             .then((rooms) => {
+                if (!isMountedRef.current) return;
                 setRooms(rooms.sort((r1, r2) => r1.lastUpdate - r2.lastUpdate));
             })
             .catch((error) => setError(error.message));

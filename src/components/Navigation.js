@@ -10,6 +10,7 @@ import MenuIcon from "@material-ui/icons/Menu";
 import AccountCircle from "@material-ui/icons/AccountCircle";
 import MeetingRoomIcon from "@material-ui/icons/MeetingRoom";
 import EmojiEventsIcon from "@material-ui/icons/EmojiEvents";
+import ChildCareIcon from "@material-ui/icons/ChildCare";
 import HourglassEmptyIcon from "@material-ui/icons/HourglassEmpty";
 import MenuItem from "@material-ui/core/MenuItem";
 import Menu from "@material-ui/core/Menu";
@@ -24,6 +25,7 @@ import Slide from "@material-ui/core/Slide";
 import useScrollTrigger from "@material-ui/core/useScrollTrigger";
 import packageJson from "../../package.json";
 import PropTypes from "prop-types";
+import { ADMIN } from "../constants/roles";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -42,7 +44,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function MenuDrawer({ items }) {
+function MenuDrawer({ items, userRoles }) {
     const classes = useStyles();
     const [state, setState] = React.useState({
         top: false,
@@ -70,12 +72,26 @@ function MenuDrawer({ items }) {
             onKeyDown={toggleDrawer(side, false)}
         >
             <List>
-                {items.map((item) => (
-                    <ListItem button key={item.id} onClick={item.action}>
-                        <ListItemIcon>{item.icon}</ListItemIcon>
-                        <ListItemText primary={item.label} />
-                    </ListItem>
-                ))}
+                {items.map((item) => {
+                    console.log(
+                        item.restrictedTo &&
+                            userRoles &&
+                            userRoles[item.restrictedTo]
+                    );
+                    if (
+                        item.restrictedTo &&
+                        !(userRoles && userRoles[item.restrictedTo])
+                    ) {
+                        return;
+                    }
+
+                    return (
+                        <ListItem button key={item.id} onClick={item.action}>
+                            <ListItemIcon>{item.icon}</ListItemIcon>
+                            <ListItemText primary={item.label} />
+                        </ListItem>
+                    );
+                })}
             </List>
         </div>
     );
@@ -100,6 +116,7 @@ function MenuDrawer({ items }) {
 
 MenuDrawer.propTypes = {
     items: PropTypes.array,
+    userRoles: PropTypes.object,
 };
 
 function AnonMenu() {
@@ -256,6 +273,13 @@ const menuItems = (history) => [
         icon: <HourglassEmptyIcon />,
         action: () => history.push("/future"),
     },
+    {
+        id: "playground",
+        label: "Playground",
+        icon: <ChildCareIcon />,
+        action: () => history.push("/playground"),
+        restrictedTo: ADMIN,
+    },
 ];
 
 function HideOnScroll(props) {
@@ -291,7 +315,10 @@ function Navigation(props) {
             <HideOnScroll {...props}>
                 <AppBar position="static">
                     <Toolbar>
-                        <MenuDrawer items={menuItems(history)} />
+                        <MenuDrawer
+                            items={menuItems(history)}
+                            userRoles={authUser && authUser.roles}
+                        />
                         <Typography
                             variant="body1"
                             className={classes.title}
