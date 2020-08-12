@@ -5,40 +5,6 @@ import powersUnboundCards from "./dbs/powers_unbound_db";
 import { cardsdb } from "./dbs/cardsdb";
 import boardsData from "./boards";
 
-export const factions = {
-    // "universal" : "Universal",
-    // "garreks-reavers" : "Garrek's Reavers",
-    // "steelhearts-champions" : "Steelheart's Champions",
-    // "sepulchral-guard" : "Sepulchral Guard",
-    // "ironskulls-boyz" : "Ironskull's Boyz",
-    // "the-chosen-axes" : "The Chosen Axes",
-    // "spiteclaws-swarm" : "Spiteclaw's Swarm",
-    // "magores-fiends" : "Magore's Fiends",
-    // "the-farstriders" : "The Farstriders",
-
-    // // NIGHTVAULT
-
-    // "stormsires-cursebreakers": "Stormsire's Cursebreakers",
-    // "thorns-of-the-briar-queen": "Thorns of the Briar Queen",
-    // "the-eyes-of-the-nine": "The Eyes of the Nine",
-    // "zarbags-gitz": "Zarbag's Gitz",
-    // "godsworn-hunt": "Godsworn Hunt",
-    // "mollogs-mob": "Mollog's Mob",
-    // "thundriks-profiteers": "Thundrik’s Profiteers",
-    // "yltharis-guardians": "Ylthari’s Guardians",
-
-    // DREADFANE
-
-    "ironsouls-condemners": "Ironsoul's Condemners",
-    "lady-harrows-mournflight": "Lady Harrow's Mournflight",
-
-    // BEASTGRAVE
-
-    // "grashraks-despoilers": "Grashrak’s Despoilers",
-    // "skaeths-wild-hunt": "Skaeth’s Wild Hunt",
-    // "the-grymwatch": "The Grymwatch",
-};
-
 export const boards = {
     ...boardsData,
 };
@@ -86,6 +52,8 @@ export const factionIndexes = [
     "rippas-snarlfangs", // 22
     "hrothgorns-mantrappers", // 23
     "the-wurmspat", // 24
+    "morgwaeths-blade-coven", // 25
+    "morgoks-krushas", // 26
 ];
 
 export const warbandColors = {
@@ -113,6 +81,8 @@ export const warbandColors = {
     "hrothgorns-mantrappers": "#4682B4", // steelblue
     "the-wurmspat": "#556B2F", // dark olive
     "the-farstriders": "#0000CD", // medium blue
+    "morgwaeths-blade-coven": "#78184a", // pancy purple
+    "morgoks-krushas": "#507d2a", // sap green
 };
 
 export const warbands = {
@@ -152,6 +122,51 @@ export const warbands = {
             wounds: 0,
             tokens: "",
             upgrades: "",
+        },
+    ],
+
+    "morgoks-krushas": [
+        {
+            type: "FIGHTER",
+            icon: "morgoks-krushas-1",
+            name: "Morgok",
+            from: { x: -1, y: -1 },
+            onBoard: { x: -1, y: -1 },
+            isOnBoard: false,
+            isInspired: false,
+            wounds: 0,
+            tokens: "",
+            upgrades: "",
+            counters: "",
+            counterTypes: "Waaagh",
+        },
+        {
+            type: "FIGHTER",
+            icon: "morgoks-krushas-2",
+            name: "’Ardskull",
+            from: { x: -1, y: -1 },
+            onBoard: { x: -1, y: -1 },
+            isOnBoard: false,
+            isInspired: false,
+            wounds: 0,
+            tokens: "",
+            upgrades: "",
+            counters: "",
+            counterTypes: "Waaagh",
+        },
+        {
+            type: "FIGHTER",
+            icon: "morgoks-krushas-3",
+            name: "Thugg",
+            from: { x: -1, y: -1 },
+            onBoard: { x: -1, y: -1 },
+            isOnBoard: false,
+            isInspired: false,
+            wounds: 0,
+            tokens: "",
+            upgrades: "",
+            counters: "",
+            counterTypes: "Waaagh",
         },
     ],
 
@@ -900,6 +915,69 @@ export const warbands = {
             type: "FIGHTER",
             icon: "spiteclaws-swarm-5",
             name: "Hungering",
+            from: { x: -1, y: -1 },
+            onBoard: { x: -1, y: -1 },
+            isOnBoard: false,
+            isInspired: false,
+            wounds: 0,
+            tokens: "",
+            upgrades: "",
+        },
+    ],
+
+    "morgwaeths-blade-coven": [
+        {
+            type: "FIGHTER",
+            icon: "morgwaeths-blade-coven-1",
+            name: "Morgwaeth",
+            from: { x: -1, y: -1 },
+            onBoard: { x: -1, y: -1 },
+            isOnBoard: false,
+            isInspired: false,
+            wounds: 0,
+            tokens: "",
+            upgrades: "",
+        },
+        {
+            type: "FIGHTER",
+            icon: "morgwaeths-blade-coven-2",
+            name: "Kyrae",
+            from: { x: -1, y: -1 },
+            onBoard: { x: -1, y: -1 },
+            isOnBoard: false,
+            isInspired: false,
+            wounds: 0,
+            tokens: "",
+            upgrades: "",
+        },
+        {
+            type: "FIGHTER",
+            icon: "morgwaeths-blade-coven-3",
+            name: "Khamyss",
+            from: { x: -1, y: -1 },
+            onBoard: { x: -1, y: -1 },
+            isOnBoard: false,
+            isInspired: false,
+            wounds: 0,
+            tokens: "",
+            upgrades: "",
+        },
+        {
+            type: "FIGHTER",
+            icon: "morgwaeths-blade-coven-4",
+            name: "Kyrssa",
+            from: { x: -1, y: -1 },
+            onBoard: { x: -1, y: -1 },
+            isOnBoard: false,
+            isInspired: false,
+            wounds: 0,
+            tokens: "",
+            upgrades: "",
+        },
+        {
+            type: "FIGHTER",
+            icon: "morgwaeths-blade-coven-5",
+            name: "Lethyr",
             from: { x: -1, y: -1 },
             onBoard: { x: -1, y: -1 },
             isOnBoard: false,
@@ -2393,4 +2471,68 @@ export const cardsIdToFactionIndex = {
     "06190": 23,
     "06191": 23,
     "06192": 23,
+    "06193": 25,
+    "06194": 25,
+    "06195": 25,
+    "06196": 25,
+    "06197": 25,
+    "06198": 25,
+    "06199": 25,
+    "06200": 25,
+    "06201": 25,
+    "06202": 25,
+    "06203": 25,
+    "06204": 25,
+    "06205": 25,
+    "06206": 25,
+    "06207": 25,
+    "06208": 25,
+    "06209": 25,
+    "06210": 25,
+    "06211": 25,
+    "06212": 25,
+    "06213": 25,
+    "06214": 25,
+    "06215": 25,
+    "06216": 25,
+    "06217": 25,
+    "06218": 25,
+    "06219": 25,
+    "06220": 25,
+    "06221": 25,
+    "06222": 25,
+    "06223": 25,
+    "06224": 25,
+    "06225": 26,
+    "06226": 26,
+    "06227": 26,
+    "06228": 26,
+    "06229": 26,
+    "06230": 26,
+    "06231": 26,
+    "06232": 26,
+    "06233": 26,
+    "06234": 26,
+    "06235": 26,
+    "06236": 26,
+    "06237": 26,
+    "06238": 26,
+    "06239": 26,
+    "06240": 26,
+    "06241": 26,
+    "06242": 26,
+    "06243": 26,
+    "06244": 26,
+    "06245": 26,
+    "06246": 26,
+    "06247": 26,
+    "06248": 26,
+    "06249": 26,
+    "06250": 26,
+    "06251": 26,
+    "06252": 26,
+    "06253": 26,
+    "06254": 26,
+    "06255": 26,
+    "06256": 26,
 };
