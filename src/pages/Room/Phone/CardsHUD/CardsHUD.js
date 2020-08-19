@@ -104,6 +104,12 @@ const CardsHUD = ({
         }
         setObjectiveDrawPile((prev) => prev.slice(1));
         setModified(true);
+
+        firebase.addGenericMessage2(roomId, {
+            author: "Katophrane",
+            type: "INFO",
+            value: `**${myself.username}** has drawn objective card.`,
+        });
     };
 
     const drawPowerCard = () => {
@@ -115,6 +121,12 @@ const CardsHUD = ({
         }
         setPowersDrawPile((prev) => prev.slice(1));
         setModified(true);
+
+        firebase.addGenericMessage2(roomId, {
+            author: "Katophrane",
+            type: "INFO",
+            value: `**${myself.username}** has drawn power card.`,
+        });
     };
 
     const handleHighlightCard = (card, source) => () => {
@@ -237,18 +249,36 @@ const CardsHUD = ({
             setScoredObjectives((prev) =>
                 prev ? prev.filter((c) => c.id !== card.id) : []
             );
+
+            firebase.addGenericMessage2(roomId, {
+                author: "Katophrane",
+                type: "INFO",
+                value: `**${myself.username}** has returned scored objective card back to hand.`,
+            });
         }
 
         if (source === OBJECTIVES_DISCARDED) {
             setDiscardedObjectives((prev) =>
                 prev ? prev.filter((c) => c.id !== card.id) : []
             );
+
+            firebase.addGenericMessage2(roomId, {
+                author: "Katophrane",
+                type: "INFO",
+                value: `**${myself.username}** has returned discarded objective card back to hand.`,
+            });
         }
 
         if (source === POWERS_DISCARDED) {
             setDiscardedPowers((prev) =>
                 prev ? prev.filter((c) => c.id !== card.id) : []
             );
+
+            firebase.addGenericMessage2(roomId, {
+                author: "Katophrane",
+                type: "INFO",
+                value: `**${myself.username}** has returned discarded power card back to hand.`,
+            });
         }
 
         setHighlightCard(null);
