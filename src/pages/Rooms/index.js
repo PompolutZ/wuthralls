@@ -56,7 +56,7 @@ function Rooms() {
                 unsub();
             }
         };
-    }, []);
+    }, [myself, firebase.fstore]);
 
     const handleAddNewRoom = async () => {
         history.push(`/${"v1"}/new/room`);

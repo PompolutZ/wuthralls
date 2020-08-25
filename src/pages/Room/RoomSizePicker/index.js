@@ -18,20 +18,12 @@ export default function RoomSizePicker() {
             }
         });
 
-        // const unsubscribeFromMessages = firebase.fstore.collection('messages').doc(state.id).onSnapshot(s => {
-        //     if(!s.data()) return;
-        //     const msgs = Object.entries(s.data()).map(([key, value]) => ({...value, id: Number(key) }));
-        //     console.log('MESSAGES', msgs);
-        //     setMessages(msgs);
-        // });
-
         setLoaded(true);
 
         return () => {
             unsubscribe();
-            // unsubscribeFromMessages();
         };
-    }, []);
+    }, [firebase, state.id]);
 
     if (!loaded) return <span>Loading...</span>;
 
@@ -43,12 +35,5 @@ export default function RoomSizePicker() {
                 <PhoneRoom />
             </MessagesProvider>
         );
-        // if(isLg) {
-        //     console.log('DESKTOP ROOM');
-        //     return <DesktopRoom />
-        // } else {
-        //     console.log('PHONE ROOM');
-
-        // }
     }
 }
