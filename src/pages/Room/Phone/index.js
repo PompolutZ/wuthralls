@@ -55,7 +55,6 @@ export default function PhoneRoom() {
     const [enemyPowersDiscardPile, setEnemyPowersDiscardPile] = useState(
         opponent && opponent.dPws
     );
-    // const [messages, setMessages] = useState(null);
 
     const [boardScaleFactor, setBoardScaleFactor] = useState(0.5);
     const boardMeta = useMemo(() => {
@@ -137,7 +136,7 @@ export default function PhoneRoom() {
         };
 
         return meta;
-    }, [boardScaleFactor, data.status.stage]);
+    }, [boardScaleFactor, data.status]);
 
     useEffect(() => {
         window.addEventListener("keydown", handleHotkeyDown);
@@ -148,23 +147,11 @@ export default function PhoneRoom() {
             }
         });
 
-        // const unsubscribeFromMessages = firebase.fstore.collection('messages').doc(state.id).onSnapshot(s => {
-        //     if(!s.data()) return;
-        //     const msgs = Object.entries(s.data()).map(([key, value]) => ({...value, id: Number(key) }));
-        //     console.log('MESSAGES', msgs);
-        //     setMessages(msgs);
-        // });
-
         return () => {
             unsubscribe();
-            // unsubscribeFromMessages();
             window.removeEventListener("keydown", handleHotkeyDown);
         };
-    }, []);
-
-    // useEffect(() => {
-    //     console.log('KATO', katophrane);
-    // }, [katophrane]);
+    }, [firebase, state.id]);
 
     useEffect(() => {
         if (data[myself.uid].hand !== hand) {
