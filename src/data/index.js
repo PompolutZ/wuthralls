@@ -1,6 +1,7 @@
 import { dreadfaneDb } from "./dbs/dreadfane_db";
 import { beastgraveDB } from "./dbs/beastgrave_db";
 import { beastgraveGiftPackDb } from "./dbs/beastgrave_giftpack_db";
+import { arenaMortisDb } from "./dbs/arena-mortis-db";
 import powersUnboundCards from "./dbs/powers_unbound_db";
 import { cardsdb } from "./dbs/cardsdb";
 import boardsData from "./boards";
@@ -15,6 +16,7 @@ export const cardsDb = {
     ...dreadfaneDb,
     ...beastgraveDB,
     ...beastgraveGiftPackDb,
+    ...arenaMortisDb,
 };
 
 export const factionIndexes = [
