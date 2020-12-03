@@ -2,6 +2,7 @@ import { dreadfaneDb } from "./dbs/dreadfane_db";
 import { beastgraveDB } from "./dbs/beastgrave_db";
 import { beastgraveGiftPackDb } from "./dbs/beastgrave_giftpack_db";
 import powersUnboundCards from "./dbs/powers_unbound_db";
+import { direchasm_db } from "./dbs/direchasm-db";
 import { cardsdb } from "./dbs/cardsdb";
 import boardsData from "./boards";
 
@@ -15,6 +16,7 @@ export const cardsDb = {
     ...dreadfaneDb,
     ...beastgraveDB,
     ...beastgraveGiftPackDb,
+    ...direchasm_db,
 };
 
 export const factionIndexes = [
@@ -54,6 +56,10 @@ export const factionIndexes = [
     "the-wurmspat", // 24
     "morgwaeths-blade-coven", // 25
     "morgoks-krushas", // 26
+
+    // DIRECHASM
+    "myaris-purifiers", // 27
+    "dread-pageant", // 28
 ];
 
 export const warbandColors = {
@@ -83,6 +89,9 @@ export const warbandColors = {
     "the-farstriders": "#0000CD", // medium blue
     "morgwaeths-blade-coven": "#78184a", // pancy purple
     "morgoks-krushas": "#507d2a", // sap green
+    // DIRECHASM
+    "myaris-purifiers": "#2894C2", // myari blue
+    "dread-pageant": "#261943", // night violet
 };
 
 export const warbands = {
@@ -661,6 +670,117 @@ export const warbands = {
             type: "FIGHTER",
             icon: "mollogs-mob-4",
             name: "Spiteshroom",
+            from: { x: -1, y: -1 },
+            onBoard: { x: -1, y: -1 },
+            isOnBoard: false,
+            isInspired: false,
+            wounds: 0,
+            tokens: "",
+            upgrades: "",
+        },
+    ],
+
+    // DIRECHASM
+    "myaris-purifiers": [
+        {
+            type: "FIGHTER",
+            icon: "myaris-purifiers-1",
+            name: "Myari",
+            from: { x: -1, y: -1 },
+            onBoard: { x: -1, y: -1 },
+            isOnBoard: false,
+            isInspired: false,
+            wounds: 0,
+            tokens: "",
+            upgrades: "",
+            counters: "Generic",
+            counterTypes: "Generic",
+        },
+        {
+            type: "FIGHTER",
+            icon: "myaris-purifiers-2",
+            name: "Bahannar",
+            from: { x: -1, y: -1 },
+            onBoard: { x: -1, y: -1 },
+            isOnBoard: false,
+            isInspired: false,
+            wounds: 0,
+            tokens: "",
+            upgrades: "",
+            counters: "Generic",
+            counterTypes: "Generic",
+        },
+        {
+            type: "FIGHTER",
+            icon: "myaris-purifiers-3",
+            name: "Ailenn",
+            from: { x: -1, y: -1 },
+            onBoard: { x: -1, y: -1 },
+            isOnBoard: false,
+            isInspired: false,
+            wounds: 0,
+            tokens: "",
+            upgrades: "",
+            counters: "Generic",
+            counterTypes: "Generic",
+        },
+        {
+            type: "FIGHTER",
+            icon: "myaris-purifiers-4",
+            name: "Senaela",
+            from: { x: -1, y: -1 },
+            onBoard: { x: -1, y: -1 },
+            isOnBoard: false,
+            isInspired: false,
+            wounds: 0,
+            tokens: "",
+            upgrades: "",
+            counters: "Generic",
+            counterTypes: "Generic",
+        },
+    ],
+
+    "dread-pageant": [
+        {
+            type: "FIGHTER",
+            icon: "dread-pageant-1",
+            name: "Vasillac",
+            from: { x: -1, y: -1 },
+            onBoard: { x: -1, y: -1 },
+            isOnBoard: false,
+            isInspired: false,
+            wounds: 0,
+            tokens: "",
+            upgrades: "",
+        },
+        {
+            type: "FIGHTER",
+            icon: "dread-pageant-2",
+            name: "Glissete",
+            from: { x: -1, y: -1 },
+            onBoard: { x: -1, y: -1 },
+            isOnBoard: false,
+            isInspired: false,
+            wounds: 0,
+            tokens: "",
+            upgrades: "",
+        },
+        {
+            type: "FIGHTER",
+            icon: "dread-pageant-3",
+            name: "Hadzu",
+            from: { x: -1, y: -1 },
+            onBoard: { x: -1, y: -1 },
+            isOnBoard: false,
+            isInspired: false,
+            wounds: 0,
+            tokens: "",
+            upgrades: "",
+        },
+        {
+            type: "FIGHTER",
+            icon: "dread-pageant-4",
+            name: "Slakeslash",
             from: { x: -1, y: -1 },
             onBoard: { x: -1, y: -1 },
             isOnBoard: false,
@@ -2535,4 +2655,68 @@ export const cardsIdToFactionIndex = {
     "06254": 26,
     "06255": 26,
     "06256": 26,
+    "09001": 27,
+    "09002": 27,
+    "09003": 27,
+    "09004": 27,
+    "09005": 27,
+    "09006": 27,
+    "09007": 27,
+    "09008": 27,
+    "09009": 27,
+    "09010": 27,
+    "09011": 27,
+    "09012": 27,
+    "09013": 27,
+    "09014": 27,
+    "09015": 27,
+    "09016": 27,
+    "09017": 27,
+    "09018": 27,
+    "09019": 27,
+    "09020": 27,
+    "09021": 27,
+    "09022": 27,
+    "09023": 27,
+    "09024": 27,
+    "09025": 27,
+    "09026": 27,
+    "09027": 27,
+    "09028": 27,
+    "09029": 27,
+    "09030": 27,
+    "09031": 27,
+    "09032": 27,
+    "09033": 28,
+    "09034": 28,
+    "09035": 28,
+    "09036": 28,
+    "09037": 28,
+    "09038": 28,
+    "09039": 28,
+    "09040": 28,
+    "09041": 28,
+    "09042": 28,
+    "09043": 28,
+    "09044": 28,
+    "09045": 28,
+    "09046": 28,
+    "09047": 28,
+    "09048": 28,
+    "09049": 28,
+    "09050": 28,
+    "09051": 28,
+    "09052": 28,
+    "09053": 28,
+    "09054": 28,
+    "09055": 28,
+    "09056": 28,
+    "09057": 28,
+    "09058": 28,
+    "09059": 28,
+    "09060": 28,
+    "09061": 28,
+    "09062": 28,
+    "09063": 28,
+    "09064": 28,
 };
