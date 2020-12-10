@@ -18,8 +18,10 @@ const config = {
 
 class Firebase {
     constructor() {
-        app.initializeApp(config);
-        app.analytics();
+        if (!app.apps.length) {
+            app.initializeApp(config);
+            app.analytics();
+        }
 
         this.db = app.database();
         this.fstore = app.firestore();
