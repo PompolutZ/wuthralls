@@ -170,7 +170,7 @@ BoardPlacer.propTypes = {
 };
 
 function FirstBoardPicker({ onBoardPicked }) {
-    const [selectedIndex, setSelectedIndex] = useState(1);
+    const [selectedIndex, setSelectedIndex] = useState(15);
     const [startingHexes, setStartingHexes] = useState(
         boardsData[selectedIndex].horizontal.startingHexes[0]
     );
@@ -188,12 +188,12 @@ function FirstBoardPicker({ onBoardPicked }) {
     }, [selectedIndex]);
 
     const handleMoveSelectionLeft = () => {
-        const nextIndex = selectedIndex - 1 < 1 ? 14 : selectedIndex - 1;
+        const nextIndex = selectedIndex - 1 < 1 ? 20 : selectedIndex - 1;
         setSelectedIndex(nextIndex);
     };
 
     const handleMoveSelectionRight = () => {
-        const nextIndex = selectedIndex + 1 > 14 ? 1 : selectedIndex + 1;
+        const nextIndex = selectedIndex + 1 > 20 ? 1 : selectedIndex + 1;
         setSelectedIndex(nextIndex);
     };
 

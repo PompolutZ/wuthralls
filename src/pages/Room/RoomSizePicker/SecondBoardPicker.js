@@ -347,7 +347,7 @@ function SecondBoardPicker({ onBoardPicked, top }) {
     const [scale, setScale] = useState(0.5);
     const [offset, setOffset] = useState(0);
     const [orientation, setOrientation] = useState("horizontal");
-    const [selectedIndex, setSelectedIndex] = useState(1);
+    const [selectedIndex, setSelectedIndex] = useState(15);
     const [topBoard, setTopBoard] = useState(top);
     const [bottomBoard, setBottomBoard] = useState({
         id: selectedIndex,
@@ -501,7 +501,7 @@ function SecondBoardPicker({ onBoardPicked, top }) {
     }, [selectedIndex, topBoard, bottomBoard, offset, orientation]);
 
     const handleMoveSelectionLeft = () => {
-        const nextIndex = selectedIndex - 1 < 1 ? 14 : selectedIndex - 1;
+        const nextIndex = selectedIndex - 1 < 1 ? 20 : selectedIndex - 1;
         setSelectedIndex(nextIndex);
         setBottomBoard({
             ...bottomBoard,
@@ -510,7 +510,7 @@ function SecondBoardPicker({ onBoardPicked, top }) {
     };
 
     const handleMoveSelectionRight = () => {
-        const nextIndex = selectedIndex + 1 > 14 ? 1 : selectedIndex + 1;
+        const nextIndex = selectedIndex + 1 > 20 ? 1 : selectedIndex + 1;
         setSelectedIndex(nextIndex);
         setBottomBoard({
             ...bottomBoard,
