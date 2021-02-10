@@ -8,7 +8,7 @@ import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import UnknownIcon from "@material-ui/icons/Help";
 import { makeStyles } from "@material-ui/core/styles";
-import { cardsIdToFactionIndex, factionIndexes, warbands } from "../../data";
+import { cardsDb, warbands } from "../../data";
 import { FirebaseContext } from "../../firebase";
 
 function shuffle(a) {
@@ -101,9 +101,14 @@ export default function SpawnRoom() {
     const myself = useAuthUser();
     const firebase = useContext(FirebaseContext);
     const history = useHistory();
-    const [selectedFaction, setSelectedFaction] = useState(null); //useState("hrothgorns-mantrappers");
-    const [objectiveCards, setObjectiveCards] = useState(""); //useState(`06172,06162,06295,06164,07001,06165,03384,06167,06311,03357,03368,06316`);
-    const [powerCards, setPowerCards] = useState(""); //useState(`06191,06181,06182,06184,06395,06175,06176,06187,06364,06398,07014,06189,06388,06179,03420,06434,03400,06403,03401,06417`);
+
+    const [selectedFaction, setSelectedFaction] = useState(null);
+    const [objectiveCards, setObjectiveCards] = useState("");
+    const [powerCards, setPowerCards] = useState("");
+    // const [selectedFaction, setSelectedFaction] = useState("hrothgorns-mantrappers");
+    // const [objectiveCards, setObjectiveCards] = useState(`06172,06162,06295,06164,07001,06165,03384,06167,06311,03357,03368,06316`);
+    // const [powerCards, setPowerCards] = useState(`06191,06181,06182,06184,06395,06175,06176,06187,06364,06398,07014,06189,06388,06179,03420,06434,03400,06403,03401,06417`);
+
     const [playerIsReady, setPlayerIsReady] = useState(false);
     const [roomName, setRoomName] = useState(""); //useState(`DEV ${Math.ceil(100 * Math.random())}`);
     const [deck, setDeck] = useState("");
@@ -114,22 +119,16 @@ export default function SpawnRoom() {
         const objectives = objectiveCards && objectiveCards.split(",");
         const powers = powerCards && powerCards.split(",");
         const allCards = [...objectives, ...powers];
-        let autoDeterminedFaction = null;
-        for (let c of allCards) {
-            if (cardsIdToFactionIndex[c]) {
-                autoDeterminedFaction =
-                    factionIndexes[cardsIdToFactionIndex[c]];
-                setSelectedFaction(autoDeterminedFaction);
-                break;
-            }
-        }
+        let factions = allCards
+            .map((cardId) => cardsDb[cardId].faction)
+            .filter((faction) => faction !== "universal");
 
         if (
-            Boolean(autoDeterminedFaction) &&
+            factions.length === 1 &&
             objectives.length === 12 &&
-            powers.length >= 20 &&
-            Boolean(roomName)
+            powers.length >= 20
         ) {
+            setSelectedFaction(factions[0]);
             setPlayerIsReady(true);
         }
     }, [objectiveCards, powerCards, roomName]);
