@@ -679,8 +679,8 @@ const warbands = {
             wounds: 0,
             tokens: "",
             upgrades: "",
-            counters: "Generic",
-            counterTypes: "Generic",
+            counters: "Aetherquartz",
+            counterTypes: "Aetherquartz",
         },
         {
             type: "FIGHTER",
@@ -693,8 +693,8 @@ const warbands = {
             wounds: 0,
             tokens: "",
             upgrades: "",
-            counters: "Generic",
-            counterTypes: "Generic",
+            counters: "Aetherquartz",
+            counterTypes: "Aetherquartz",
         },
         {
             type: "FIGHTER",
@@ -707,8 +707,8 @@ const warbands = {
             wounds: 0,
             tokens: "",
             upgrades: "",
-            counters: "Generic",
-            counterTypes: "Generic",
+            counters: "Aetherquartz",
+            counterTypes: "Aetherquartz",
         },
         {
             type: "FIGHTER",
@@ -721,8 +721,8 @@ const warbands = {
             wounds: 0,
             tokens: "",
             upgrades: "",
-            counters: "Generic",
-            counterTypes: "Generic",
+            counters: "Aetherquartz",
+            counterTypes: "Aetherquartz",
         },
     ],
 
