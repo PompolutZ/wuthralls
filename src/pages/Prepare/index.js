@@ -47,12 +47,15 @@ function Prepare() {
     const firebase = useContext(FirebaseContext);
     const history = useHistory();
     const { state } = useLocation();
+
     const [selectedFaction, setSelectedFaction] = useState(null);
     const [objectiveCards, setObjectiveCards] = useState("");
     const [powerCards, setPowerCards] = useState("");
     // const [selectedFaction, setSelectedFaction] = useState("hrothgorns-mantrappers");
     // const [objectiveCards, setObjectiveCards] = useState(`06172,06162,06295,06164,07001,06165,03384,06167,06311,03357,03368,06316`);
     // const [powerCards, setPowerCards] = useState(`06191,06181,06182,06184,06395,06175,06176,06187,06364,06398,07014,06189,06388,06179,03420,06434,03400,06403,03401,06417`);
+
+    const [primacy, setPrimacy] = useState(false);
     const [playerIsReady, setPlayerIsReady] = useState(false);
     const [deck, setDeck] = useState("");
 
@@ -61,17 +64,19 @@ function Prepare() {
 
         const objectives = objectiveCards && objectiveCards.split(",");
         const powers = powerCards && powerCards.split(",");
-        const allCards = [...objectives, ...powers];
-        let factions = allCards
-            .map((cardId) => cardsDb[cardId].faction)
-            .filter((faction) => faction !== "universal");
+        const allCards = [...objectives, ...powers].map(
+            (cardId) => cardsDb[cardId]
+        );
+        let { faction } = allCards.find((card) => card.faction !== "universal");
+        console.log(state);
 
-        if (
-            factions.length === 1 &&
-            objectives.length === 12 &&
-            powers.length >= 20
-        ) {
-            setSelectedFaction(factions[0]);
+        let anyPrimacyCards = allCards.some((card) => card.primacy);
+        if (anyPrimacyCards) {
+            setPrimacy(true);
+        }
+
+        if (faction && objectives.length === 12 && powers.length >= 20) {
+            setSelectedFaction(faction);
             setPlayerIsReady(true);
         }
     }, [objectiveCards, powerCards]);
@@ -105,10 +110,25 @@ function Prepare() {
             (r, fighter, idx) => ({ ...r, [`${myself.uid}_F${idx}`]: fighter }),
             {}
         );
-        await firebase.addPlayerToRoom(state.id, myself.uid, playerInfo, {
-            ...state.board.fighters,
-            ...myWarband,
-        });
+
+        let primacyInfo = undefined;
+        if (primacy || state.status.primacy) {
+            primacyInfo = [...state.players, myself.uid].reduce(
+                (info, uid) => ({ ...info, [uid]: false }),
+                {}
+            );
+        }
+
+        await firebase.addPlayerToRoom(
+            state.id,
+            myself.uid,
+            playerInfo,
+            {
+                ...state.board.fighters,
+                ...myWarband,
+            },
+            primacyInfo
+        );
 
         history.push("/");
     };
@@ -134,10 +154,18 @@ function Prepare() {
                 >
                     <Typography variant="h6">Faction</Typography>
                     {selectedFaction ? (
-                        <img
-                            className={classes.factionIcon}
-                            src={`/assets/factions/${selectedFaction}-icon.png`}
-                        />
+                        <div>
+                            <img
+                                className={classes.factionIcon}
+                                src={`/assets/factions/${selectedFaction}-icon.png`}
+                            />
+                            {primacy && (
+                                <img
+                                    className={classes.factionIcon}
+                                    src={`/assets/other/Primacy.png`}
+                                />
+                            )}
+                        </div>
                     ) : (
                         <UnknownIcon className={classes.factionIcon} />
                     )}

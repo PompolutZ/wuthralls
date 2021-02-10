@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useContext } from "react";
 import { useAuthUser } from "../../components/Session";
+import React, { useEffect, useState, useContext } from "react";
 import { useHistory } from "react-router-dom";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
@@ -109,6 +109,7 @@ export default function SpawnRoom() {
     // const [objectiveCards, setObjectiveCards] = useState(`06172,06162,06295,06164,07001,06165,03384,06167,06311,03357,03368,06316`);
     // const [powerCards, setPowerCards] = useState(`06191,06181,06182,06184,06395,06175,06176,06187,06364,06398,07014,06189,06388,06179,03420,06434,03400,06403,03401,06417`);
 
+    const [primacy, setPrimacy] = useState(false);
     const [playerIsReady, setPlayerIsReady] = useState(false);
     const [roomName, setRoomName] = useState(""); //useState(`DEV ${Math.ceil(100 * Math.random())}`);
     const [deck, setDeck] = useState("");
@@ -118,17 +119,19 @@ export default function SpawnRoom() {
 
         const objectives = objectiveCards && objectiveCards.split(",");
         const powers = powerCards && powerCards.split(",");
-        const allCards = [...objectives, ...powers];
-        let factions = allCards
-            .map((cardId) => cardsDb[cardId].faction)
-            .filter((faction) => faction !== "universal");
+        const allCards = [...objectives, ...powers].map(
+            (cardId) => cardsDb[cardId]
+        );
+        let { faction } = allCards.find((card) => card.faction !== "universal");
+        console.log(faction);
 
-        if (
-            factions.length === 1 &&
-            objectives.length === 12 &&
-            powers.length >= 20
-        ) {
-            setSelectedFaction(factions[0]);
+        let anyPrimacyCards = allCards.some((card) => card.primacy);
+        if (anyPrimacyCards) {
+            setPrimacy(true);
+        }
+
+        if (faction && objectives.length === 12 && powers.length >= 20) {
+            setSelectedFaction(faction);
             setPlayerIsReady(true);
         }
     }, [objectiveCards, powerCards, roomName]);
@@ -151,6 +154,8 @@ export default function SpawnRoom() {
         setRoomName(e.target.value);
     };
 
+    // ROOMS SHOULD BE DEFINED IN SOME OTHER MANNER
+    // SINCE WE BUILDING HERE JUST A HANDSHAKE
     const createNewRoom = async () => {
         const featureHexTokens = shuffle(featureTokens).reduce(
             (r, token, idx) => ({ ...r, [`Feature_${idx}`]: token }),
@@ -165,28 +170,36 @@ export default function SpawnRoom() {
             {}
         );
 
+        const initialStatus = {
+            round: 1,
+            stage: "SETUP",
+            waitingFor: [myself.uid],
+            waitingReason: "WAITING_FOR_OPPONENT",
+            rollOffs: {
+                [`${myself.uid}_1`]: "",
+            },
+            rollOffNumber: 1,
+            orientation: "HORIZONTAL",
+            top: {
+                id: -1,
+                rotate: 0,
+            },
+            bottom: {
+                id: -1,
+                rotate: 0,
+            },
+        };
+
+        if (primacy) {
+            initialStatus["primacy"] = {
+                [myself.uid]: false,
+            };
+        }
+
         const payload = {
             name: roomName,
             createdBy: myself.uid,
-            status: {
-                round: 1,
-                stage: "SETUP",
-                waitingFor: [myself.uid],
-                waitingReason: "WAITING_FOR_OPPONENT",
-                rollOffs: {
-                    [`${myself.uid}_1`]: "",
-                },
-                rollOffNumber: 1,
-                orientation: "HORIZONTAL",
-                top: {
-                    id: -1,
-                    rotate: 0,
-                },
-                bottom: {
-                    id: -1,
-                    rotate: 0,
-                },
-            },
+            status: initialStatus,
             board: {
                 fighters: {
                     ...myWarband,
@@ -245,10 +258,18 @@ export default function SpawnRoom() {
                 >
                     <Typography variant="h6">Faction</Typography>
                     {selectedFaction ? (
-                        <img
-                            className={classes.factionIcon}
-                            src={`/assets/factions/${selectedFaction}-icon.png`}
-                        />
+                        <div>
+                            <img
+                                className={classes.factionIcon}
+                                src={`/assets/factions/${selectedFaction}-icon.png`}
+                            />
+                            {primacy && (
+                                <img
+                                    className={classes.factionIcon}
+                                    src={`/assets/other/Primacy.png`}
+                                />
+                            )}
+                        </div>
                     ) : (
                         <UnknownIcon className={classes.factionIcon} />
                     )}
@@ -267,16 +288,6 @@ export default function SpawnRoom() {
                         onChange={handleDeckChange}
                     />
                 </Grid>
-                {/* <Grid item xs={12} lg={4}>
-                    <Typography variant="h6">Power cards pile</Typography>
-                    <Divider />
-                    <TextField 
-                        fullWidth 
-                        type="text"
-                        multiline
-                        value={powerCards}
-                        onChange={handlePowerCardsChange} />
-                </Grid> */}
                 <Grid item xs={12} lg={4}>
                     <Button
                         variant="contained"

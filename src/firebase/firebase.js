@@ -303,11 +303,11 @@ class Firebase {
             .onSnapshot(handler);
     }
 
-    async addPlayerToRoom(roomId, playerId, playerInfo, warband) {
+    async addPlayerToRoom(roomId, playerId, playerInfo, warband, primacy) {
         try {
             const roomRef = this.fstore.collection("rooms").doc(roomId);
 
-            await roomRef.update({
+            const payload = {
                 // add player to players list
                 players: this.firestoreArrayUnion(playerId),
                 // add player's warband
@@ -318,7 +318,13 @@ class Firebase {
                 [`status.waitingFor`]: this.firestoreArrayUnion(playerId),
                 [`status.waitingReason`]: "INITIATIVE_ROLL",
                 [`status.rollOffs.${playerId}_1`]: "",
-            });
+            };
+
+            if (primacy) {
+                payload["status.primacy"] = primacy;
+            }
+
+            await roomRef.update(payload);
 
             const now = new Date();
             await this.fstore
