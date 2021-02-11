@@ -8,6 +8,7 @@ import Paper from "@material-ui/core/Paper";
 import { FirebaseContext } from "../../firebase";
 import { useHistory } from "react-router-dom";
 import { SignInForm } from "../../components/SignInPage";
+import PrimacyIndicator from "./PrimacyIndicator";
 
 function Rooms() {
     const myself = useAuthUser();
@@ -196,7 +197,18 @@ function Rooms() {
                                                 container
                                                 justify="center"
                                             >
-                                                <Typography variant="h5">{`VS`}</Typography>
+                                                <div
+                                                    style={{
+                                                        display: "flex",
+                                                        flexDirection: "column",
+                                                        alignItems: "center",
+                                                    }}
+                                                >
+                                                    <Typography variant="h5">{`VS`}</Typography>
+                                                    {r.status.primacy && (
+                                                        <PrimacyIndicator />
+                                                    )}
+                                                </div>
                                             </Grid>
                                             <Grid item xs={4}>
                                                 {participants.length === 1 && (
@@ -363,6 +375,9 @@ function Rooms() {
                                                     justify="center"
                                                 >
                                                     <Typography variant="h5">{`VS`}</Typography>
+                                                    {r.status.primacy && (
+                                                        <PrimacyIndicator />
+                                                    )}
                                                 </Grid>
                                                 <Grid item xs={4}>
                                                     {participants.length ===

@@ -25,8 +25,8 @@ function RoundCounter({ round, onRoundChange }) {
                 onClick={handleChangeValue(-1)}
                 style={{
                     backgroundColor: "green",
-                    width: "3rem",
-                    height: "3rem",
+                    width: "2rem",
+                    height: "2rem",
                     borderRadius: "1.5rem",
                     border: "3px solid white",
                     color: "white",
@@ -39,17 +39,18 @@ function RoundCounter({ round, onRoundChange }) {
                 style={{
                     display: "flex",
                     position: "relative",
-                    width: "8rem",
-                    height: "8rem",
+                    width: "5rem",
+                    height: "5rem",
                     borderRadius: "4rem",
                     border: "2px solid white",
+                    alignItems: "center",
+                    justifyContent: "center",
                 }}
             >
                 <div
                     style={{
-                        margin: "-1rem auto 1rem auto",
                         color: "white",
-                        fontSize: "7rem",
+                        fontSize: "4rem",
                         fontWeight: "bold",
                     }}
                 >
@@ -60,8 +61,8 @@ function RoundCounter({ round, onRoundChange }) {
                         backgroundImage: `url(/assets/other/roundToken.png)`,
                         backgroundPosition: "center, center",
                         backgroundSize: "cover",
-                        width: "8rem",
-                        height: "8rem",
+                        width: "5rem",
+                        height: "5rem",
                         position: "absolute",
                         top: 0,
                         left: 0,
@@ -76,8 +77,8 @@ function RoundCounter({ round, onRoundChange }) {
                 onClick={handleChangeValue(1)}
                 style={{
                     backgroundColor: "red",
-                    width: "3rem",
-                    height: "3rem",
+                    width: "2rem",
+                    height: "2rem",
                     borderRadius: "1.5rem",
                     border: "3px solid white",
                     color: "white",
@@ -333,6 +334,59 @@ ActivationsCounter.propTypes = {
     onActivationsCounterChanged: PropTypes.func,
 };
 
+function PrimacyOwner({ ownership, me, onOwnershipChange }) {
+    const [[opponent, hasPrimacy]] = Object.entries(ownership).filter(
+        ([k]) => k !== me
+    );
+
+    const handleClaimPrimacy = (owner) => () => {
+        const payload = {
+            [me]: false,
+            [opponent]: false,
+        };
+
+        payload[owner] = true;
+        onOwnershipChange(payload);
+    };
+
+    return (
+        <div
+            style={{
+                display: "flex",
+                alignItems: "center",
+                flexDirection: "column",
+                margin: "0 1rem",
+            }}
+        >
+            <img
+                src="/assets/other/Primacy.png"
+                style={{
+                    width: "2rem",
+                    height: "2rem",
+                    opacity: ownership[me] ? 1 : 0.5,
+                }}
+                onClick={handleClaimPrimacy(me)}
+            />
+            <Divider />
+            <img
+                src="/assets/other/Primacy.png"
+                style={{
+                    width: "2rem",
+                    height: "2rem",
+                    opacity: hasPrimacy ? 1 : 0.5,
+                }}
+                onClick={handleClaimPrimacy(opponent)}
+            />
+        </div>
+    );
+}
+
+PrimacyOwner.propTypes = {
+    ownership: PropTypes.object,
+    me: PropTypes.string,
+    onOwnershipChange: PropTypes.func,
+};
+
 function GameStatusHUD({ data, onModified }) {
     const myself = useAuthUser();
     const firebase = useContext(FirebaseContext);
@@ -435,12 +489,24 @@ function GameStatusHUD({ data, onModified }) {
         });
     };
 
+    const handleOwnershipChange = (value) => {
+        firebase.updateRoom(data.id, {
+            [`status.primacy`]: value,
+        });
+
+        firebase.addGenericMessage2(data.id, {
+            author: "Katophrane",
+            type: "INFO",
+            value: `${
+                value[myself.uid] ? myself.username : data[opponent].name
+            } has claimed Primacy token.`,
+        });
+    };
+
     return (
-        <Grid container>
-            <Grid container justify="center">
-                <Grid item>
-                    <Typography variant="h6">{myself.username}</Typography>
-                </Grid>
+        <Grid container alignItems="center" direction="column">
+            <Grid item>
+                <Typography variant="h6">{myself.username}</Typography>
             </Grid>
             <Grid item xs={12}>
                 <CombinedGloryCounter
@@ -462,17 +528,22 @@ function GameStatusHUD({ data, onModified }) {
                 </Grid>
             </Grid>
             <Grid item xs={12}>
-                <br />
-                <Divider />
-                <Grid container justify="center">
+                <div style={{ display: "flex", width: "100%" }}>
                     <RoundCounter
                         round={data.status.round}
                         onRoundChange={handleRoundCounterChange}
                     />
-                </Grid>
-                <Divider />
-                <br />
+                    {data.status.primacy && (
+                        <PrimacyOwner
+                            ownership={data.status.primacy}
+                            me={myself.uid}
+                            onOwnershipChange={handleOwnershipChange}
+                        />
+                    )}
+                </div>
             </Grid>
+            <Grid item xs={4}></Grid>
+
             {Boolean(opponent) && (
                 <Grid item xs={12}>
                     <Grid container justify="center">

@@ -129,15 +129,13 @@ const modifyNoOnesArray = (array, offset) => {
 };
 
 const renderHex = (hex, svg, color, lethals, blocked) => {
-    // render(draw, color) {
-
     const { x, y } = hex.toPoint();
     const corners = hex.corners();
     const isLethal = lethals.some(([x, y]) => x === hex.x && y === hex.y);
     const isBlocked = blocked.some(([x, y]) => x === hex.x && y === hex.y);
 
     const handleMouseOver = () => {
-        const element = SVG.get(`hex${hex.x}${hex.y}`); //svg.children().find(c => c.node.id === `hex${hex.x}${hex.y}`);
+        const element = SVG.get(`hex${hex.x}${hex.y}`);
         if (element) {
             element
                 .stop(true, true)
@@ -159,7 +157,6 @@ const renderHex = (hex, svg, color, lethals, blocked) => {
     };
 
     svg.polygon(corners.map(({ x, y }) => `${x * 0.96},${y * 0.96}`))
-        //.style({ filter: isLethal ? 'drop-shadow(0px 0px 10px red)' : 'drop-shadow(0px 0px 0px white)' })
         .fill(isBlocked ? "rgba(192,192,192, .5)" : "rgba(192,192,192, 0)")
         .on("mouseover", handleMouseOver)
         .on("mouseout", handleMouseOut)
@@ -288,18 +285,9 @@ function Board({
         left: -10000,
     });
     const [selectedTokenId, setSelectedTokenId] = useState(null);
-    //const [scaleFactor, setScaleFactor] = useState(.5);
     const myData = state[myself.uid];
-    const opponentData =
-        state.players.length > 1
-            ? state[state.players.find((p) => p !== myself.uid)]
-            : null;
-    // const [myData, setMyData] = useState(state[myself.uid]);
-    // const [opponentData, setOpponentData] = useState(
-    //     state.players.length > 1
-    //         ? state[state.players.find((p) => p !== myself.uid)]
-    //         : null
-    // );
+    const opponent = state.players.find((p) => p !== myself.uid);
+    const opponentData = state.players.length > 1 ? state[opponent] : null;
 
     useEffect(() => {
         if (state.status.stage !== "READY") return;
@@ -562,10 +550,30 @@ function Board({
                             alignItems: "center",
                         }}
                     >
-                        <img
-                            src={`/assets/factions/${myData.faction}-icon.png`}
-                            style={{ width: "1.5rem", height: "1.5rem" }}
-                        />
+                        <div style={{ position: "relative" }}>
+                            <img
+                                src={`/assets/factions/${myData.faction}-icon.png`}
+                                style={{ width: "1.5rem", height: "1.5rem" }}
+                            />
+                            {state.status.primacy &&
+                                state.status.primacy[myself.uid] && (
+                                    <img
+                                        src={`/assets/other/Primacy.png`}
+                                        style={{
+                                            width: "1rem",
+                                            height: "1rem",
+                                            position: "absolute",
+                                            bottom: 0,
+                                            left: "50%",
+                                            marginLeft: "-0.5rem",
+                                            marginBottom: "-0.5rem",
+                                            boxSizing: "border-box",
+                                            border: "1px solid #ccc",
+                                            borderRadius: "1rem",
+                                        }}
+                                    />
+                                )}
+                        </div>
                         <div
                             style={{
                                 marginRight: ".2rem",
@@ -680,15 +688,37 @@ function Board({
                             alignItems: "center",
                         }}
                     >
-                        <img
-                            src={`/assets/factions/${opponentData.faction}-icon.png`}
-                            style={{
-                                width: "1.5rem",
-                                height: "1.5rem",
-                                borderLeft: "1px solid gray",
-                                paddingLeft: ".2rem",
-                            }}
-                        />
+                        <div style={{ position: "relative" }}>
+                            <img
+                                src={`/assets/factions/${opponentData.faction}-icon.png`}
+                                style={{
+                                    width: "1.5rem",
+                                    height: "1.5rem",
+                                    borderLeft: "1px solid gray",
+                                    paddingLeft: ".2rem",
+                                }}
+                            />
+                            {state.status.primacy &&
+                                opponent &&
+                                state.status.primacy[opponent] && (
+                                    <img
+                                        src={`/assets/other/Primacy.png`}
+                                        style={{
+                                            width: "1rem",
+                                            height: "1rem",
+                                            position: "absolute",
+                                            bottom: 0,
+                                            right: "50%",
+                                            marginRight: "-0.5rem",
+                                            marginBottom: "-0.5rem",
+                                            boxSizing: "border-box",
+                                            border: "1px solid #ccc",
+                                            borderRadius: "1rem",
+                                        }}
+                                    />
+                                )}
+                        </div>
+
                         <div
                             style={{
                                 marginLeft: ".2rem",
