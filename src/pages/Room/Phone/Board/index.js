@@ -971,6 +971,7 @@ function Board({
                                             key={k}
                                             x={x}
                                             y={y}
+                                            counter={hex.counter}
                                             pointyTokenBaseWidth={
                                                 pointyTokenBaseWidth
                                             }

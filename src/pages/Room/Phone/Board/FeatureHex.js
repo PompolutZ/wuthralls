@@ -11,6 +11,7 @@ function FeatureHex({
     isLethal,
     number,
     isSelected,
+    counter,
 }) {
     return (
         <div
@@ -41,8 +42,24 @@ function FeatureHex({
                 }
                 style={{
                     width: pointyTokenBaseWidth * scaleFactor,
+                    opacity: counter ? 0.5 : 1,
                 }}
             />
+            {counter && (
+                <img
+                    src={`/assets/other/${counter}.png`}
+                    style={{
+                        width: pointyTokenBaseWidth * 0.7 * scaleFactor,
+                        position: "absolute",
+                        top: "50%",
+                        left: "50%",
+                        marginTop:
+                            (-(pointyTokenBaseWidth * 0.7) * scaleFactor) / 2,
+                        marginLeft:
+                            (-(pointyTokenBaseWidth * 0.7) * scaleFactor) / 2,
+                    }}
+                />
+            )}
             <div
                 style={{
                     position: "absolute",
@@ -81,6 +98,7 @@ FeatureHex.propTypes = {
     isSelected: PropTypes.bool,
     isLethal: PropTypes.bool,
     number: PropTypes.number,
+    counter: PropTypes.string,
 };
 
 export default FeatureHex;
