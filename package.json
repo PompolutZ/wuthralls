@@ -7,7 +7,7 @@
     "@material-ui/icons": "^4.5.1",
     "@material-ui/lab": "^4.0.0-alpha.39",
     "@react-hook/throttle": "^1.0.9",
-    "firebase": "7.2.1",
+    "firebase": "^8.2.7",
     "honeycomb-grid": "^3.1.0",
     "lodash": "^4.17.15",
     "prop-types": "^15.7.2",
