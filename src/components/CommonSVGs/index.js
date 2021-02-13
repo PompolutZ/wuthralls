@@ -2,13 +2,10 @@ import React from "react";
 import SvgIcon from "@material-ui/core/SvgIcon";
 import PropTypes from "prop-types";
 
-function SVGPath(props) {
+function SVGPath({ path, ...rest }) {
     return (
-        <SvgIcon
-            viewBox="0 0 24 24"
-            style={{ ...{ width: 100, height: 100 }, ...props.style }}
-        >
-            <path d={props.path} />
+        <SvgIcon viewBox="0 0 24 24" {...rest}>
+            <path d={path} />
         </SvgIcon>
     );
 }

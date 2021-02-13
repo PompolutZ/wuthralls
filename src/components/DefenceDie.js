@@ -7,108 +7,62 @@ import {
     DoubleAssist,
     Crit,
 } from "./CommonSVGs";
+import { makeStyles } from "@material-ui/core/styles";
 
-function hexToRgb(hex) {
+function hexToRgb(hex, alpha = 1) {
     var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-    return result
-        ? {
-              r: parseInt(result[1], 16),
-              g: parseInt(result[2], 16),
-              b: parseInt(result[3], 16),
-          }
-        : null;
+    let red = parseInt(result[1], 16);
+    let green = parseInt(result[2], 16);
+    let blue = parseInt(result[3], 16);
+
+    return result ? `rgba(${red},${green},${blue},${alpha})` : "";
 }
 
-function DefenceDie({ side, accentColorHex, size, useBlackOutline }) {
-    const { r, g, b } = hexToRgb(accentColorHex);
+const useStyles = makeStyles({
+    core: ({ size, useBlackOutline, accentColorHex }) => ({
+        width: size,
+        height: size,
+        display: "flex",
+        boxSizing: "border-box",
+        border: `2px solid ${useBlackOutline ? "black" : accentColorHex}`,
+        borderRadius: size * 0.2,
+        backgroundColor: useBlackOutline ? "black" : hexToRgb(accentColorHex),
+    }),
+
+    symbol: ({ size, useBlackOutline, accentColorHex }) => ({
+        margin: "auto",
+        width: size * 0.8,
+        height: size * 0.8,
+        color: useBlackOutline ? hexToRgb(accentColorHex) : "white",
+    }),
+});
+
+function SideToSymbol({ side, ...rest }) {
+    switch (side) {
+        case 1:
+            return <SingleAssist {...rest} />;
+        case 2:
+            return <DefenceDodge {...rest} />;
+        case 3:
+            return <DefenceBlock {...rest} />;
+        case 4:
+            return <DefenceBlock {...rest} />;
+        case 5:
+            return <DoubleAssist {...rest} />;
+        default:
+            return <Crit {...rest} />;
+    }
+}
+
+SideToSymbol.propTypes = {
+    side: PropTypes.number,
+};
+
+function DefenceDie(props) {
+    const classes = useStyles(props);
     return (
-        <div
-            style={{
-                width: size,
-                height: size,
-                display: "flex",
-                boxSizing: "border-box",
-                border: `2px solid ${
-                    useBlackOutline ? "black" : accentColorHex
-                }`,
-                borderRadius: size * 0.2,
-                backgroundColor: useBlackOutline
-                    ? "black"
-                    : `rgba(${r},${g},${b})`,
-            }}
-        >
-            {Number(side) === 1 && (
-                <SingleAssist
-                    style={{
-                        margin: "auto",
-                        width: size * 0.8,
-                        height: size * 0.8,
-                        color: useBlackOutline
-                            ? `rgba(${r},${g},${b})`
-                            : "white",
-                    }}
-                />
-            )}
-            {Number(side) === 2 && (
-                <DefenceDodge
-                    style={{
-                        margin: "auto",
-                        width: size * 0.8,
-                        height: size * 0.8,
-                        color: useBlackOutline
-                            ? `rgba(${r},${g},${b})`
-                            : "white",
-                    }}
-                />
-            )}
-            {Number(side) === 3 && (
-                <DefenceBlock
-                    style={{
-                        margin: "auto",
-                        width: size * 0.8,
-                        height: size * 0.8,
-                        color: useBlackOutline
-                            ? `rgba(${r},${g},${b})`
-                            : "white",
-                    }}
-                />
-            )}
-            {Number(side) === 4 && (
-                <DefenceBlock
-                    style={{
-                        margin: "auto",
-                        width: size * 0.8,
-                        height: size * 0.8,
-                        color: useBlackOutline
-                            ? `rgba(${r},${g},${b})`
-                            : "white",
-                    }}
-                />
-            )}
-            {Number(side) === 5 && (
-                <DoubleAssist
-                    style={{
-                        margin: "auto",
-                        width: size * 0.8,
-                        height: size * 0.8,
-                        color: useBlackOutline
-                            ? `rgba(${r},${g},${b})`
-                            : "white",
-                    }}
-                />
-            )}
-            {Number(side) === 6 && (
-                <Crit
-                    style={{
-                        margin: "auto",
-                        width: size * 0.8,
-                        height: size * 0.8,
-                        color: useBlackOutline
-                            ? `rgba(${r},${g},${b})`
-                            : "white",
-                    }}
-                />
-            )}
+        <div className={classes.core}>
+            <SideToSymbol className={classes.symbol} />
         </div>
     );
 }

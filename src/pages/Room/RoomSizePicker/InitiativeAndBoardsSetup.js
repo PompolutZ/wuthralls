@@ -38,7 +38,10 @@ function RollOffDiceTray({ rollResults, faction }) {
                                     accentColorHex={warbandColors[faction]}
                                     size={36}
                                     side={x}
-                                    useBlackOutline={faction === "zarbags-gitz"}
+                                    useBlackOutline={
+                                        faction === "zarbags-gitz" ||
+                                        faction === "khagras-ravagers"
+                                    }
                                 />
                             )}
                             {i % 2 !== 0 && (
@@ -46,7 +49,10 @@ function RollOffDiceTray({ rollResults, faction }) {
                                     accentColorHex={warbandColors[faction]}
                                     size={36}
                                     side={x}
-                                    useBlackOutline={faction === "zarbags-gitz"}
+                                    useBlackOutline={
+                                        faction === "zarbags-gitz" ||
+                                        faction === "khagras-ravagers"
+                                    }
                                 />
                             )}
                         </div>

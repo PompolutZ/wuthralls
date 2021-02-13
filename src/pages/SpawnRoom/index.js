@@ -166,7 +166,19 @@ export default function SpawnRoom() {
             {}
         );
         const myWarband = warbands[selectedFaction].reduce(
-            (r, fighter, idx) => ({ ...r, [`${myself.uid}_F${idx}`]: fighter }),
+            (r, fighter, idx) => ({
+                ...r,
+                [`${myself.uid}_F${idx}`]: {
+                    from: { x: -1, y: -1 },
+                    onBoard: { x: -1, y: -1 },
+                    isOnBoard: false,
+                    isInspired: false,
+                    wounds: 0,
+                    tokens: "",
+                    upgrades: "",
+                    ...fighter,
+                },
+            }),
             {}
         );
 

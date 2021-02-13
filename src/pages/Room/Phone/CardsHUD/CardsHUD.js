@@ -174,7 +174,7 @@ const CardsHUD = ({
     const playCard = (card) => () => {
         setHand((prev) => prev.filter((c) => c.id !== card.id));
 
-        if (card.type === 0) {
+        if (card.type === "Objective") {
             if (!scoredObjectives) {
                 setScoredObjectives([card]);
             } else {
@@ -340,7 +340,7 @@ const CardsHUD = ({
     const discardCard = (card) => () => {
         setHand((prev) => prev.filter((c) => c.id !== card.id));
 
-        if (card.type === 0) {
+        if (card.type === "Objective") {
             if (!discardedObjectives) {
                 setDiscardedObjectives([card]);
             } else {
@@ -659,8 +659,9 @@ const CardsHUD = ({
                                 Objectives{" "}
                                 {`(${
                                     hand && hand.length > 0
-                                        ? hand.filter((c) => c.type === 0)
-                                              .length
+                                        ? hand.filter(
+                                              (c) => c.type === "Objective"
+                                          ).length
                                         : "empty"
                                 })`}
                             </Typography>
@@ -676,7 +677,9 @@ const CardsHUD = ({
                                     {hand &&
                                         hand.length > 0 &&
                                         hand
-                                            .filter((c) => c.type === 0)
+                                            .filter(
+                                                (c) => c.type === "Objective"
+                                            )
                                             .map((card, idx, arr) => (
                                                 <Paper
                                                     key={card.id}
@@ -721,8 +724,9 @@ const CardsHUD = ({
                                 Power cards{" "}
                                 {`(${
                                     hand && hand.length > 0
-                                        ? hand.filter((c) => c.type !== 0)
-                                              .length
+                                        ? hand.filter(
+                                              (c) => c.type !== "Objective"
+                                          ).length
                                         : "empty"
                                 })`}
                             </Typography>
@@ -738,7 +742,9 @@ const CardsHUD = ({
                                     {hand &&
                                         hand.length > 0 &&
                                         hand
-                                            .filter((c) => c.type !== 0)
+                                            .filter(
+                                                (c) => c.type !== "Objective"
+                                            )
                                             .map((card, idx, arr) => (
                                                 <Paper
                                                     key={card.id}
@@ -801,7 +807,7 @@ const CardsHUD = ({
                                     {scoredObjectives &&
                                         scoredObjectives.length > 0 &&
                                         scoredObjectives
-                                            // .filter(c => c.type !== 0)
+                                            // .filter(c => c.type !== "Objective")
                                             .map((card, idx, arr) => (
                                                 <Paper
                                                     key={card.id}
@@ -864,7 +870,7 @@ const CardsHUD = ({
                                     {discardedObjectives &&
                                         discardedObjectives.length > 0 &&
                                         discardedObjectives
-                                            // .filter(c => c.type !== 0)
+                                            // .filter(c => c.type !== "Objective")
                                             .map((card, idx, arr) => (
                                                 <Paper
                                                     key={card.id}
@@ -927,7 +933,7 @@ const CardsHUD = ({
                                     {discardedPowers &&
                                         discardedPowers.length > 0 &&
                                         discardedPowers
-                                            // .filter(c => c.type !== 0)
+                                            // .filter(c => c.type !== "Objective")
                                             .map((card, idx, arr) => (
                                                 <Paper
                                                     key={card.id}
@@ -1018,7 +1024,9 @@ const CardsHUD = ({
                                             >
                                                 {opponentHand &&
                                                     opponentHand.filter(
-                                                        (c) => c.type === 0
+                                                        (c) =>
+                                                            c.type ===
+                                                            "Objective"
                                                     ).length}
                                             </Typography>
                                         </Paper>
@@ -1060,7 +1068,9 @@ const CardsHUD = ({
                                             >
                                                 {opponentHand &&
                                                     opponentHand.filter(
-                                                        (c) => c.type !== 0
+                                                        (c) =>
+                                                            c.type !==
+                                                            "Objective"
                                                     ).length}
                                             </Typography>
                                         </Paper>
@@ -1090,7 +1100,7 @@ const CardsHUD = ({
                                         opponentScoreObjectivesPile.length >
                                             0 &&
                                         opponentScoreObjectivesPile
-                                            // .filter(c => c.type !== 0)
+                                            // .filter(c => c.type !== "Objective")
                                             .map((card, idx, arr) => (
                                                 <Paper
                                                     key={card.id}
@@ -1154,7 +1164,7 @@ const CardsHUD = ({
                                         opponentObjectivesDiscardPile.length >
                                             0 &&
                                         opponentObjectivesDiscardPile
-                                            // .filter(c => c.type !== 0)
+                                            // .filter(c => c.type !== "Objective")
                                             .map((card, idx, arr) => (
                                                 <Paper
                                                     key={card.id}
@@ -1217,7 +1227,7 @@ const CardsHUD = ({
                                     {opponentPowersDiscardPile &&
                                         opponentPowersDiscardPile.length > 0 &&
                                         opponentPowersDiscardPile
-                                            // .filter(c => c.type !== 0)
+                                            // .filter(c => c.type !== "Objective")
                                             .map((card, idx, arr) => (
                                                 <Paper
                                                     key={card.id}
