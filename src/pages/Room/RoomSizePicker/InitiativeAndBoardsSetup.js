@@ -37,7 +37,7 @@ function RollOffDiceTray({ rollResults, faction }) {
                                 <DefenceDie
                                     accentColorHex={warbandColors[faction]}
                                     size={36}
-                                    side={x}
+                                    side={Number(x)}
                                     useBlackOutline={
                                         faction === "zarbags-gitz" ||
                                         faction === "khagras-ravagers"
@@ -48,7 +48,7 @@ function RollOffDiceTray({ rollResults, faction }) {
                                 <AttackDie
                                     accentColorHex={warbandColors[faction]}
                                     size={36}
-                                    side={x}
+                                    side={Number(x)}
                                     useBlackOutline={
                                         faction === "zarbags-gitz" ||
                                         faction === "khagras-ravagers"

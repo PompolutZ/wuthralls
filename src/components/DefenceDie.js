@@ -38,7 +38,8 @@ const useStyles = makeStyles({
 });
 
 function SideToSymbol({ side, ...rest }) {
-    switch (side) {
+    const value = Number(side);
+    switch (value) {
         case 1:
             return <SingleAssist {...rest} />;
         case 2:
@@ -59,10 +60,11 @@ SideToSymbol.propTypes = {
 };
 
 function DefenceDie(props) {
+    console.log(props);
     const classes = useStyles(props);
     return (
         <div className={classes.core}>
-            <SideToSymbol className={classes.symbol} />
+            <SideToSymbol className={classes.symbol} {...props} />
         </div>
     );
 }
