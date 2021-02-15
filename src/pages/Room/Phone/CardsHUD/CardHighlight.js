@@ -39,7 +39,7 @@ const CardHighlight = ({
     const [addTokenAnchor, setAddTokenAnchor] = useState(null);
 
     const playOrUpgrade = (e) => {
-        if (highlightCard.type !== 2) {
+        if (highlightCard.type !== "Upgrade") {
             playCard(highlightCard)();
         } else {
             setAddTokenAnchor(e.currentTarget);
@@ -206,7 +206,7 @@ const CardHighlight = ({
                                 }}
                                 onClick={playOrUpgrade}
                             >
-                                {highlightCard.type !== 2 && (
+                                {highlightCard.type !== "Upgrade" && (
                                     <PlayIcon
                                         style={{
                                             width: "2rem",
@@ -214,7 +214,7 @@ const CardHighlight = ({
                                         }}
                                     />
                                 )}
-                                {highlightCard.type === 2 && (
+                                {highlightCard.type === "Upgrade" && (
                                     <PlayUpgradeIcon
                                         style={{
                                             width: "2rem",

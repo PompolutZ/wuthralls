@@ -118,7 +118,7 @@ function UpgradePicker({
             playerInfo.hand
                 .split(",")
                 .map((cardId) => ({ ...cardsDb[cardId], id: cardId }))
-                .filter((c) => c.type === 2)
+                .filter((c) => c.type === "Upgrade")
     );
     const [currentIndex, setCurrentIndex] = useState(0);
 

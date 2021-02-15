@@ -639,7 +639,10 @@ function Board({
                             <Typography
                                 style={{ margin: "auto", fontSize: ".7rem" }}
                             >
-                                {myHand.filter((c) => c.type === 0).length}
+                                {
+                                    myHand.filter((c) => c.type === "Objective")
+                                        .length
+                                }
                             </Typography>
                         </div>
                         <div
@@ -656,7 +659,10 @@ function Board({
                             <Typography
                                 style={{ margin: "auto", fontSize: ".7rem" }}
                             >
-                                {myHand.filter((c) => c.type !== 0).length}
+                                {
+                                    myHand.filter((c) => c.type !== "Objective")
+                                        .length
+                                }
                             </Typography>
                         </div>
                         <ButtonBase
@@ -785,8 +791,9 @@ function Board({
                                 style={{ margin: "auto", fontSize: ".7rem" }}
                             >
                                 {
-                                    opponentHand.filter((c) => c.type === 0)
-                                        .length
+                                    opponentHand.filter(
+                                        (c) => c.type === "Objective"
+                                    ).length
                                 }
                             </Typography>
                         </div>
@@ -805,8 +812,9 @@ function Board({
                                 style={{ margin: "auto", fontSize: ".7rem" }}
                             >
                                 {
-                                    opponentHand.filter((c) => c.type !== 0)
-                                        .length
+                                    opponentHand.filter(
+                                        (c) => c.type !== "Objective"
+                                    ).length
                                 }
                             </Typography>
                         </div>
