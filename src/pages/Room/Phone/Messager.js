@@ -96,7 +96,8 @@ const DiceRollMessage = React.memo(
                                     size={36}
                                     side={Number(x)}
                                     useBlackOutline={
-                                        authorFaction === "zarbags-gitz"
+                                        authorFaction === "zarbags-gitz" ||
+                                        authorFaction === "khagras-ravagers"
                                     }
                                 />
                             )}
@@ -108,7 +109,8 @@ const DiceRollMessage = React.memo(
                                     size={36}
                                     side={Number(x)}
                                     useBlackOutline={
-                                        authorFaction === "zarbags-gitz"
+                                        authorFaction === "zarbags-gitz" ||
+                                        authorFaction === "khagras-ravagers"
                                     }
                                 />
                             )}
@@ -123,7 +125,8 @@ const DiceRollMessage = React.memo(
                                     size={36}
                                     side={Number(x)}
                                     useBlackOutline={
-                                        authorFaction === "zarbags-gitz"
+                                        authorFaction === "zarbags-gitz" ||
+                                        authorFaction === "khagras-ravagers"
                                     }
                                 />
                             )}
@@ -135,7 +138,8 @@ const DiceRollMessage = React.memo(
                                     size={36}
                                     side={Number(x)}
                                     useBlackOutline={
-                                        authorFaction === "zarbags-gitz"
+                                        authorFaction === "zarbags-gitz" ||
+                                        authorFaction === "khagras-ravagers"
                                     }
                                 />
                             )}
@@ -348,7 +352,7 @@ function Messenger({ state }) {
 
     useEffect(() => {
         if (!messages) return;
-        setVisibleMessages(messages);
+        setVisibleMessages(messages.sort((prev, next) => prev.id - next.id));
     }, [messages]);
 
     useLayoutEffect(() => {

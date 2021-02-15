@@ -203,7 +203,8 @@ function RollDiceAction({ roomId, rollResult, defaultAmount, myFaction }) {
                                         size={36}
                                         side={x}
                                         useBlackOutline={
-                                            myFaction === "zarbags-gitz"
+                                            myFaction === "zarbags-gitz" ||
+                                            myFaction === "khagras-ravagers"
                                         }
                                     />
                                 )}
@@ -215,7 +216,8 @@ function RollDiceAction({ roomId, rollResult, defaultAmount, myFaction }) {
                                         size={36}
                                         side={x}
                                         useBlackOutline={
-                                            myFaction === "zarbags-gitz"
+                                            myFaction === "zarbags-gitz" ||
+                                            myFaction === "khagras-ravagers"
                                         }
                                     />
                                 )}
@@ -231,7 +233,8 @@ function RollDiceAction({ roomId, rollResult, defaultAmount, myFaction }) {
                                             size={36}
                                             side={x}
                                             useBlackOutline={
-                                                myFaction === "zarbags-gitz"
+                                                myFaction === "zarbags-gitz" ||
+                                                myFaction === "khagras-ravagers"
                                             }
                                         />
                                     )}
@@ -244,21 +247,12 @@ function RollDiceAction({ roomId, rollResult, defaultAmount, myFaction }) {
                                             size={36}
                                             side={x}
                                             useBlackOutline={
-                                                myFaction === "zarbags-gitz"
+                                                myFaction === "zarbags-gitz" ||
+                                                myFaction === "khagras-ravagers"
                                             }
                                         />
                                     )}
                             </div>
-                            // <Die
-                            //     key={i}
-                            //     side={x}
-                            //     type={selectedType}
-                            //     style={{
-                            //         width: '3rem',
-                            //         height: '3rem',
-                            //         marginRight: '.2rem',
-                            //     }}
-                            // />
                         ))}
                     {canIncrease && (
                         <ButtonBase
