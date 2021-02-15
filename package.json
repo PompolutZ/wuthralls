@@ -1,6 +1,6 @@
 {
   "name": "wuthralls",
-  "version": "0.26.1",
+  "version": "0.26.2",
   "private": true,
   "dependencies": {
     "@material-ui/core": "^4.6.0",
