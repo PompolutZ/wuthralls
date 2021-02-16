@@ -12,6 +12,7 @@ import { useAuthUser } from "../../../components/Session";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import PropTypes from "prop-types";
+import { sortByIdAsc } from "../../../utils";
 
 const useStyles = makeStyles(() => ({
     root: {
@@ -135,7 +136,7 @@ function ObjectiveHexesPile({ roomId, tokens, onSelectedTokenChange }) {
     return (
         <div className={classes.root}>
             <div className={classes.itemsContainer}>
-                {tokens.map((token) => (
+                {tokens.sort(sortByIdAsc).map((token) => (
                     <div
                         key={token.id}
                         style={{

@@ -7,6 +7,7 @@ import EditIcon from "@material-ui/icons/Edit";
 import { FirebaseContext } from "../../../firebase";
 import { makeStyles } from "@material-ui/core/styles";
 import PropTypes from "prop-types";
+import { sortByIdAsc } from "../../../utils";
 
 const useStyles = makeStyles(() => ({
     root: {
@@ -29,7 +30,6 @@ const useStyles = makeStyles(() => ({
         overflow: "auto",
     },
 }));
-
 function Warband({
     roomId,
     myfighters,
@@ -40,7 +40,10 @@ function Warband({
 }) {
     const classes = useStyles();
     const myself = useAuthUser();
-    const fighters = [...myfighters, ...enemyFighters];
+    const fighters = [
+        ...myfighters.sort(sortByIdAsc),
+        ...enemyFighters.sort(sortByIdAsc),
+    ];
     const pointyTokenBaseWidth = 95;
     const [selectedFighter, setSelectedFighter] = useState(null);
     const firebase = useContext(FirebaseContext);
