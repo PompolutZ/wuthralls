@@ -6,10 +6,10 @@ import Button from "@material-ui/core/Button";
 import AttackDie from "../../../components/AttackDie";
 import DefenceDie from "../../../components/DefenceDie";
 import { warbandColors } from "../../../data";
-import { getDieRollResult } from "../../../common/function";
 import FirstBoardPicker from "./FirstBoardPicker";
 import SecondBoardPicker from "./SecondBoardPicker";
 import PropTypes from "prop-types";
+import { getDieRollResult } from "../../../utils";
 
 function RollOffDiceTray({ rollResults, faction }) {
     return (

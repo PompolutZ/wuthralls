@@ -115,174 +115,116 @@ class Firebase {
     // PLAYGROUND
     // -------------------
     async recordGameResult(roomId, payload) {
-        try {
-            const results = payload.players.map((p) => ({
-                glory: payload[p].gloryScored + payload[p].glorySpent,
-                faction: payload[p].faction,
-                pid: p,
-                name: payload[p].name,
-            }));
+        const results = payload.players.map((p) => ({
+            glory: payload[p].gloryScored + payload[p].glorySpent,
+            faction: payload[p].faction,
+            pid: p,
+            name: payload[p].name,
+        }));
 
-            await this.fstore.collection("gameResults").add({
-                gameName: payload.name,
-                players: payload.players,
-                result: results,
-                finishied: new Date(),
-            });
+        await this.fstore.collection("gameResults").add({
+            gameName: payload.name,
+            players: payload.players,
+            result: results,
+            finishied: new Date(),
+        });
 
-            await this.fstore.collection("rooms").doc(roomId).delete();
-            await this.fstore.collection("messages").doc(roomId).delete();
-        } catch (error) {
-            throw error;
-        }
+        await this.fstore.collection("rooms").doc(roomId).delete();
+        await this.fstore.collection("messages").doc(roomId).delete();
     }
 
     async addRoom(payload) {
-        try {
-            const roomRef = await this.fstore.collection("rooms").add(payload);
+        const roomRef = await this.fstore.collection("rooms").add(payload);
 
-            const now = new Date();
-            await this.fstore
-                .collection("messages")
-                .doc(roomRef.id)
-                .set({
-                    [now.getTime()]: {
-                        author: "Katophrane",
-                        type: "INFO",
-                        created: now,
-                        value: `${payload.name} room was created by ${
-                            payload[payload.createdBy].name
-                        }`,
-                    },
-                });
+        const now = new Date();
+        await this.fstore
+            .collection("messages")
+            .doc(roomRef.id)
+            .set({
+                [now.getTime()]: {
+                    author: "Katophrane",
+                    type: "INFO",
+                    created: now,
+                    value: `${payload.name} room was created by ${
+                        payload[payload.createdBy].name
+                    }`,
+                },
+            });
 
-            return roomRef.id;
-        } catch (error) {
-            throw error;
-        }
+        return roomRef.id;
     }
 
     async addRoom2(payload) {
-        try {
-            const roomRef = await this.fstore.collection("rooms").add(payload);
+        const roomRef = await this.fstore.collection("rooms").add(payload);
 
-            const now = new Date();
-            await this.fstore
-                .collection("messages")
-                .doc(roomRef.id)
-                .set({
-                    [now.getTime()]: {
-                        author: "Katophrane",
-                        type: "INFO",
-                        created: now,
-                        value: `Greetings **${
-                            payload[payload.createdBy].name
-                        }**! You've entered the **${
-                            payload.name
-                        }** room and as soon as someone else joins it too, you could start rolling for initiative and select boards.`,
-                    },
-                });
+        const now = new Date();
+        await this.fstore
+            .collection("messages")
+            .doc(roomRef.id)
+            .set({
+                [now.getTime()]: {
+                    author: "Katophrane",
+                    type: "INFO",
+                    created: now,
+                    value: `Greetings **${
+                        payload[payload.createdBy].name
+                    }**! You've entered the **${
+                        payload.name
+                    }** room and as soon as someone else joins it too, you could start rolling for initiative and select boards.`,
+                },
+            });
 
-            return roomRef.id;
-        } catch (error) {
-            throw error;
-        }
+        return roomRef.id;
     }
 
     async listRooms() {
-        try {
-            const list = await this.fstore.collection("rooms").get();
-            return list.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
-        } catch (error) {
-            throw error;
-        }
+        const list = await this.fstore.collection("rooms").get();
+        return list.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
     }
 
     async updateBoardProperty(roomId, path, payload) {
-        try {
-            const roomRef = await this.fstore.collection("rooms").doc(roomId);
-            await roomRef.update({
-                [path]: payload,
-            });
-        } catch (error) {
-            throw error;
-        }
+        const roomRef = await this.fstore.collection("rooms").doc(roomId);
+        await roomRef.update({
+            [path]: payload,
+        });
     }
 
     async updateRoom(roomId, payload) {
-        try {
-            const roomRef = await this.fstore.collection("rooms").doc(roomId);
-            await roomRef.update(payload);
-        } catch (error) {
-            throw error;
-        }
+        const roomRef = await this.fstore.collection("rooms").doc(roomId);
+        await roomRef.update(payload);
     }
 
     async updateInteractiveMessage(roomId, path, payload) {
-        try {
-            const roomRef = await this.fstore
-                .collection("messages")
-                .doc(roomId);
-            await roomRef.update({
-                [path]: payload,
-            });
-        } catch (error) {
-            throw error;
-        }
+        const roomRef = await this.fstore.collection("messages").doc(roomId);
+        await roomRef.update({
+            [path]: payload,
+        });
     }
 
     async updateInteractiveMessage3(roomId, payload) {
-        try {
-            const roomRef = await this.fstore
-                .collection("messages")
-                .doc(roomId);
-            await roomRef.update(payload);
-        } catch (error) {
-            throw error;
-        }
+        const roomRef = await this.fstore.collection("messages").doc(roomId);
+        await roomRef.update(payload);
     }
 
     async updateInteractiveMessage32(roomId, timestamp, payload) {
-        try {
-            const roomRef = await this.fstore
-                .collection("messages")
-                .doc(roomId);
-            await roomRef.update(payload);
-        } catch (error) {
-            throw error;
-        }
+        const roomRef = await this.fstore.collection("messages").doc(roomId);
+        await roomRef.update(payload);
     }
 
     async updateInteractiveMessage2(roomId, timestamp, payload, playerId) {
-        try {
-            const roomRef = await this.fstore
-                .collection("messages")
-                .doc(roomId);
-            await roomRef.update({
-                ...payload,
-                [`${timestamp}.waitingFor`]: this.firestoreArrayRemove(
-                    playerId
-                ),
-            });
-        } catch (error) {
-            throw error;
-        }
+        const roomRef = await this.fstore.collection("messages").doc(roomId);
+        await roomRef.update({
+            ...payload,
+            [`${timestamp}.waitingFor`]: this.firestoreArrayRemove(playerId),
+        });
     }
 
     async updateInteractiveMessage22(roomId, timestamp, payload, playerId) {
-        try {
-            const roomRef = await this.fstore
-                .collection("messages")
-                .doc(roomId);
-            await roomRef.update({
-                ...payload,
-                [`${timestamp}.waitingFor`]: this.firestoreArrayRemove(
-                    playerId
-                ),
-            });
-        } catch (error) {
-            throw error;
-        }
+        const roomRef = await this.fstore.collection("messages").doc(roomId);
+        await roomRef.update({
+            ...payload,
+            [`${timestamp}.waitingFor`]: this.firestoreArrayRemove(playerId),
+        });
     }
 
     setRoomsListener(onSnapshot, onError) {
@@ -304,157 +246,125 @@ class Firebase {
     }
 
     async addPlayerToRoom(roomId, playerId, playerInfo, warband, primacy) {
-        try {
-            const roomRef = this.fstore.collection("rooms").doc(roomId);
+        const roomRef = this.fstore.collection("rooms").doc(roomId);
 
-            const payload = {
-                // add player to players list
-                players: this.firestoreArrayUnion(playerId),
-                // add player's warband
-                "board.fighters": warband,
-                // add player's deck and other meta
-                [playerId]: playerInfo,
-                // add player to boards initiative rolloff
-                [`status.waitingFor`]: this.firestoreArrayUnion(playerId),
-                [`status.waitingReason`]: "INITIATIVE_ROLL",
-                [`status.rollOffs.${playerId}_1`]: "",
-            };
+        const payload = {
+            // add player to players list
+            players: this.firestoreArrayUnion(playerId),
+            // add player's warband
+            "board.fighters": warband,
+            // add player's deck and other meta
+            [playerId]: playerInfo,
+            // add player to boards initiative rolloff
+            [`status.waitingFor`]: this.firestoreArrayUnion(playerId),
+            [`status.waitingReason`]: "INITIATIVE_ROLL",
+            [`status.rollOffs.${playerId}_1`]: "",
+        };
 
-            if (primacy) {
-                payload["status.primacy"] = primacy;
-            }
-
-            await roomRef.update(payload);
-
-            const now = new Date();
-            await this.fstore
-                .collection("messages")
-                .doc(roomRef.id)
-                .update({
-                    [now.getTime()]: {
-                        author: "Katophrane",
-                        type: "INFO",
-                        created: now,
-                        value: `Welcome ${playerInfo.name}! You've entered this room, but you are not alone here. Roll for initiative, select boards and fight till glorious victory!`,
-                    },
-                });
-        } catch (error) {
-            throw error;
+        if (primacy) {
+            payload["status.primacy"] = primacy;
         }
+
+        await roomRef.update(payload);
+
+        const now = new Date();
+        await this.fstore
+            .collection("messages")
+            .doc(roomRef.id)
+            .update({
+                [now.getTime()]: {
+                    author: "Katophrane",
+                    type: "INFO",
+                    created: now,
+                    value: `Welcome ${playerInfo.name}! You've entered this room, but you are not alone here. Roll for initiative, select boards and fight till glorious victory!`,
+                },
+            });
     }
 
     async deleteRoom(id) {
-        try {
-            await this.fstore.collection("rooms").doc(id).delete();
-            await this.fstore.collection("messages").doc(id).delete();
-        } catch (error) {
-            throw error;
-        }
+        await this.fstore.collection("rooms").doc(id).delete();
+        await this.fstore.collection("messages").doc(id).delete();
     }
 
     async addMessage(roomId, payload) {
-        try {
-            const messagesRef = await this.fstore
-                .collection("messages")
-                .doc(roomId);
+        const messagesRef = await this.fstore
+            .collection("messages")
+            .doc(roomId);
 
-            const now = new Date();
-            await messagesRef.update({
-                [now.getTime()]: {
-                    author: payload.uid,
-                    type: "CHAT",
-                    created: now,
-                    value: payload.value,
-                },
-            });
-        } catch (error) {
-            throw error;
-        }
+        const now = new Date();
+        await messagesRef.update({
+            [now.getTime()]: {
+                author: payload.uid,
+                type: "CHAT",
+                created: now,
+                value: payload.value,
+            },
+        });
     }
 
     async addMessage2(roomId, payload) {
-        try {
-            const messagesRef = await this.fstore
-                .collection("messages")
-                .doc(roomId);
+        const messagesRef = await this.fstore
+            .collection("messages")
+            .doc(roomId);
 
-            const now = new Date();
-            await messagesRef.update({
-                [now.getTime()]: {
-                    author: payload.uid,
-                    type: "CHAT",
-                    created: now,
-                    value: payload.value,
-                },
-            });
-        } catch (error) {
-            throw error;
-        }
+        const now = new Date();
+        await messagesRef.update({
+            [now.getTime()]: {
+                author: payload.uid,
+                type: "CHAT",
+                created: now,
+                value: payload.value,
+            },
+        });
     }
 
     async addGenericMessage2(roomId, payload) {
-        try {
-            const messagesRef = await this.fstore
-                .collection("messages")
-                .doc(roomId);
+        const messagesRef = await this.fstore
+            .collection("messages")
+            .doc(roomId);
 
-            const now = new Date();
-            await messagesRef.update({
-                [now.getTime()]: payload,
-            });
-        } catch (error) {
-            throw error;
-        }
+        const now = new Date();
+        await messagesRef.update({
+            [now.getTime()]: payload,
+        });
     }
 
     async addDiceRoll(roomId, payload) {
-        try {
-            const messagesRef = await this.fstore
-                .collection("messages")
-                .doc(roomId);
+        const messagesRef = await this.fstore
+            .collection("messages")
+            .doc(roomId);
 
-            const now = new Date();
-            await messagesRef.update({
-                [now.getTime()]: {
-                    author: payload.uid,
-                    type: "DICE_ROLL",
-                    subtype: payload.type,
-                    created: now,
-                    value: payload.value,
-                },
-            });
-        } catch (error) {
-            throw error;
-        }
+        const now = new Date();
+        await messagesRef.update({
+            [now.getTime()]: {
+                author: payload.uid,
+                type: "DICE_ROLL",
+                subtype: payload.type,
+                created: now,
+                value: payload.value,
+            },
+        });
     }
 
     async addDiceRoll2(roomId, payload) {
-        try {
-            const messagesRef = await this.fstore
-                .collection("messages")
-                .doc(roomId);
+        const messagesRef = await this.fstore
+            .collection("messages")
+            .doc(roomId);
 
-            const now = new Date();
-            await messagesRef.update({
-                [now.getTime()]: {
-                    author: payload.uid,
-                    type: "DICE_ROLL",
-                    subtype: payload.type,
-                    created: now,
-                    value: payload.value,
-                },
-            });
-        } catch (error) {
-            throw error;
-        }
+        const now = new Date();
+        await messagesRef.update({
+            [now.getTime()]: {
+                author: payload.uid,
+                type: "DICE_ROLL",
+                subtype: payload.type,
+                created: now,
+                value: payload.value,
+            },
+        });
     }
 
     async addHistoryItem(payload, gameId) {
-        try {
-            await this.fstore.collection("history").doc(gameId).set(payload);
-        } catch (error) {
-            throw error;
-        }
+        await this.fstore.collection("history").doc(gameId).set(payload);
     }
 }
 

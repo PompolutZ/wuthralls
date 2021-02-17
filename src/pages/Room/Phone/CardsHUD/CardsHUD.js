@@ -12,10 +12,10 @@ import SaveIcon from "@material-ui/icons/Save";
 import { useAuthUser } from "../../../../components/Session";
 import { Typography } from "@material-ui/core";
 import { cardsDb } from "../../../../data/index";
-import { shuffle } from "../../../../common/function";
 import PropTypes from "prop-types";
 
 import CardHighlight from "./CardHighlight";
+import { shuffle } from "../../../../utils";
 
 const stringToCards = (source) => {
     if (!source) return null;

@@ -8,13 +8,13 @@ import AddIcon from "@material-ui/icons/Add";
 import RemoveIcon from "@material-ui/icons/Remove";
 import Grid from "@material-ui/core/Grid";
 import SendIcon from "@material-ui/icons/Send";
-import { getDieRollResult } from "../../../common/function";
 import AttackDie from "../../../components/AttackDie";
 import DefenceDie from "../../../components/DefenceDie";
 import MagicDie from "../../../components/MagicDie";
 import { warbandColors } from "../../../data";
 import { makeStyles } from "@material-ui/core/styles";
 import PropTypes from "prop-types";
+import { getDieRollResult } from "../../../utils";
 
 const useStyles = makeStyles(() => ({
     root: {
