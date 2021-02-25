@@ -9,6 +9,12 @@ import PropTypes from "prop-types";
 import { getDieRollResult } from "../../../utils";
 import OpponentsRollOffs from "./OpponentsRollOffs";
 import RollOffDiceTray from "./RollOffDiceTray";
+import {
+    BOARDS_PLACEMENT_ORDER,
+    INITIATIVE_ROLL,
+    PICK_FIRST_BOARD,
+    PICK_SECOND_BOARD,
+} from "./constants/waitingReasons";
 
 function InitiativeAndBoardsSetup({ data }) {
     const myself = useAuthUser();
@@ -16,7 +22,7 @@ function InitiativeAndBoardsSetup({ data }) {
     const opponent = data.players.find((id) => id !== myself.uid);
     const [canMakeInitiativeRoll, setCanMakeInitiativeRoll] = useState(
         data.status.waitingFor.includes(myself.uid) &&
-            data.status.waitingReason === "INITIATIVE_ROLL"
+            data.status.waitingReason === INITIATIVE_ROLL
     );
 
     const {
@@ -26,7 +32,7 @@ function InitiativeAndBoardsSetup({ data }) {
     useEffect(() => {
         if (
             waitingFor.includes(myself.uid) &&
-            waitingReason === "INITIATIVE_ROLL"
+            waitingReason === INITIATIVE_ROLL
         ) {
             setCanMakeInitiativeRoll(true);
         }
@@ -76,7 +82,7 @@ function InitiativeAndBoardsSetup({ data }) {
                 const payload = {
                     [`status.rollOffNumber`]: rollOffNumber + 1,
                     [`status.waitingFor`]: data.players,
-                    [`status.waitingReason`]: "INITIATIVE_ROLL",
+                    [`status.waitingReason`]: INITIATIVE_ROLL,
                     [`status.rollOffs.${myself.uid}_${rollOffNumber}`]: rollResult.join(),
                 };
 
@@ -85,7 +91,7 @@ function InitiativeAndBoardsSetup({ data }) {
                 const payload = {
                     // [`status.rollOffNumber`]: rollOffNumber + 1,
                     [`status.waitingFor`]: [myself.uid],
-                    [`status.waitingReason`]: "BOARDS_PLACEMENT_ORDER",
+                    [`status.waitingReason`]: BOARDS_PLACEMENT_ORDER,
                     [`status.rollOffs.${myself.uid}_${rollOffNumber}`]: rollResult.join(),
                 };
                 firebase.updateRoom(data.id, payload);
@@ -93,7 +99,7 @@ function InitiativeAndBoardsSetup({ data }) {
                 const payload = {
                     // [`status.rollOffNumber`]: rollOffNumber + 1,
                     [`status.waitingFor`]: [opponent],
-                    [`status.waitingReason`]: "BOARDS_PLACEMENT_ORDER",
+                    [`status.waitingReason`]: BOARDS_PLACEMENT_ORDER,
                     [`status.rollOffs.${myself.uid}_${rollOffNumber}`]: rollResult.join(),
                 };
                 firebase.updateRoom(data.id, payload);
@@ -105,7 +111,7 @@ function InitiativeAndBoardsSetup({ data }) {
         const payload = {
             // [`status.rollOffNumber`]: rollOffNumber + 1,
             [`status.waitingFor`]: [myself.uid],
-            [`status.waitingReason`]: "PICK_FIRST_BOARD",
+            [`status.waitingReason`]: PICK_FIRST_BOARD,
             [`status.willWaitFor`]: [opponent],
         };
         firebase.updateRoom(data.id, payload);
@@ -115,7 +121,7 @@ function InitiativeAndBoardsSetup({ data }) {
         const payload = {
             // [`status.rollOffNumber`]: rollOffNumber + 1,
             [`status.waitingFor`]: [opponent],
-            [`status.waitingReason`]: "PICK_FIRST_BOARD",
+            [`status.waitingReason`]: PICK_FIRST_BOARD,
             [`status.willWaitFor`]: [myself.uid],
         };
         firebase.updateRoom(data.id, payload);
@@ -125,7 +131,7 @@ function InitiativeAndBoardsSetup({ data }) {
         const payload = {
             // [`status.rollOffNumber`]: rollOffNumber + 1,
             [`status.top.id`]: index,
-            [`status.waitingReason`]: "PICK_SECOND_BOARD",
+            [`status.waitingReason`]: PICK_SECOND_BOARD,
             [`status.waitingFor`]: data.status.willWaitFor,
             [`status.willWaitFor`]: [],
         };
@@ -159,8 +165,8 @@ function InitiativeAndBoardsSetup({ data }) {
             }}
         >
             {data[myself.uid] &&
-                waitingReason !== "PICK_FIRST_BOARD" &&
-                waitingReason !== "PICK_SECOND_BOARD" && (
+                waitingReason !== PICK_FIRST_BOARD &&
+                waitingReason !== PICK_SECOND_BOARD && (
                     <div
                         style={{
                             flex: 1,
@@ -214,9 +220,9 @@ function InitiativeAndBoardsSetup({ data }) {
             <div
                 style={{
                     flex:
-                        waitingReason === "PICK_SECOND_BOARD"
+                        waitingReason === PICK_SECOND_BOARD
                             ? 1
-                            : waitingReason === "PICK_FIRST_BOARD"
+                            : waitingReason === PICK_FIRST_BOARD
                             ? "0 1 60%"
                             : "0 1 10%",
                     display: "flex",
@@ -240,7 +246,7 @@ function InitiativeAndBoardsSetup({ data }) {
                     </Typography>
                 )}
                 {waitingFor.includes(myself.uid) &&
-                    waitingReason === "BOARDS_PLACEMENT_ORDER" && (
+                    waitingReason === BOARDS_PLACEMENT_ORDER && (
                         <div
                             style={{
                                 display: "flex",
@@ -264,11 +270,11 @@ function InitiativeAndBoardsSetup({ data }) {
                         </div>
                     )}
                 {waitingFor.includes(myself.uid) &&
-                    waitingReason === "PICK_FIRST_BOARD" && (
+                    waitingReason === PICK_FIRST_BOARD && (
                         <FirstBoardPicker onBoardPicked={handlePickTopBoard} />
                     )}
                 {waitingFor.includes(myself.uid) &&
-                    waitingReason === "PICK_SECOND_BOARD" && (
+                    waitingReason === PICK_SECOND_BOARD && (
                         <SecondBoardPicker
                             onBoardPicked={handlePickBottomBoard}
                             top={top}
@@ -276,8 +282,8 @@ function InitiativeAndBoardsSetup({ data }) {
                     )}
             </div>
             {opponent &&
-                waitingReason !== "PICK_FIRST_BOARD" &&
-                waitingReason !== "PICK_SECOND_BOARD" && (
+                waitingReason !== PICK_FIRST_BOARD &&
+                waitingReason !== PICK_SECOND_BOARD && (
                     <OpponentsRollOffs
                         name={data[opponent].name}
                         faction={data[opponent].faction}
