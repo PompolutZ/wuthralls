@@ -16,6 +16,12 @@ const config = {
     measurementId: process.env.REACT_APP_MEASUREMENT_ID,
 };
 
+export const firestoreArrayUnion = (value) =>
+    app.firestore.FieldValue.arrayUnion(value);
+
+export const firestoreArrayRemove = (value) =>
+    app.firestore.FieldValue.arrayRemove(value);
+
 class Firebase {
     constructor() {
         if (!app.apps.length) {

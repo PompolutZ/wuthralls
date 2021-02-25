@@ -6,7 +6,6 @@ import Button from "@material-ui/core/Button";
 import FirstBoardPicker from "./FirstBoardPicker";
 import SecondBoardPicker from "./SecondBoardPicker";
 import PropTypes from "prop-types";
-import { getDieRollResult } from "../../../utils";
 import OpponentsRollOffs from "./OpponentsRollOffs";
 import RollOffDiceTray from "./RollOffDiceTray";
 import {
@@ -15,6 +14,7 @@ import {
     PICK_FIRST_BOARD,
     PICK_SECOND_BOARD,
 } from "./constants/waitingReasons";
+import InitiativeRollButton from "./InitiativeRollButton";
 
 function InitiativeAndBoardsSetup({ data }) {
     const myself = useAuthUser();
@@ -36,76 +36,7 @@ function InitiativeAndBoardsSetup({ data }) {
         ) {
             setCanMakeInitiativeRoll(true);
         }
-    }, [data]);
-
-    const handleInitiativeRoll = () => {
-        setCanMakeInitiativeRoll(false);
-        const rollResult = new Array(4).fill(0).map(getDieRollResult);
-
-        if (waitingFor.some((id) => opponent === id)) {
-            // just record because waiting for opponent
-            firebase.updateRoom(data.id, {
-                [`status.rollOffs.${myself.uid}_${rollOffNumber}`]: rollResult.join(),
-                [`status.waitingFor`]: firebase.firestoreArrayRemove(
-                    myself.uid
-                ),
-            });
-        } else {
-            const opponentResult = rollOffs[`${opponent}_${rollOffNumber}`];
-            const opponentScore = opponentResult
-                .split(",")
-                .map((s) => Number(s))
-                .reduce((accumulatedInitiativeResult, dieSideNumber) => {
-                    if (dieSideNumber === 6)
-                        return accumulatedInitiativeResult + 1091;
-                    if (dieSideNumber === 1)
-                        return accumulatedInitiativeResult + 79;
-                    if (dieSideNumber === 5)
-                        return accumulatedInitiativeResult + 3;
-                    return accumulatedInitiativeResult;
-                }, 0);
-
-            const myScore = rollResult.reduce(
-                (accumulatedInitiativeResult, dieSideNumber) => {
-                    if (dieSideNumber === 6)
-                        return accumulatedInitiativeResult + 1091;
-                    if (dieSideNumber === 1)
-                        return accumulatedInitiativeResult + 79;
-                    if (dieSideNumber === 5)
-                        return accumulatedInitiativeResult + 3;
-                    return accumulatedInitiativeResult;
-                },
-                0
-            );
-
-            if (myScore === opponentScore) {
-                const payload = {
-                    [`status.rollOffNumber`]: rollOffNumber + 1,
-                    [`status.waitingFor`]: data.players,
-                    [`status.waitingReason`]: INITIATIVE_ROLL,
-                    [`status.rollOffs.${myself.uid}_${rollOffNumber}`]: rollResult.join(),
-                };
-
-                firebase.updateRoom(data.id, payload);
-            } else if (myScore > opponentScore) {
-                const payload = {
-                    // [`status.rollOffNumber`]: rollOffNumber + 1,
-                    [`status.waitingFor`]: [myself.uid],
-                    [`status.waitingReason`]: BOARDS_PLACEMENT_ORDER,
-                    [`status.rollOffs.${myself.uid}_${rollOffNumber}`]: rollResult.join(),
-                };
-                firebase.updateRoom(data.id, payload);
-            } else {
-                const payload = {
-                    // [`status.rollOffNumber`]: rollOffNumber + 1,
-                    [`status.waitingFor`]: [opponent],
-                    [`status.waitingReason`]: BOARDS_PLACEMENT_ORDER,
-                    [`status.rollOffs.${myself.uid}_${rollOffNumber}`]: rollResult.join(),
-                };
-                firebase.updateRoom(data.id, payload);
-            }
-        }
-    };
+    }, [data, myself.uid, waitingFor, waitingReason]);
 
     const handlePickFirst = () => {
         const payload = {
@@ -150,6 +81,10 @@ function InitiativeAndBoardsSetup({ data }) {
             [`status.orientation`]: playerChoice.orientation,
             [`status.offset`]: playerChoice.offset,
         };
+        firebase.updateRoom(data.id, payload);
+    };
+
+    const update = (payload) => {
         firebase.updateRoom(data.id, payload);
     };
 
@@ -231,15 +166,15 @@ function InitiativeAndBoardsSetup({ data }) {
                     justifyContent: "center",
                 }}
             >
-                {canMakeInitiativeRoll && (
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        onClick={handleInitiativeRoll}
-                    >
-                        Roll Initiative
-                    </Button>
-                )}
+                <InitiativeRollButton
+                    myuid={myself.uid}
+                    opponent={opponent}
+                    waitingFor={waitingFor}
+                    waitingReason={waitingReason}
+                    rollOffs={rollOffs}
+                    rollOffNumber={rollOffNumber}
+                    onFirebaseUpdate={update}
+                />
                 {!waitingFor.includes(myself.uid) && (
                     <Typography variant="h4">
                         Waiting for opponent...
@@ -258,14 +193,14 @@ function InitiativeAndBoardsSetup({ data }) {
                                 color="primary"
                                 onClick={handlePickFirst}
                             >
-                                Pick First
+                                Place 3 Feature tokens
                             </Button>
                             <Button
                                 variant="contained"
                                 color="primary"
                                 onClick={handlePickSecond}
                             >
-                                Pick Second
+                                Place Boards
                             </Button>
                         </div>
                     )}
