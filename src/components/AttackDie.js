@@ -21,12 +21,6 @@ function hexToRgb(hex, alpha = 1) {
 
 const useStyles = makeStyles({
     core: ({ size, useBlackOutline, accentColorHex }) => {
-        console.log(
-            size,
-            useBlackOutline,
-            accentColorHex,
-            hexToRgb(accentColorHex, useBlackOutline ? 1 : 0.1)
-        );
         return {
             width: size,
             height: size,
@@ -49,26 +43,27 @@ const useStyles = makeStyles({
     }),
 });
 
-function SideToSymbol({ side, ...rest }) {
+function SideToSymbol({ side, className }) {
     const value = Number(side);
     switch (value) {
         case 1:
-            return <SingleAssist {...rest} />;
+            return <SingleAssist className={className} />;
         case 2:
-            return <AttackFury {...rest} />;
+            return <AttackFury className={className} />;
         case 3:
-            return <AttackSmash {...rest} />;
+            return <AttackSmash className={className} />;
         case 4:
-            return <AttackSmash {...rest} />;
+            return <AttackSmash className={className} />;
         case 5:
-            return <DoubleAssist {...rest} />;
+            return <DoubleAssist className={className} />;
         default:
-            return <Crit {...rest} />;
+            return <Crit className={className} />;
     }
 }
 
 SideToSymbol.propTypes = {
     side: PropTypes.number,
+    className: PropTypes.string,
 };
 
 function AttackDie(props) {

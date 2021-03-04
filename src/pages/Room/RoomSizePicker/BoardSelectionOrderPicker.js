@@ -42,7 +42,7 @@ function BoardSelectionOrderPicker({ me, opponent, onDecisionMade }) {
 BoardSelectionOrderPicker.propTypes = {
     me: PropTypes.string,
     opponent: PropTypes.string,
-    onDecisionMade: PropTypes.function,
+    onDecisionMade: PropTypes.func,
 };
 
 export default BoardSelectionOrderPicker;

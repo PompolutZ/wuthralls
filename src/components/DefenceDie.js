@@ -37,30 +37,30 @@ const useStyles = makeStyles({
     }),
 });
 
-function SideToSymbol({ side, ...rest }) {
+function SideToSymbol({ side, className }) {
     const value = Number(side);
     switch (value) {
         case 1:
-            return <SingleAssist {...rest} />;
+            return <SingleAssist className={className} />;
         case 2:
-            return <DefenceDodge {...rest} />;
+            return <DefenceDodge className={className} />;
         case 3:
-            return <DefenceBlock {...rest} />;
+            return <DefenceBlock className={className} />;
         case 4:
-            return <DefenceBlock {...rest} />;
+            return <DefenceBlock className={className} />;
         case 5:
-            return <DoubleAssist {...rest} />;
+            return <DoubleAssist className={className} />;
         default:
-            return <Crit {...rest} />;
+            return <Crit className={className} />;
     }
 }
 
 SideToSymbol.propTypes = {
     side: PropTypes.number,
+    className: PropTypes.string,
 };
 
 function DefenceDie(props) {
-    console.log(props);
     const classes = useStyles(props);
     return (
         <div className={classes.core}>

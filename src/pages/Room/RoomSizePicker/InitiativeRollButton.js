@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { getDieRollResult } from "../../../utils";
 import {
     BOARDS_PLACEMENT_ORDER,
@@ -20,6 +20,12 @@ function InitiativeRollButton({
     const [canMakeInitiativeRoll, setCanMakeInitiativeRoll] = useState(
         waitingFor.includes(myuid) && waitingReason === INITIATIVE_ROLL
     );
+
+    useEffect(() => {
+        setCanMakeInitiativeRoll(
+            waitingFor.includes(myuid) && waitingReason === INITIATIVE_ROLL
+        );
+    }, [waitingFor, waitingReason, myuid]);
 
     const handleInitiativeRoll = () => {
         setCanMakeInitiativeRoll(false);

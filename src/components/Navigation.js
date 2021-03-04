@@ -73,11 +73,6 @@ function MenuDrawer({ items, userRoles }) {
         >
             <List>
                 {items.map((item) => {
-                    console.log(
-                        item.restrictedTo &&
-                            userRoles &&
-                            userRoles[item.restrictedTo]
-                    );
                     if (
                         item.restrictedTo &&
                         !(userRoles && userRoles[item.restrictedTo])

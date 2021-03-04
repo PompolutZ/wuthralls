@@ -15,13 +15,13 @@ export default function RoomSizePicker() {
     const firebase = useContext(FirebaseContext);
 
     useEffect(() => {
+        setLoaded(false);
         const unsubscribe = firebase.setRoomListener(state.id, (snapshot) => {
             if (snapshot.exists) {
                 setData({ ...snapshot.data(), id: snapshot.id });
+                setLoaded(true);
             }
         });
-
-        setLoaded(true);
 
         return () => {
             console.log("Unsubscribe");
@@ -29,7 +29,23 @@ export default function RoomSizePicker() {
         };
     }, [firebase, state.id]);
 
-    if (!loaded) return <span>Loading...</span>;
+    if (!loaded)
+        return (
+            <div
+                style={{
+                    width: "100%",
+                    height: "100%",
+                    display: "flex",
+                    flexDirection: "column",
+                    background: "#36393F",
+                    color: "whitesmoke",
+                    alignItems: "center",
+                    justifyContent: "center",
+                }}
+            >
+                Loading...
+            </div>
+        );
 
     if (data.status.stage === "SETUP") {
         return <InitiativeAndBoardsSetup data={data} />;
