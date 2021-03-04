@@ -24,6 +24,7 @@ function MessagesProvider(props) {
             .doc(props.roomId)
             .onSnapshot((s) => {
                 if (!s.data()) return;
+                console.log("MessagesProvider - Updated from server");
                 const msgs = Object.entries(s.data()).map(([key, value]) => ({
                     ...value,
                     id: Number(key),

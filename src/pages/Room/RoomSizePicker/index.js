@@ -18,6 +18,7 @@ export default function RoomSizePicker() {
         setLoaded(false);
         const unsubscribe = firebase.setRoomListener(state.id, (snapshot) => {
             if (snapshot.exists) {
+                console.log("RoomSizePicker - Updated from server");
                 setData({ ...snapshot.data(), id: snapshot.id });
                 setLoaded(true);
             }
@@ -52,7 +53,7 @@ export default function RoomSizePicker() {
     } else {
         return (
             <MessagesProvider roomId={state.id}>
-                <PhoneRoom />
+                <PhoneRoom data={data} />
             </MessagesProvider>
         );
     }

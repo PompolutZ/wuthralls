@@ -10,7 +10,7 @@ import { useAuthUser } from "../../../components/Session";
 import { boards as boardsData } from "../../../data/index";
 import CardsHUD from "./CardsHUD/CardsHUD";
 
-export default function PhoneRoom() {
+export default function PhoneRoom({ data }) {
     const myself = useAuthUser();
     const firebase = useContext(FirebaseContext);
     const { state } = useLocation();
@@ -18,7 +18,7 @@ export default function PhoneRoom() {
     const isMd = useMediaQuery(theme.breakpoints.up("md"));
     const [tabIndex, setTabIndex] = useState(0);
     const [selectedElement, setSelectedElement] = useState(null);
-    const [data, setData] = useState(state);
+    // const [data, setData] = useState(state);
     const [activePaletteType, setActivePaletteType] = useState(null);
     const [, setActionsPanelOffsetHeight] = useState(4 * 16);
     const [isHUDOpen, setIsHUDOpen] = useState(false);
@@ -141,17 +141,10 @@ export default function PhoneRoom() {
     useEffect(() => {
         window.addEventListener("keydown", handleHotkeyDown);
 
-        const unsubscribe = firebase.setRoomListener(state.id, (snapshot) => {
-            if (snapshot.exists) {
-                setData({ ...snapshot.data(), id: snapshot.id });
-            }
-        });
-
         return () => {
-            unsubscribe();
             window.removeEventListener("keydown", handleHotkeyDown);
         };
-    }, [firebase, state.id]);
+    }, []);
 
     useEffect(() => {
         if (data[myself.uid].hand !== hand) {
