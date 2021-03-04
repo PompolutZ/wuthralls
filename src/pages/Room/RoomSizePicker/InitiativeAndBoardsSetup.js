@@ -1,62 +1,27 @@
-import React, { useEffect, useContext, useState } from "react";
+// eslint-disable-next-line no-unused-vars
+import React, { useContext, useState } from "react";
 import { FirebaseContext } from "../../../firebase";
 import { useAuthUser } from "../../../components/Session";
 import Typography from "@material-ui/core/Typography";
-import Button from "@material-ui/core/Button";
 import FirstBoardPicker from "./FirstBoardPicker";
 import SecondBoardPicker from "./SecondBoardPicker";
 import PropTypes from "prop-types";
 import PlayerRollOffs from "./OpponentsRollOffs";
-import RollOffDiceTray from "./RollOffDiceTray";
 import {
     BOARDS_PLACEMENT_ORDER,
-    INITIATIVE_ROLL,
     PICK_FIRST_BOARD,
     PICK_SECOND_BOARD,
 } from "./constants/waitingReasons";
 import InitiativeRollButton from "./InitiativeRollButton";
+import BoardSelectionOrderPicker from "./BoardSelectionOrderPicker";
 
 function InitiativeAndBoardsSetup({ data }) {
     const myself = useAuthUser();
     const firebase = useContext(FirebaseContext);
     const opponent = data.players.find((id) => id !== myself.uid);
-    const [canMakeInitiativeRoll, setCanMakeInitiativeRoll] = useState(
-        data.status.waitingFor.includes(myself.uid) &&
-            data.status.waitingReason === INITIATIVE_ROLL
-    );
-
     const {
         status: { top, rollOffs, waitingFor, waitingReason, rollOffNumber },
     } = data;
-
-    useEffect(() => {
-        if (
-            waitingFor.includes(myself.uid) &&
-            waitingReason === INITIATIVE_ROLL
-        ) {
-            setCanMakeInitiativeRoll(true);
-        }
-    }, [data, myself.uid, waitingFor, waitingReason]);
-
-    const handlePickFirst = () => {
-        const payload = {
-            // [`status.rollOffNumber`]: rollOffNumber + 1,
-            [`status.waitingFor`]: [myself.uid],
-            [`status.waitingReason`]: PICK_FIRST_BOARD,
-            [`status.willWaitFor`]: [opponent],
-        };
-        firebase.updateRoom(data.id, payload);
-    };
-
-    const handlePickSecond = () => {
-        const payload = {
-            // [`status.rollOffNumber`]: rollOffNumber + 1,
-            [`status.waitingFor`]: [opponent],
-            [`status.waitingReason`]: PICK_FIRST_BOARD,
-            [`status.willWaitFor`]: [myself.uid],
-        };
-        firebase.updateRoom(data.id, payload);
-    };
 
     const handlePickTopBoard = (index) => {
         const payload = {
@@ -142,28 +107,11 @@ function InitiativeAndBoardsSetup({ data }) {
                 )}
                 {waitingFor.includes(myself.uid) &&
                     waitingReason === BOARDS_PLACEMENT_ORDER && (
-                        <div
-                            style={{
-                                display: "flex",
-                                maxWidth: "80vw",
-                                justifyContent: "space-between",
-                            }}
-                        >
-                            <Button
-                                variant="contained"
-                                color="primary"
-                                onClick={handlePickFirst}
-                            >
-                                Place 3 Feature tokens
-                            </Button>
-                            <Button
-                                variant="contained"
-                                color="primary"
-                                onClick={handlePickSecond}
-                            >
-                                Place Boards
-                            </Button>
-                        </div>
+                        <BoardSelectionOrderPicker
+                            me={myself.uid}
+                            opponent={opponent}
+                            onDecisionMade={update}
+                        />
                     )}
                 {waitingFor.includes(myself.uid) &&
                     waitingReason === PICK_FIRST_BOARD && (
