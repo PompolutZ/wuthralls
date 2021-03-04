@@ -8,6 +8,7 @@ import Divider from "@material-ui/core/Divider";
 import AddIcon from "@material-ui/icons/Add";
 import RemoveIcon from "@material-ui/icons/Remove";
 import PropTypes from "prop-types";
+import { useMyState } from "../RoomSizePicker";
 
 function RoundCounter({ round, onRoundChange }) {
     const [value, setValue] = useState(round);
@@ -388,6 +389,7 @@ PrimacyOwner.propTypes = {
 };
 
 function GameStatusHUD({ data, onModified }) {
+    const myState = useMyState();
     const myself = useAuthUser();
     const firebase = useContext(FirebaseContext);
     const [myValues, setMyValues] = useState({
@@ -395,6 +397,10 @@ function GameStatusHUD({ data, onModified }) {
         gloryScored: data[myself.uid].gloryScored,
         glorySpent: data[myself.uid].glorySpent,
     });
+
+    useEffect(() => {
+        console.log(myState);
+    }, [myState]);
 
     const opponent = data.players.find((p) => p !== myself.uid);
     const [opponentValues, setOpponentValues] = useState({

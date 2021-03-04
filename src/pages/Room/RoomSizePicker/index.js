@@ -7,19 +7,26 @@ import { MessagesProvider } from "../contexts/messagesContext";
 import create from "zustand";
 import { useAuthUser } from "../../../components/Session";
 
+export const useMyState = create(() => ({
+    data: {},
+}));
+
 // Maybe better to write this to take more usage from the react-router-dom?..
 export default function RoomSizePicker() {
     const [loaded, setLoaded] = useState(false);
     const { state } = useLocation();
     const [data, setData] = useState(state);
     const firebase = useContext(FirebaseContext);
+    const myself = useAuthUser();
 
     useEffect(() => {
         setLoaded(false);
         const unsubscribe = firebase.setRoomListener(state.id, (snapshot) => {
             if (snapshot.exists) {
                 console.log("RoomSizePicker - Updated from server");
-                setData({ ...snapshot.data(), id: snapshot.id });
+                const serverData = snapshot.data();
+                useMyState.setState({ data: serverData[myself.uid] });
+                setData({ ...serverData, id: snapshot.id });
                 setLoaded(true);
             }
         });
