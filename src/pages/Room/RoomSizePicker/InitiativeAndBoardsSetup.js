@@ -20,15 +20,21 @@ function InitiativeAndBoardsSetup({ data }) {
     const firebase = useContext(FirebaseContext);
     const opponent = data.players.find((id) => id !== myself.uid);
     const {
-        status: { top, rollOffs, waitingFor, waitingReason, rollOffNumber },
+        status: {
+            top,
+            rollOffs,
+            waitingFor,
+            waitingReason,
+            willWaitFor,
+            rollOffNumber,
+        },
     } = data;
 
     const handlePickTopBoard = (index) => {
         const payload = {
-            // [`status.rollOffNumber`]: rollOffNumber + 1,
             [`status.top.id`]: index,
             [`status.waitingReason`]: PICK_SECOND_BOARD,
-            [`status.waitingFor`]: data.status.willWaitFor,
+            [`status.waitingFor`]: willWaitFor,
             [`status.willWaitFor`]: [],
         };
         firebase.updateRoom(data.id, payload);
