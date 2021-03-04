@@ -3,13 +3,13 @@ import React from "react";
 import RollOffDiceTray from "./RollOffDiceTray";
 import PropTypes from "prop-types";
 
-function OpponentsRollOffs({ name, faction, rollOffs }) {
+function PlayerRollOffs({ name, faction, rollOffs, reverse = false }) {
     return (
         <div
             style={{
                 flex: 1,
                 display: "flex",
-                flexDirection: "column",
+                flexDirection: reverse ? "column" : "column-reverse",
                 alignItems: "center",
                 justifyContent: "flex-start",
             }}
@@ -48,10 +48,11 @@ function OpponentsRollOffs({ name, faction, rollOffs }) {
     );
 }
 
-OpponentsRollOffs.propTypes = {
+PlayerRollOffs.propTypes = {
     name: PropTypes.string,
     faction: PropTypes.string,
     rollOffs: PropTypes.array,
+    reverse: PropTypes.bool,
 };
 
-export default OpponentsRollOffs;
+export default PlayerRollOffs;

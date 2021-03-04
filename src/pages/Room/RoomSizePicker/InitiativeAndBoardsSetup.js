@@ -6,7 +6,7 @@ import Button from "@material-ui/core/Button";
 import FirstBoardPicker from "./FirstBoardPicker";
 import SecondBoardPicker from "./SecondBoardPicker";
 import PropTypes from "prop-types";
-import OpponentsRollOffs from "./OpponentsRollOffs";
+import PlayerRollOffs from "./OpponentsRollOffs";
 import RollOffDiceTray from "./RollOffDiceTray";
 import {
     BOARDS_PLACEMENT_ORDER,
@@ -102,54 +102,14 @@ function InitiativeAndBoardsSetup({ data }) {
             {data[myself.uid] &&
                 waitingReason !== PICK_FIRST_BOARD &&
                 waitingReason !== PICK_SECOND_BOARD && (
-                    <div
-                        style={{
-                            flex: 1,
-                            display: "flex",
-                            flexDirection: "column",
-                            alignItems: "center",
-                            justifyContent: "flex-end",
-                        }}
-                    >
-                        <RollOffDiceTray
-                            rollResults={Object.entries(rollOffs).filter(
-                                ([id, v]) =>
-                                    id.startsWith(myself.uid) && Boolean(v)
-                            )}
-                            faction={data[myself.uid].faction}
-                        />
-                        <div
-                            style={{
-                                display: "flex",
-                                margin: "1rem",
-                                alignItems: "center",
-                            }}
-                        >
-                            <div
-                                style={{
-                                    width: "3rem",
-                                    height: "3rem",
-                                    marginRight: "1rem",
-                                    boxSizing: "border-box",
-                                    borderRadius: "1.5rem",
-                                    border: "2px solid whitesmoke",
-                                    display: "flex",
-                                }}
-                            >
-                                <img
-                                    style={{
-                                        width: "100%",
-                                        height: "100%",
-                                        margin: "auto",
-                                    }}
-                                    src={`/assets/factions/${
-                                        data[myself.uid].faction
-                                    }-icon.png`}
-                                />
-                            </div>
-                            <Typography>{data[myself.uid].name}</Typography>
-                        </div>
-                    </div>
+                    <PlayerRollOffs
+                        reverse
+                        name={data[myself.uid].name}
+                        faction={data[myself.uid].faction}
+                        rollOffs={Object.entries(rollOffs).filter(
+                            ([id, v]) => id.startsWith(myself.uid) && Boolean(v)
+                        )}
+                    />
                 )}
 
             <div
@@ -185,6 +145,7 @@ function InitiativeAndBoardsSetup({ data }) {
                         <div
                             style={{
                                 display: "flex",
+                                maxWidth: "80vw",
                                 justifyContent: "space-between",
                             }}
                         >
@@ -219,7 +180,7 @@ function InitiativeAndBoardsSetup({ data }) {
             {opponent &&
                 waitingReason !== PICK_FIRST_BOARD &&
                 waitingReason !== PICK_SECOND_BOARD && (
-                    <OpponentsRollOffs
+                    <PlayerRollOffs
                         name={data[opponent].name}
                         faction={data[opponent].faction}
                         rollOffs={Object.entries(rollOffs).filter(
