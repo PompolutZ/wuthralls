@@ -15,6 +15,7 @@ import TopBoard from "./TopBoard";
 import LethalHex from "./LethalHex";
 import FeatureHex from "./FeatureHex";
 import PropTypes from "prop-types";
+import { MyStateSummary, OpponentStateSummary } from "./PlayerInfo";
 
 const useStyles = makeStyles(() => ({
     boardContainer: {
@@ -504,18 +505,6 @@ function Board({
     const { x: scatterTokenX, y: scatterTokenY } = scatterTokenHex
         ? scatterTokenHex.toPoint()
         : { x: -10, y: -10 };
-    const myHand =
-        myData && myData.hand
-            ? myData.hand
-                  .split(",")
-                  .map((cardId) => ({ ...cardsDb[cardId], id: cardId }))
-            : [];
-    const opponentHand =
-        opponentData && opponentData.hand
-            ? opponentData.hand
-                  .split(",")
-                  .map((cardId) => ({ ...cardsDb[cardId], id: cardId }))
-            : [];
 
     return (
         <div
@@ -537,148 +526,26 @@ function Board({
                     paddingTop: "1rem",
                     marginBottom: ".2rem",
                     alignItems: "center",
+                    justifyContent: "center",
                 }}
             >
-                {myData && (
-                    <div
-                        style={{
-                            display: "flex",
-                            flexDirection: "row-reverse",
-                            flex: 1,
-                            borderRight: "1px solid gray",
-                            paddingRight: ".2rem",
-                            alignItems: "center",
-                        }}
-                    >
-                        <div style={{ position: "relative" }}>
-                            <img
-                                src={`/assets/factions/${myData.faction}-icon.png`}
-                                style={{ width: "1.5rem", height: "1.5rem" }}
-                            />
-                            {state.status.primacy &&
-                                state.status.primacy[myself.uid] && (
-                                    <img
-                                        src={`/assets/other/Primacy.png`}
-                                        style={{
-                                            width: "1rem",
-                                            height: "1rem",
-                                            position: "absolute",
-                                            bottom: 0,
-                                            left: "50%",
-                                            marginLeft: "-0.5rem",
-                                            marginBottom: "-0.5rem",
-                                            boxSizing: "border-box",
-                                            border: "1px solid #ccc",
-                                            borderRadius: "1rem",
-                                        }}
-                                    />
-                                )}
-                        </div>
-                        <div
-                            style={{
-                                marginRight: ".2rem",
-                                width: "1.2rem",
-                                height: "1.2rem",
-                                backgroundColor: "goldenrod",
-                                borderRadius: "1rem",
-                                color: "white",
-                                display: "flex",
-                            }}
-                        >
-                            <Typography
-                                style={{ margin: "auto", fontSize: ".7rem" }}
-                            >
-                                {myData.gloryScored}
-                            </Typography>
-                        </div>
-                        <div
-                            style={{
-                                marginRight: ".2rem",
-                                width: "1.2rem",
-                                height: "1.2rem",
-                                backgroundColor: "darkgray",
-                                borderRadius: "1rem",
-                                color: "white",
-                                display: "flex",
-                            }}
-                        >
-                            <Typography
-                                style={{ margin: "auto", fontSize: ".7rem" }}
-                            >
-                                {myData.glorySpent}
-                            </Typography>
-                        </div>
-                        <div
-                            style={{
-                                marginRight: ".2rem",
-                                width: "1.2rem",
-                                height: "1.2rem",
-                                backgroundColor: "teal",
-                                borderRadius: "1rem",
-                                color: "white",
-                                display: "flex",
-                            }}
-                        >
-                            <Typography
-                                style={{ margin: "auto", fontSize: ".7rem" }}
-                            >
-                                {myData.activationsLeft}
-                            </Typography>
-                        </div>
-                        <div
-                            style={{
-                                marginRight: ".2rem",
-                                width: "1rem",
-                                height: "1.5rem",
-                                backgroundColor: "goldenrod",
-                                borderRadius: ".2rem",
-                                color: "white",
-                                display: "flex",
-                            }}
-                        >
-                            <Typography
-                                style={{ margin: "auto", fontSize: ".7rem" }}
-                            >
-                                {
-                                    myHand.filter((c) => c.type === "Objective")
-                                        .length
-                                }
-                            </Typography>
-                        </div>
-                        <div
-                            style={{
-                                marginRight: ".2rem",
-                                width: "1rem",
-                                height: "1.5rem",
-                                backgroundColor: "teal",
-                                borderRadius: ".2rem",
-                                color: "white",
-                                display: "flex",
-                            }}
-                        >
-                            <Typography
-                                style={{ margin: "auto", fontSize: ".7rem" }}
-                            >
-                                {
-                                    myHand.filter((c) => c.type !== "Objective")
-                                        .length
-                                }
-                            </Typography>
-                        </div>
-                        <ButtonBase
-                            onClick={handleIncreazeScaleFactor}
-                            style={{ flex: 1 }}
-                        >
-                            <ZoomInIcon />
-                        </ButtonBase>
-                    </div>
-                )}
+                <ButtonBase
+                    onClick={handleIncreazeScaleFactor}
+                    style={{ marginRight: "1rem" }}
+                >
+                    <ZoomInIcon />
+                </ButtonBase>
+
+                <MyStateSummary style={{ flexDirection: "row-reverse" }} />
                 <div
                     style={{
                         display: "flex",
                         flexDirection: "column",
                         alignItems: "center",
                         margin: "auto .5rem auto .5rem",
+                        borderLeft: "1px solid gray",
+                        borderRight: "1px solid gray",
+                        padding: "0 1rem",
                     }}
                 >
                     <Typography style={{ fontSize: ".7rem" }}>
@@ -686,143 +553,13 @@ function Board({
                     </Typography>
                     <Typography style={{ fontSize: ".5rem" }}>round</Typography>
                 </div>
-                {opponentData && (
-                    <div
-                        style={{
-                            display: "flex",
-                            flex: 1,
-                            alignItems: "center",
-                        }}
-                    >
-                        <div style={{ position: "relative" }}>
-                            <img
-                                src={`/assets/factions/${opponentData.faction}-icon.png`}
-                                style={{
-                                    width: "1.5rem",
-                                    height: "1.5rem",
-                                    borderLeft: "1px solid gray",
-                                    paddingLeft: ".2rem",
-                                }}
-                            />
-                            {state.status.primacy &&
-                                opponent &&
-                                state.status.primacy[opponent] && (
-                                    <img
-                                        src={`/assets/other/Primacy.png`}
-                                        style={{
-                                            width: "1rem",
-                                            height: "1rem",
-                                            position: "absolute",
-                                            bottom: 0,
-                                            right: "50%",
-                                            marginRight: "-0.5rem",
-                                            marginBottom: "-0.5rem",
-                                            boxSizing: "border-box",
-                                            border: "1px solid #ccc",
-                                            borderRadius: "1rem",
-                                        }}
-                                    />
-                                )}
-                        </div>
-
-                        <div
-                            style={{
-                                marginLeft: ".2rem",
-                                width: "1.2rem",
-                                height: "1.2rem",
-                                backgroundColor: "goldenrod",
-                                borderRadius: "1rem",
-                                color: "white",
-                                display: "flex",
-                            }}
-                        >
-                            <Typography
-                                style={{ margin: "auto", fontSize: ".7rem" }}
-                            >
-                                {opponentData.gloryScored}
-                            </Typography>
-                        </div>
-                        <div
-                            style={{
-                                marginLeft: ".2rem",
-                                width: "1.2rem",
-                                height: "1.2rem",
-                                backgroundColor: "darkgray",
-                                borderRadius: "1rem",
-                                color: "white",
-                                display: "flex",
-                            }}
-                        >
-                            <Typography
-                                style={{ margin: "auto", fontSize: ".7rem" }}
-                            >
-                                {opponentData.glorySpent}
-                            </Typography>
-                        </div>
-                        <div
-                            style={{
-                                marginLeft: ".2rem",
-                                width: "1.2rem",
-                                height: "1.2rem",
-                                backgroundColor: "teal",
-                                borderRadius: "1rem",
-                                color: "white",
-                                display: "flex",
-                            }}
-                        >
-                            <Typography
-                                style={{ margin: "auto", fontSize: ".7rem" }}
-                            >
-                                {opponentData.activationsLeft}
-                            </Typography>
-                        </div>
-                        <div
-                            style={{
-                                marginLeft: ".2rem",
-                                width: "1rem",
-                                height: "1.5rem",
-                                backgroundColor: "goldenrod",
-                                borderRadius: ".2rem",
-                                color: "white",
-                                display: "flex",
-                            }}
-                        >
-                            <Typography
-                                style={{ margin: "auto", fontSize: ".7rem" }}
-                            >
-                                {
-                                    opponentHand.filter(
-                                        (c) => c.type === "Objective"
-                                    ).length
-                                }
-                            </Typography>
-                        </div>
-                        <div
-                            style={{
-                                marginLeft: ".2rem",
-                                width: "1rem",
-                                height: "1.5rem",
-                                backgroundColor: "teal",
-                                borderRadius: ".2rem",
-                                color: "white",
-                                display: "flex",
-                            }}
-                        >
-                            <Typography
-                                style={{ margin: "auto", fontSize: ".7rem" }}
-                            >
-                                {
-                                    opponentHand.filter(
-                                        (c) => c.type !== "Objective"
-                                    ).length
-                                }
-                            </Typography>
-                        </div>
-                        <ButtonBase onClick={handleDecreaseScaleFactor}>
-                            <ZoomOutIcon />
-                        </ButtonBase>
-                    </div>
-                )}
+                {opponentData && <OpponentStateSummary />}
+                <ButtonBase
+                    onClick={handleDecreaseScaleFactor}
+                    style={{ marginLeft: "1rem" }}
+                >
+                    <ZoomOutIcon />
+                </ButtonBase>
             </div>
             <div
                 style={{

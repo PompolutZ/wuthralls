@@ -8,8 +8,11 @@ import Divider from "@material-ui/core/Divider";
 import AddIcon from "@material-ui/icons/Add";
 import RemoveIcon from "@material-ui/icons/Remove";
 import PropTypes from "prop-types";
-import { useMyState } from "../RoomSizePicker";
-
+import shallow from "zustand/shallow";
+import {
+    useMyGameState,
+    useTheirGameState,
+} from "../hooks/playerGameStateHooks";
 function RoundCounter({ round, onRoundChange }) {
     const [value, setValue] = useState(round);
 
@@ -283,6 +286,10 @@ function ActivationsCounter({
 }) {
     const [value, setValue] = useState(activationsToMake);
 
+    useEffect(() => {
+        setValue(activationsToMake);
+    }, [activationsToMake]);
+
     const handleMakeActivation = () => {
         if (!canEdit) return;
 
@@ -389,7 +396,16 @@ PrimacyOwner.propTypes = {
 };
 
 function GameStatusHUD({ data, onModified }) {
-    const myState = useMyState();
+    const myname = useMyGameState((state) => state.name);
+    const [myActivationsLeft, setMyActivationsLeft] = useMyGameState(
+        (state) => [state.activationsLeft, state.setActivationsLeft],
+        shallow
+    );
+    const opponentName = useTheirGameState((state) => state.name);
+    const opponentActivationsLeft = useTheirGameState(
+        (state) => state.activationsLeft
+    );
+
     const myself = useAuthUser();
     const firebase = useContext(FirebaseContext);
     const [myValues, setMyValues] = useState({
@@ -397,10 +413,6 @@ function GameStatusHUD({ data, onModified }) {
         gloryScored: data[myself.uid].gloryScored,
         glorySpent: data[myself.uid].glorySpent,
     });
-
-    useEffect(() => {
-        console.log(myState);
-    }, [myState]);
 
     const opponent = data.players.find((p) => p !== myself.uid);
     const [opponentValues, setOpponentValues] = useState({
@@ -416,6 +428,10 @@ function GameStatusHUD({ data, onModified }) {
             glorySpent: opponent ? data[opponent].glorySpent : 0,
         });
     }, [data]);
+
+    useEffect(() => {
+        console.log(opponentActivationsLeft);
+    }, [opponentActivationsLeft]);
 
     const handleOnGloryChange = (value) => {
         setMyValues({
@@ -512,7 +528,7 @@ function GameStatusHUD({ data, onModified }) {
     return (
         <Grid container alignItems="center" direction="column">
             <Grid item>
-                <Typography variant="h6">{myself.username}</Typography>
+                <Typography variant="h6">{myname}</Typography>
             </Grid>
             <Grid item xs={12}>
                 <CombinedGloryCounter
@@ -525,7 +541,7 @@ function GameStatusHUD({ data, onModified }) {
             <Grid item xs={12} style={{ marginTop: "1rem" }}>
                 <Grid container justify="center">
                     <ActivationsCounter
-                        activationsToMake={myValues.activationsLeft}
+                        activationsToMake={myActivationsLeft}
                         onActivationsCounterChanged={
                             handleActivationsLeftChanged
                         }
@@ -554,7 +570,7 @@ function GameStatusHUD({ data, onModified }) {
                 <Grid item xs={12}>
                     <Grid container justify="center">
                         <ActivationsCounter
-                            activationsToMake={opponentValues.activationsLeft}
+                            activationsToMake={opponentActivationsLeft}
                             canEdit={false}
                         />
                     </Grid>
@@ -574,9 +590,7 @@ function GameStatusHUD({ data, onModified }) {
                         style={{ marginTop: "1rem" }}
                     >
                         <Grid item>
-                            <Typography variant="h6">
-                                {data[opponent].name}
-                            </Typography>
+                            <Typography variant="h6">{opponentName}</Typography>
                         </Grid>
                     </Grid>
                 </Grid>

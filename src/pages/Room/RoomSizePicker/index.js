@@ -6,10 +6,18 @@ import { FirebaseContext } from "../../../firebase";
 import { MessagesProvider } from "../contexts/messagesContext";
 import create from "zustand";
 import { useAuthUser } from "../../../components/Session";
+import {
+    useMyGameState,
+    useTheirGameState,
+} from "../hooks/playerGameStateHooks";
 
-export const useMyState = create(() => ({
-    data: {},
-}));
+// activationsLeft
+// faction
+// gloryScored
+// glorySpent
+// name
+// oDeck
+// pDeck
 
 // Maybe better to write this to take more usage from the react-router-dom?..
 export default function RoomSizePicker() {
@@ -25,7 +33,19 @@ export default function RoomSizePicker() {
             if (snapshot.exists) {
                 console.log("RoomSizePicker - Updated from server");
                 const serverData = snapshot.data();
-                useMyState.setState({ data: serverData[myself.uid] });
+                const [opponent] = serverData.players.filter(
+                    (p) => p !== myself.uid
+                );
+
+                useMyGameState.setState({
+                    ...serverData[myself.uid],
+                    hasPrimacy: serverData.status.primacy[myself.uid],
+                });
+                useTheirGameState.setState({
+                    ...serverData[opponent],
+                    hasPrimacy: serverData.status.primacy[opponent],
+                });
+
                 setData({ ...serverData, id: snapshot.id });
                 setLoaded(true);
             }
