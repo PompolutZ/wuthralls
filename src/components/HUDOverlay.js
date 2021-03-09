@@ -101,7 +101,7 @@ function HUDOverlay({ onCloseOverlayClick, children, modified }) {
 
 HUDOverlay.propTypes = {
     onCloseOverlayClick: PropTypes.func,
-    children: PropTypes.array,
+    children: PropTypes.element,
     modified: PropTypes.bool,
 };
 

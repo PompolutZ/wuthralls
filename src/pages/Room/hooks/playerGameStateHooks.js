@@ -8,11 +8,12 @@ const initialPlayerState = {
     name: "",
     oDeck: "",
     pDeck: "",
+    id: "",
 };
 
 export const useMyGameState = create((set) => ({
     ...initialPlayerState,
-    setActivationsLeft: (value) => set((state) => ({ activationsLeft: value })),
+    setActivationsLeft: (value) => set(() => ({ activationsLeft: value })),
 }));
 
 export const useTheirGameState = create(() => ({

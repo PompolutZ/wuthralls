@@ -13,20 +13,50 @@ import {
     useMyGameState,
     useTheirGameState,
 } from "../hooks/playerGameStateHooks";
-function RoundCounter({ round, onRoundChange }) {
-    const [value, setValue] = useState(round);
+import useUpdateRoom from "../hooks/useUpdateRoom";
+import HUDOverlay from "../../../components/HUDOverlay";
+import { useGameRound, useRoomInfo } from "../hooks/gameStateHooks";
+import useUpdateGameLog from "../hooks/useUpdateGameLog";
 
+function RoundCounter() {
+    const roomId = useRoomInfo((room) => room.roomId);
+    const playerIds = useRoomInfo((room) => room.players);
+    const round = useGameRound((state) => state.round);
+    const setRound = useGameRound((state) => state.setRound);
+    const updateRoom = useUpdateRoom(roomId);
+    const updateGameLog = useUpdateGameLog(roomId);
+    const myName = useMyGameState((my) => my.name);
+
+    // TODO: Remove tokens from fighters
     const handleChangeValue = (changeBy) => () => {
-        const nextValue = value + changeBy > 1 ? value + changeBy : 1;
-        setValue(nextValue);
-        if (value === nextValue) return;
-        onRoundChange(nextValue);
+        const nextRound = round + changeBy;
+        setRound(nextRound);
+
+        // const fightersWithoutTokens = Object.entries(
+        //     data.board.fighters
+        // ).reduce(
+        //     (r, [fighterId, fighterData]) => ({
+        //         ...r,
+        //         [fighterId]: { ...fighterData, tokens: "" },
+        //     }),
+        //     {}
+        // );
+        updateRoom({
+            [`status.round`]: nextRound,
+            ...playerIds.reduce(
+                (r, p) => ({ ...r, [`${p}.activationsLeft`]: 4 }),
+                {}
+            ),
+            // [`board.fighters`]: fightersWithoutTokens,
+        });
+        updateGameLog(`${myName} has started round ${nextRound}.`);
     };
 
     return (
         <div style={{ display: "flex", alignItems: "center" }}>
             <ButtonBase
                 onClick={handleChangeValue(-1)}
+                disabled={round <= 1}
                 style={{
                     backgroundColor: "green",
                     width: "2rem",
@@ -58,7 +88,7 @@ function RoundCounter({ round, onRoundChange }) {
                         fontWeight: "bold",
                     }}
                 >
-                    {value}
+                    {round}
                 </div>
                 <div
                     style={{
@@ -79,6 +109,7 @@ function RoundCounter({ round, onRoundChange }) {
             </div>
             <ButtonBase
                 onClick={handleChangeValue(1)}
+                disabled={round >= 3}
                 style={{
                     backgroundColor: "red",
                     width: "2rem",
@@ -94,11 +125,6 @@ function RoundCounter({ round, onRoundChange }) {
         </div>
     );
 }
-
-RoundCounter.propTypes = {
-    round: PropTypes.number,
-    onRoundChange: PropTypes.func,
-};
 
 function CombinedGloryCounter({
     canEdit,
@@ -290,18 +316,10 @@ function ActivationsCounter({
         setValue(activationsToMake);
     }, [activationsToMake]);
 
-    const handleMakeActivation = () => {
+    const handleMakeActivation = (modifier) => () => {
         if (!canEdit) return;
 
-        const nextValue = value - 1;
-        setValue(nextValue);
-        onActivationsCounterChanged(nextValue);
-    };
-
-    const handleUndoActivation = () => {
-        if (!canEdit) return;
-
-        const nextValue = value + 1;
+        const nextValue = value + modifier;
         setValue(nextValue);
         onActivationsCounterChanged(nextValue);
     };
@@ -317,7 +335,7 @@ function ActivationsCounter({
                         height: "5rem",
                         margin: "auto .1rem",
                     }}
-                    onClick={handleUndoActivation}
+                    onClick={handleMakeActivation(1)}
                 />
             ))}
             {new Array(value).fill(1).map((v, idx) => (
@@ -329,7 +347,7 @@ function ActivationsCounter({
                         height: "5rem",
                         margin: "auto .1rem",
                     }}
-                    onClick={handleMakeActivation}
+                    onClick={handleMakeActivation(-1)}
                 />
             ))}
         </div>
@@ -395,15 +413,16 @@ PrimacyOwner.propTypes = {
     onOwnershipChange: PropTypes.func,
 };
 
-function GameStatusHUD({ data, onModified }) {
+function GameStatusHUD({ data, onClose }) {
+    const updateRoom = useUpdateRoom(data.id);
     const myname = useMyGameState((state) => state.name);
     const [myActivationsLeft, setMyActivationsLeft] = useMyGameState(
         (state) => [state.activationsLeft, state.setActivationsLeft],
         shallow
     );
-    const opponentName = useTheirGameState((state) => state.name);
+    const opponentName = useTheirGameState((player) => player.name);
     const opponentActivationsLeft = useTheirGameState(
-        (state) => state.activationsLeft
+        (player) => player.activationsLeft
     );
 
     const myself = useAuthUser();
@@ -420,6 +439,8 @@ function GameStatusHUD({ data, onModified }) {
         gloryScored: opponent ? data[opponent].gloryScored : 0,
         glorySpent: opponent ? data[opponent].glorySpent : 0,
     });
+    const [modified, setModified] = useState(false);
+    const [payload, setPayload] = useState({});
 
     useEffect(() => {
         setOpponentValues({
@@ -429,25 +450,17 @@ function GameStatusHUD({ data, onModified }) {
         });
     }, [data]);
 
-    useEffect(() => {
-        console.log(opponentActivationsLeft);
-    }, [opponentActivationsLeft]);
-
     const handleOnGloryChange = (value) => {
         setMyValues({
             ...myValues,
             gloryScored: value.earned,
             glorySpent: value.spent,
         });
-
-        onModified({
-            save: () => {
-                firebase.updateRoom(data.id, {
-                    [`${myself.uid}.activationsLeft`]: myValues.activationsLeft,
-                    [`${myself.uid}.gloryScored`]: value.earned,
-                    [`${myself.uid}.glorySpent`]: value.spent,
-                });
-            },
+        setModified(true);
+        setPayload({
+            [`${myself.uid}.activationsLeft`]: myValues.activationsLeft,
+            [`${myself.uid}.gloryScored`]: value.earned,
+            [`${myself.uid}.glorySpent`]: value.spent,
         });
     };
 
@@ -456,6 +469,7 @@ function GameStatusHUD({ data, onModified }) {
             ...myValues,
             activationsLeft: value,
         });
+        setModified(true);
 
         firebase.addGenericMessage2(data.id, {
             author: "Katophrane",
@@ -463,51 +477,10 @@ function GameStatusHUD({ data, onModified }) {
             value: `${myself.username} flipped activation token and has ${value} activations left.`,
         });
 
-        onModified({
-            save: () => {
-                firebase.updateRoom(data.id, {
-                    [`${myself.uid}.activationsLeft`]: value,
-                    [`${myself.uid}.gloryScored`]: myValues.gloryScored,
-                    [`${myself.uid}.glorySpent`]: myValues.glorySpent,
-                });
-            },
-        });
-    };
-
-    const handleRoundCounterChange = (value) => {
-        setMyValues({
-            ...myValues,
-            activationsLeft: 4,
-        });
-
-        setOpponentValues({
-            ...opponentValues,
-            activationsLeft: 4,
-        });
-
-        const fightersWithoutTokens = Object.entries(
-            data.board.fighters
-        ).reduce(
-            (r, [fighterId, fighterData]) => ({
-                ...r,
-                [fighterId]: { ...fighterData, tokens: "" },
-            }),
-            {}
-        );
-
-        firebase.updateRoom(data.id, {
-            [`status.round`]: value,
-            ...data.players.reduce(
-                (r, p) => ({ ...r, [`${p}.activationsLeft`]: 4 }),
-                {}
-            ),
-            [`board.fighters`]: fightersWithoutTokens,
-        });
-
-        firebase.addGenericMessage2(data.id, {
-            author: "Katophrane",
-            type: "INFO",
-            value: `${myself.username} has started round ${value}.`,
+        setPayload({
+            [`${myself.uid}.activationsLeft`]: value,
+            [`${myself.uid}.gloryScored`]: myValues.gloryScored,
+            [`${myself.uid}.glorySpent`]: myValues.glorySpent,
         });
     };
 
@@ -525,77 +498,86 @@ function GameStatusHUD({ data, onModified }) {
         });
     };
 
+    const handleCloseOverlay = () => {
+        updateRoom(payload);
+        onClose();
+    };
+
     return (
-        <Grid container alignItems="center" direction="column">
-            <Grid item>
-                <Typography variant="h6">{myname}</Typography>
-            </Grid>
-            <Grid item xs={12}>
-                <CombinedGloryCounter
-                    canEdit
-                    glory={myValues.gloryScored}
-                    glorySpent={myValues.glorySpent}
-                    onGloryChange={handleOnGloryChange}
-                />
-            </Grid>
-            <Grid item xs={12} style={{ marginTop: "1rem" }}>
-                <Grid container justify="center">
-                    <ActivationsCounter
-                        activationsToMake={myActivationsLeft}
-                        onActivationsCounterChanged={
-                            handleActivationsLeftChanged
-                        }
+        <HUDOverlay
+            modified={modified}
+            onCloseOverlayClick={handleCloseOverlay}
+        >
+            <Grid container alignItems="center" direction="column">
+                <Grid item>
+                    <Typography variant="h6">{myname}</Typography>
+                </Grid>
+                <Grid item xs={12}>
+                    <CombinedGloryCounter
                         canEdit
+                        glory={myValues.gloryScored}
+                        glorySpent={myValues.glorySpent}
+                        onGloryChange={handleOnGloryChange}
                     />
                 </Grid>
-            </Grid>
-            <Grid item xs={12}>
-                <div style={{ display: "flex", width: "100%" }}>
-                    <RoundCounter
-                        round={data.status.round}
-                        onRoundChange={handleRoundCounterChange}
-                    />
-                    {data.status.primacy && (
-                        <PrimacyOwner
-                            ownership={data.status.primacy}
-                            me={myself.uid}
-                            onOwnershipChange={handleOwnershipChange}
-                        />
-                    )}
-                </div>
-            </Grid>
-            <Grid item xs={4}></Grid>
-
-            {Boolean(opponent) && (
-                <Grid item xs={12}>
+                <Grid item xs={12} style={{ marginTop: "1rem" }}>
                     <Grid container justify="center">
                         <ActivationsCounter
-                            activationsToMake={opponentActivationsLeft}
-                            canEdit={false}
+                            activationsToMake={myActivationsLeft}
+                            onActivationsCounterChanged={
+                                handleActivationsLeftChanged
+                            }
+                            canEdit
                         />
                     </Grid>
+                </Grid>
+                <Grid item xs={12}>
+                    <div style={{ display: "flex", width: "100%" }}>
+                        <RoundCounter />
+                        {data.status.primacy && (
+                            <PrimacyOwner
+                                ownership={data.status.primacy}
+                                me={myself.uid}
+                                onOwnershipChange={handleOwnershipChange}
+                            />
+                        )}
+                    </div>
+                </Grid>
+                <Grid item xs={4}></Grid>
 
-                    <Grid container justify="center">
-                        <Grid item xs={12} style={{ marginTop: "1rem" }}>
-                            <CombinedGloryCounter
+                {Boolean(opponent) && (
+                    <Grid item xs={12}>
+                        <Grid container justify="center">
+                            <ActivationsCounter
+                                activationsToMake={opponentActivationsLeft}
                                 canEdit={false}
-                                glory={opponentValues.gloryScored}
-                                glorySpent={opponentValues.glorySpent}
                             />
                         </Grid>
-                    </Grid>
-                    <Grid
-                        container
-                        justify="center"
-                        style={{ marginTop: "1rem" }}
-                    >
-                        <Grid item>
-                            <Typography variant="h6">{opponentName}</Typography>
+
+                        <Grid container justify="center">
+                            <Grid item xs={12} style={{ marginTop: "1rem" }}>
+                                <CombinedGloryCounter
+                                    canEdit={false}
+                                    glory={opponentValues.gloryScored}
+                                    glorySpent={opponentValues.glorySpent}
+                                />
+                            </Grid>
+                        </Grid>
+                        <Grid
+                            container
+                            justify="center"
+                            style={{ marginTop: "1rem" }}
+                        >
+                            <Grid item>
+                                <Typography variant="h6">
+                                    {opponentName}
+                                </Typography>
+                            </Grid>
                         </Grid>
                     </Grid>
-                </Grid>
-            )}
-        </Grid>
+                )}
+            </Grid>
+        </HUDOverlay>
     );
 }
 

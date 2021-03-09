@@ -122,15 +122,7 @@ function ActionsPalette({
     };
 
     const handleCloseOverlay = (e) => {
-        e.preventDefault();
-        if (mainHUDWasModified) {
-            mainHUDModifications.save();
-        }
-
-        setMainHUDModifications(null);
-        setMainHUDWasModified(false);
         setShowMainHUD(null);
-        setMainHUDPayload(null);
     };
 
     const handleSwitchScreen = () => {
@@ -362,7 +354,7 @@ function ActionsPalette({
                     orientation={data.status && data.status.orientation}
                 />
             )}
-            {showMainHUD && (
+            {/* {showMainHUD && (
                 <HUDOverlay
                     onCloseOverlayClick={handleCloseOverlay}
                     modified={mainHUDWasModified}
@@ -370,13 +362,10 @@ function ActionsPalette({
                     {showMainHUD === "FIGHTER_INFO" && (
                         <FighterHUD data={mainHUDPayload} />
                     )}
-                    {showMainHUD === "GAME_STATUS_INFO" && (
-                        <GameStatusHUD
-                            data={data}
-                            onModified={onGameStatusHUDModified}
-                        />
-                    )}
                 </HUDOverlay>
+            )} */}
+            {showMainHUD === "GAME_STATUS_INFO" && (
+                <GameStatusHUD data={data} onClose={handleCloseOverlay} />
             )}
         </div>
     );

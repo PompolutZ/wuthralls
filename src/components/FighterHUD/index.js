@@ -881,8 +881,6 @@ function FighterHUD({ data }) {
                                 height: cardImageHeight * 0.8,
                                 margin: "auto",
                                 borderRadius: "1rem",
-                                // border: '3px dashed black',
-                                // boxSizing: 'border-box',
                                 backgroundPosition: "center center",
                                 backgroundSize: "cover",
                                 backgroundRepeat: "no-repeat",

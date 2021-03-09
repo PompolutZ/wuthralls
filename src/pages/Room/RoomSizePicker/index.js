@@ -10,6 +10,7 @@ import {
     useMyGameState,
     useTheirGameState,
 } from "../hooks/playerGameStateHooks";
+import { useGameRound, useRoomInfo } from "../hooks/gameStateHooks";
 
 // activationsLeft
 // faction
@@ -28,6 +29,13 @@ export default function RoomSizePicker() {
     const myself = useAuthUser();
 
     useEffect(() => {
+        useRoomInfo.setState({
+            roomId: state.id,
+            players: state.players,
+        });
+    }, [state]);
+
+    useEffect(() => {
         setLoaded(false);
         const unsubscribe = firebase.setRoomListener(state.id, (snapshot) => {
             if (snapshot.exists) {
@@ -40,11 +48,14 @@ export default function RoomSizePicker() {
                 useMyGameState.setState({
                     ...serverData[myself.uid],
                     hasPrimacy: serverData.status.primacy[myself.uid],
+                    id: myself.uid,
                 });
                 useTheirGameState.setState({
                     ...serverData[opponent],
                     hasPrimacy: serverData.status.primacy[opponent],
+                    id: opponent,
                 });
+                useGameRound.setState({ round: serverData.status.round });
 
                 setData({ ...serverData, id: snapshot.id });
                 setLoaded(true);
@@ -55,7 +66,7 @@ export default function RoomSizePicker() {
             console.log("Unsubscribe");
             unsubscribe();
         };
-    }, [firebase, state.id]);
+    }, [firebase, state.id, myself.uid]);
 
     if (!loaded)
         return (
