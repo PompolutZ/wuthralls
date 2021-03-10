@@ -4,6 +4,7 @@ import ButtonBase from "@material-ui/core/ButtonBase";
 import AddIcon from "@material-ui/icons/Add";
 import SaveIcon from "@material-ui/icons/Save";
 import PropTypes from "prop-types";
+import Grow from "@material-ui/core/Grow";
 
 function Overlay(props) {
     const [portalHost, setPortalHost] = useState(undefined);
@@ -70,7 +71,9 @@ function HUDOverlay({ onCloseOverlayClick, children, modified }) {
                         overflow: "scroll",
                     }}
                 >
-                    {children}
+                    <Grow timeout={375} in mountOnEnter unmountOnExit>
+                        {children}
+                    </Grow>
                 </div>
                 <ButtonBase
                     style={{
