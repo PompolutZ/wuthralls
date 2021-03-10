@@ -4,7 +4,7 @@ import { cardsDb } from "../../../../data";
 import {
     useMyGameState,
     useTheirGameState,
-} from "../../hooks/playerGameStateHooks";
+} from "../../hooks/playerStateHooks";
 
 const convertHandStringIntoCards = (hand) =>
     hand ? hand.split(",").map((id) => ({ ...cardsDb[id], id })) : [];

@@ -9,22 +9,18 @@ import AddIcon from "@material-ui/icons/Add";
 import RemoveIcon from "@material-ui/icons/Remove";
 import PropTypes from "prop-types";
 import shallow from "zustand/shallow";
-import {
-    useMyGameState,
-    useTheirGameState,
-} from "../hooks/playerGameStateHooks";
+import { useMyGameState, useTheirGameState } from "../hooks/playerStateHooks";
 import useUpdateRoom from "../hooks/useUpdateRoom";
 import HUDOverlay from "../../../components/HUDOverlay";
 import { useGameRound, useRoomInfo } from "../hooks/gameStateHooks";
 import useUpdateGameLog from "../hooks/useUpdateGameLog";
 
 function RoundCounter() {
-    const roomId = useRoomInfo((room) => room.roomId);
     const playerIds = useRoomInfo((room) => room.players);
     const round = useGameRound((state) => state.round);
     const setRound = useGameRound((state) => state.setRound);
-    const updateRoom = useUpdateRoom(roomId);
-    const updateGameLog = useUpdateGameLog(roomId);
+    const updateRoom = useUpdateRoom();
+    const updateGameLog = useUpdateGameLog();
     const myName = useMyGameState((my) => my.name);
 
     // TODO: Remove tokens from fighters

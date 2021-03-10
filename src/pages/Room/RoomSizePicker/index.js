@@ -6,10 +6,7 @@ import { FirebaseContext } from "../../../firebase";
 import { MessagesProvider } from "../contexts/messagesContext";
 import create from "zustand";
 import { useAuthUser } from "../../../components/Session";
-import {
-    useMyGameState,
-    useTheirGameState,
-} from "../hooks/playerGameStateHooks";
+import { useMyGameState, useTheirGameState } from "../hooks/playerStateHooks";
 import { useGameRound, useRoomInfo } from "../hooks/gameStateHooks";
 
 // activationsLeft
