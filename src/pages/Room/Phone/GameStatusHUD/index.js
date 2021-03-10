@@ -1,7 +1,7 @@
 import React, { useContext, useState, useEffect } from "react";
 import Grid from "@material-ui/core/Grid";
-import { useAuthUser } from "../../../components/Session";
-import { FirebaseContext } from "../../../firebase";
+import { useAuthUser } from "../../../../components/Session";
+import { FirebaseContext } from "../../../../firebase";
 import ButtonBase from "@material-ui/core/ButtonBase";
 import Typography from "@material-ui/core/Typography";
 import Divider from "@material-ui/core/Divider";
@@ -9,124 +9,19 @@ import AddIcon from "@material-ui/icons/Add";
 import RemoveIcon from "@material-ui/icons/Remove";
 import PropTypes from "prop-types";
 import shallow from "zustand/shallow";
-import { useMyGameState, useTheirGameState } from "../hooks/playerStateHooks";
-import useUpdateRoom from "../hooks/useUpdateRoom";
-import HUDOverlay from "../../../components/HUDOverlay";
+import {
+    useMyGameState,
+    useTheirGameState,
+} from "../../hooks/playerStateHooks";
+import useUpdateRoom from "../../hooks/useUpdateRoom";
+import HUDOverlay from "../../../../components/HUDOverlay";
 import {
     useFightersInfo,
     useGameRound,
     useRoomInfo,
-} from "../hooks/gameStateHooks";
-import useUpdateGameLog from "../hooks/useUpdateGameLog";
-
-function RoundCounter() {
-    const playerIds = useRoomInfo((room) => room.players);
-    const round = useGameRound((state) => state.round);
-    const setRound = useGameRound((state) => state.setRound);
-    const updateRoom = useUpdateRoom();
-    const updateGameLog = useUpdateGameLog();
-    const myName = useMyGameState((my) => my.name);
-    const fighterIds = useFightersInfo((state) => Object.keys(state));
-
-    // TODO: Remove tokens from fighters
-    const handleChangeValue = (changeBy) => () => {
-        const nextRound = round + changeBy;
-        setRound(nextRound);
-
-        const fightersWithoutTokens = fighterIds.reduce(
-            (fightersPayload, fighterId) => ({
-                ...fightersPayload,
-                [`board.fighters.${fighterId}.tokens`]: "",
-            }),
-            {}
-        );
-
-        const playersWithRestoredActivations = playerIds.reduce(
-            (r, p) => ({ ...r, [`${p}.activationsLeft`]: 4 }),
-            {}
-        );
-
-        updateRoom({
-            [`status.round`]: nextRound,
-            ...playersWithRestoredActivations,
-            ...fightersWithoutTokens,
-        });
-        updateGameLog(`${myName} has started round ${nextRound}.`);
-    };
-
-    return (
-        <div style={{ display: "flex", alignItems: "center" }}>
-            <ButtonBase
-                onClick={handleChangeValue(-1)}
-                disabled={round <= 1}
-                style={{
-                    backgroundColor: "green",
-                    width: "2rem",
-                    height: "2rem",
-                    borderRadius: "1.5rem",
-                    border: "3px solid white",
-                    color: "white",
-                    boxSizing: "border-box",
-                }}
-            >
-                <RemoveIcon />
-            </ButtonBase>
-            <div
-                style={{
-                    display: "flex",
-                    position: "relative",
-                    width: "5rem",
-                    height: "5rem",
-                    borderRadius: "4rem",
-                    border: "2px solid white",
-                    alignItems: "center",
-                    justifyContent: "center",
-                }}
-            >
-                <div
-                    style={{
-                        color: "white",
-                        fontSize: "4rem",
-                        fontWeight: "bold",
-                    }}
-                >
-                    {round}
-                </div>
-                <div
-                    style={{
-                        backgroundImage: `url(/assets/other/roundToken.png)`,
-                        backgroundPosition: "center, center",
-                        backgroundSize: "cover",
-                        width: "5rem",
-                        height: "5rem",
-                        position: "absolute",
-                        top: 0,
-                        left: 0,
-                        bottom: 0,
-                        right: 0,
-                        opacity: ".9",
-                        zIndex: -1,
-                    }}
-                />
-            </div>
-            <ButtonBase
-                onClick={handleChangeValue(1)}
-                disabled={round >= 3}
-                style={{
-                    backgroundColor: "red",
-                    width: "2rem",
-                    height: "2rem",
-                    borderRadius: "1.5rem",
-                    border: "3px solid white",
-                    color: "white",
-                    boxSizing: "border-box",
-                }}
-            >
-                <AddIcon />
-            </ButtonBase>
-        </div>
-    );
-}
+} from "../../hooks/gameStateHooks";
+import useUpdateGameLog from "../../hooks/useUpdateGameLog";
+import RoundCounter from "./RoundCounter";
 
 function CombinedGloryCounter({
     canEdit,
