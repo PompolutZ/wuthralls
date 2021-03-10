@@ -7,7 +7,11 @@ import { MessagesProvider } from "../contexts/messagesContext";
 import create from "zustand";
 import { useAuthUser } from "../../../components/Session";
 import { useMyGameState, useTheirGameState } from "../hooks/playerStateHooks";
-import { useGameRound, useRoomInfo } from "../hooks/gameStateHooks";
+import {
+    useFightersInfo,
+    useGameRound,
+    useRoomInfo,
+} from "../hooks/gameStateHooks";
 
 // activationsLeft
 // faction
@@ -53,6 +57,10 @@ export default function RoomSizePicker() {
                     id: opponent,
                 });
                 useGameRound.setState({ round: serverData.status.round });
+
+                useFightersInfo.setState({
+                    ...serverData.board.fighters,
+                });
 
                 setData({ ...serverData, id: snapshot.id });
                 setLoaded(true);

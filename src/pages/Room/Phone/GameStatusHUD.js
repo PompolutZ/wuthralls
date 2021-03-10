@@ -12,7 +12,11 @@ import shallow from "zustand/shallow";
 import { useMyGameState, useTheirGameState } from "../hooks/playerStateHooks";
 import useUpdateRoom from "../hooks/useUpdateRoom";
 import HUDOverlay from "../../../components/HUDOverlay";
-import { useGameRound, useRoomInfo } from "../hooks/gameStateHooks";
+import {
+    useFightersInfo,
+    useGameRound,
+    useRoomInfo,
+} from "../hooks/gameStateHooks";
 import useUpdateGameLog from "../hooks/useUpdateGameLog";
 
 function RoundCounter() {
@@ -22,28 +26,30 @@ function RoundCounter() {
     const updateRoom = useUpdateRoom();
     const updateGameLog = useUpdateGameLog();
     const myName = useMyGameState((my) => my.name);
+    const fighterIds = useFightersInfo((state) => Object.keys(state));
 
     // TODO: Remove tokens from fighters
     const handleChangeValue = (changeBy) => () => {
         const nextRound = round + changeBy;
         setRound(nextRound);
 
-        // const fightersWithoutTokens = Object.entries(
-        //     data.board.fighters
-        // ).reduce(
-        //     (r, [fighterId, fighterData]) => ({
-        //         ...r,
-        //         [fighterId]: { ...fighterData, tokens: "" },
-        //     }),
-        //     {}
-        // );
+        const fightersWithoutTokens = fighterIds.reduce(
+            (fightersPayload, fighterId) => ({
+                ...fightersPayload,
+                [`board.fighters.${fighterId}.tokens`]: "",
+            }),
+            {}
+        );
+
+        const playersWithRestoredActivations = playerIds.reduce(
+            (r, p) => ({ ...r, [`${p}.activationsLeft`]: 4 }),
+            {}
+        );
+
         updateRoom({
             [`status.round`]: nextRound,
-            ...playerIds.reduce(
-                (r, p) => ({ ...r, [`${p}.activationsLeft`]: 4 }),
-                {}
-            ),
-            // [`board.fighters`]: fightersWithoutTokens,
+            ...playersWithRestoredActivations,
+            ...fightersWithoutTokens,
         });
         updateGameLog(`${myName} has started round ${nextRound}.`);
     };

@@ -9,3 +9,5 @@ export const useRoomInfo = create(() => ({
     roomId: "",
     players: [],
 }));
+
+export const useFightersInfo = create(() => ({}));
