@@ -19,8 +19,10 @@ import {
     OpponentNameAndFaction,
 } from "./PlayerNameAndFaction";
 
+/// Eventually, we should get rid of data property.
+/// A thorough investigation of data dependencies is pending...
 function GameStatusHUD({ data, onClose }) {
-    const updateRoom = useUpdateRoom(data.id);
+    const updateRoom = useUpdateRoom();
     const [myActivationsLeft, setMyActivationsLeft] = useMyGameState(
         (state) => [state.activationsLeft, state.setActivationsLeft],
         shallow
@@ -52,7 +54,7 @@ function GameStatusHUD({ data, onClose }) {
             gloryScored: opponent ? data[opponent].gloryScored : 0,
             glorySpent: opponent ? data[opponent].glorySpent : 0,
         });
-    }, [data]);
+    }, [data, opponent]);
 
     const handleOnGloryChange = (value) => {
         setMyValues({

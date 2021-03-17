@@ -15,7 +15,7 @@ import ObjectiveHexesPile from "./ObjectiveHexesPile";
 import Warband from "./Warband";
 import { useAuthUser } from "../../../components/Session";
 import HUDOverlay from "../../../components/HUDOverlay";
-import FighterHUD from "../../../components/FighterHUD";
+import FighterHUD from "./FighterHUD";
 import GameStatusHUD from "./GameStatusHUD";
 import ScatterToken from "./ScatterToken";
 import { FirebaseContext } from "../../../firebase";
@@ -367,6 +367,9 @@ function ActionsPalette({
             {showMainHUD === "GAME_STATUS_INFO" && (
                 <GameStatusHUD data={data} onClose={handleCloseOverlay} />
             )}
+            {/* {showMainHUD === "FIGHTER_INFO" && (
+                <FighterHUD data={data} onClose={handleCloseOverlay} />
+            )} */}
         </div>
     );
 }
