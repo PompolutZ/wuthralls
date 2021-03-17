@@ -25,24 +25,35 @@ function WoundsCounter({ wounds, onWoundsCounterChange }) {
                 position: "absolute",
                 top: ".3rem",
                 left: "-2.5rem",
-                alignItems: "flex-end",
+                flexDirection: "column",
             }}
         >
-            <ButtonBase
-                onClick={handleChangeValue(-1)}
-                style={{
-                    backgroundColor: "green",
-                    width: "3rem",
-                    height: "3rem",
-                    borderRadius: "1.5rem",
-                    border: "3px solid white",
-                    color: "white",
-                    boxSizing: "border-box",
-                }}
-            >
-                <RemoveIcon />
-            </ButtonBase>
+            {value > 0 && (
+                <ButtonBase
+                    onClick={handleChangeValue(-1)}
+                    style={{
+                        position: "absolute",
+                        width: "3rem",
+                        height: "3rem",
+                        left: "-2.5rem",
+                        top: ".5rem",
+                        borderRadius: "1.5rem",
+                        color: "white",
+                        boxSizing: "border-box",
+                    }}
+                >
+                    <AddIcon
+                        style={{
+                            transform: "rotate(45deg)",
+                            width: "3rem",
+                            height: "3rem",
+                            filter: "drop-shadow(0px 4px 7px rgba(0,0,0,.5))",
+                        }}
+                    />
+                </ButtonBase>
+            )}
             <div
+                onClick={handleChangeValue(1)}
                 style={{
                     display: "flex",
                     backgroundImage: "url(/assets/other/woundToken.png)",
@@ -51,7 +62,10 @@ function WoundsCounter({ wounds, onWoundsCounterChange }) {
                     width: "4rem",
                     height: "4rem",
                     borderRadius: "2rem",
-                    border: "2px solid white",
+                    cursor: "pointer",
+                    // border: "2px solid white",
+                    filter: "drop-shadow(0px 4px 7px rgba(0,0,0,.5))",
+                    zIndex: value,
                 }}
             >
                 <div
@@ -59,12 +73,35 @@ function WoundsCounter({ wounds, onWoundsCounterChange }) {
                         margin: "auto",
                         color: "white",
                         fontSize: "1.5rem",
+                        userSelect: "none",
                     }}
                 >
                     {value}
                 </div>
             </div>
-            <ButtonBase
+            {value > 1 &&
+                new Array(value - 1).fill(true).map((x, i) => (
+                    <div
+                        key={i}
+                        style={{
+                            position: "absolute",
+                            marginTop: "2rem",
+                            top: `${i}rem`,
+
+                            backgroundImage:
+                                "url(/assets/other/woundToken.png)",
+                            backgroundPosition: "center, center",
+                            backgroundSize: "cover",
+                            width: "3rem",
+                            height: "3rem",
+                            borderRadius: "2rem",
+                            left: ".5rem",
+                            filter: "drop-shadow(0px 2px 2px rgba(0,0,0,.5))",
+                            zIndex: value - 1 - i,
+                        }}
+                    />
+                ))}
+            {/* <ButtonBase
                 onClick={handleChangeValue(1)}
                 style={{
                     backgroundColor: "red",
@@ -77,7 +114,7 @@ function WoundsCounter({ wounds, onWoundsCounterChange }) {
                 }}
             >
                 <AddIcon />
-            </ButtonBase>
+            </ButtonBase> */}
         </div>
     );
 }

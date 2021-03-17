@@ -301,6 +301,7 @@ function FighterHUD({ data, fighterId, onClose }) {
                 direction="column"
                 style={{
                     position: "relative",
+                    padding: "1rem",
                 }}
             >
                 <Grid item xs={12}>
@@ -316,6 +317,8 @@ function FighterHUD({ data, fighterId, onClose }) {
                                         : "scale(1)"
                                 }`,
                                 transition: "transform .3s ease-out",
+                                filter:
+                                    "drop-shadow(0px 2px 4px rgba(0,0,0,.5))",
                             }}
                         >
                             <img
@@ -444,7 +447,7 @@ function FighterHUD({ data, fighterId, onClose }) {
                                 wounds={fighter.wounds}
                                 onWoundsCounterChange={handleUpdateWounds}
                             />
-                            <ButtonBase
+                            {/* <ButtonBase
                                 style={{
                                     position: "absolute",
                                     top: "50%",
@@ -476,7 +479,7 @@ function FighterHUD({ data, fighterId, onClose }) {
                                         }}
                                     />
                                 )}
-                            </ButtonBase>
+                            </ButtonBase> */}
                             <div
                                 style={{
                                     display: "flex",
