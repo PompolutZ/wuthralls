@@ -33,6 +33,7 @@ export default function RoomSizePicker() {
         useRoomInfo.setState({
             roomId: state.id,
             players: state.players,
+            withPrimacy: !!state.status.primacy,
         });
     }, [state]);
 
@@ -48,12 +49,16 @@ export default function RoomSizePicker() {
 
                 useMyGameState.setState({
                     ...serverData[myself.uid],
-                    hasPrimacy: serverData.status.primacy[myself.uid],
+                    hasPrimacy:
+                        serverData.status.primacy &&
+                        serverData.status.primacy[myself.uid],
                     id: myself.uid,
                 });
                 useTheirGameState.setState({
                     ...serverData[opponent],
-                    hasPrimacy: serverData.status.primacy[opponent],
+                    hasPrimacy:
+                        serverData.status.primacy &&
+                        serverData.status.primacy[opponent],
                     id: opponent,
                 });
                 useGameRound.setState({ round: serverData.status.round });

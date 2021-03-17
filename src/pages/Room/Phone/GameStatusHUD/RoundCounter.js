@@ -66,6 +66,7 @@ const useStyles = makeStyles((theme) => ({
 export default function RoundCounter() {
     const classes = useStyles();
     const playerIds = useRoomInfo((room) => room.players);
+    const withPrimacy = useRoomInfo((room) => room.withPrimacy);
     const round = useGameRound((state) => state.round);
     const setRound = useGameRound((state) => state.setRound);
     const updateRoom = useUpdateRoom();
@@ -91,10 +92,18 @@ export default function RoundCounter() {
             {}
         );
 
+        const resetPrimacyOwnership = withPrimacy
+            ? playerIds.reduce(
+                  (r, p) => ({ ...r, [`status.primacy.${p}`]: false }),
+                  {}
+              )
+            : {};
+
         updateRoom({
             [`status.round`]: nextRound,
             ...playersWithRestoredActivations,
             ...fightersWithoutTokens,
+            ...resetPrimacyOwnership,
         });
         updateGameLog(`${myName} has started round ${nextRound}.`);
     };
