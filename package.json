@@ -19,6 +19,7 @@
     "react-scripts": "4.0.2",
     "react-scrollbars-custom": "^4.0.21",
     "seedrandom": "^3.0.5",
+    "styled-components": "^5.2.1",
     "svg.js": "^2.7.1",
     "zustand": "3.3.2"
   },

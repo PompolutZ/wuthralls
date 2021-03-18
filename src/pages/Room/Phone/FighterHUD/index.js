@@ -13,6 +13,7 @@ import { FirebaseContext } from "../../../../firebase";
 import { useAuthUser } from "../../../../components/Session";
 import DrawCardsIcon from "@material-ui/icons/GetApp";
 import DeleteIcon from "@material-ui/icons/Delete";
+import Button from "@material-ui/core/Button";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 import PropTypes from "prop-types";
@@ -26,6 +27,8 @@ import {
     useTheirGameState,
 } from "../../hooks/playerStateHooks";
 import shallow from "zustand/shallow";
+import TokensDrawPile from "./TokensDrawPile";
+import InspirationButton from "./InspirationButton";
 
 const cardImageWidth = 300;
 const cardImageHeight = 420;
@@ -290,6 +293,10 @@ function FighterHUD({ data, fighterId, onClose }) {
         // });
     };
 
+    const handleAddToken = (token) => {
+        console.log(token);
+    };
+
     return (
         <HUDOverlay
             modified={modified}
@@ -330,119 +337,20 @@ function FighterHUD({ data, fighterId, onClose }) {
                                     height: cardImageHeight * 0.9,
                                 }}
                             />
-                            <div
-                                style={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                    marginTop: ".5rem",
-                                    alignSelf: "flex-end",
-                                }}
-                                onClick={handleOpenAddTokenMenu}
-                            >
-                                <AddIcon
-                                    style={{
-                                        width: "1rem",
-                                        height: "1rem",
-                                        color: "teal",
-                                    }}
-                                />
-                                <Typography
-                                    style={{
-                                        fontSize: "1rem",
-                                        color: "teal",
-                                        textDecoration: "underline",
-                                    }}
-                                >
-                                    Add Token
-                                </Typography>
-                            </div>
-                            {fighter.counterTypes && (
-                                <div
-                                    style={{
-                                        display: "flex",
-                                        alignItems: "center",
-                                        marginTop: ".5rem",
-                                        alignSelf: "flex-end",
-                                    }}
-                                    onClick={handleOpenAddCounterMenu}
-                                >
-                                    <AddIcon
-                                        style={{
-                                            width: "1rem",
-                                            height: "1rem",
-                                            color: "teal",
-                                        }}
-                                    />
-                                    <Typography
-                                        style={{
-                                            fontSize: "1rem",
-                                            color: "teal",
-                                            textDecoration: "underline",
-                                        }}
-                                    >
-                                        Add Counter
-                                    </Typography>
-                                </div>
-                            )}
-                            <Menu
-                                id="tokensMenu"
-                                anchorEl={addTokenAnchor}
-                                keepMounted
-                                open={Boolean(addTokenAnchor)}
-                                onClose={handleCloseAddTokenMenu}
-                                style={{ zIndex: 20000 }}
-                            >
-                                <MenuItem
-                                    onClick={handleAddTokenAndCloseMenu("Move")}
-                                >
-                                    Move Token
-                                </MenuItem>
-                                <MenuItem
-                                    onClick={handleAddTokenAndCloseMenu(
-                                        "Charge"
-                                    )}
-                                >
-                                    Charge Token
-                                </MenuItem>
-                                <MenuItem
-                                    onClick={handleAddTokenAndCloseMenu(
-                                        "Guard"
-                                    )}
-                                >
-                                    Guard Token
-                                </MenuItem>
-                                {fighter.extraTokens &&
-                                    fighter.extraTokens
-                                        .split(",")
-                                        .map((token) => (
-                                            <MenuItem
-                                                key={token}
-                                                onClick={handleAddTokenAndCloseMenu(
-                                                    token
-                                                )}
-                                            >{`${token} Token`}</MenuItem>
-                                        ))}
-                            </Menu>
-                            <Menu
-                                id="countersMenu"
-                                anchorEl={addCounterAnchor}
-                                keepMounted
-                                open={Boolean(addCounterAnchor)}
-                                onClose={handleCloseAddCounterMenu}
-                                style={{ zIndex: 20000 }}
-                            >
-                                {fighter.counterTypes &&
-                                    fighter.counterTypes
-                                        .split(",")
-                                        .map((counter) => (
-                                            <MenuItem
-                                                key={counter}
-                                                onClick={handleAddCounterAndCloseMenu(
-                                                    counter
-                                                )}
-                                            >{`${counter} Counter`}</MenuItem>
-                                        ))}
-                            </Menu>
+                            <InspirationButton isInspired={isInspired} />
+                            <TokensDrawPile
+                                tokens={["Move", "Charge", "Guard"]}
+                                onClick={handleAddToken}
+                            />
+                            <TokensDrawPile
+                                variant="circular"
+                                tokens={[
+                                    "woundToken",
+                                    "Hunger1",
+                                    ...fighter.counterTypes.split(","),
+                                ]}
+                                onClick={handleAddToken}
+                            />
                             <WoundsCounter
                                 wounds={fighter.wounds}
                                 onWoundsCounterChange={handleUpdateWounds}
@@ -462,7 +370,7 @@ function FighterHUD({ data, fighterId, onClose }) {
                                     border: "3px solid white",
                                     boxSizing: "border-box",
                                 }}
-                                onClick={changeInspire}
+                                
                             >
                                 {isInspired ? (
                                     <UninspireIcon
