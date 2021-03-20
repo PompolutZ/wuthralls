@@ -41,7 +41,6 @@ function FighterHUD({ data, fighterId, onClose }) {
     const myself = useAuthUser();
     const firebase = useContext(FirebaseContext);
     const fighter = useFightersInfo((info) => info[fighterId]);
-    console.log(fighter);
     // const { roomId } = data;
     const [upgrades, setUpgrades] = useState(
         fighter.upgrades ? fighter.upgrades.split(",") : []
@@ -58,20 +57,13 @@ function FighterHUD({ data, fighterId, onClose }) {
     const [counters, setCounters] = useState(
         fighter.counters ? fighter.counters.split(",") : []
     );
+    const [wounds, setWounds] = useState(fighter.wounds);
 
     // ===== NEW STUFF
     const [modified, setModified] = useState(false);
     const [payload, setPayload] = useState({});
 
     // ===============
-
-    // useEffect(() => {
-    //     // firebase.updateBoardProperty(
-    //     //     roomId,
-    //     //     `board.fighters.${data.id}.isInspired`,
-    //     //     isInspired
-    //     // );
-    // }, [isInspired]);
 
     const handleCloseOverlay = () => {
         updateRoom(payload);
@@ -228,7 +220,13 @@ function FighterHUD({ data, fighterId, onClose }) {
     };
 
     const changeInspire = async () => {
-        // setIsInspired((prev) => !prev);
+        const nextValue = !isInspired;
+        setIsInspired(nextValue);
+        setPayload((prev) => ({
+            ...prev,
+            isInspired: nextValue,
+        }));
+        setModified(true);
     };
 
     const returnUpgradeToHand = (cardId) => () => {
@@ -294,7 +292,63 @@ function FighterHUD({ data, fighterId, onClose }) {
     };
 
     const handleAddToken = (token) => {
-        console.log(token);
+        const nextTokens = [...tokens, token];
+        setTokens(nextTokens);
+        setPayload((prev) => ({
+            ...prev,
+            tokens: nextTokens.join(","),
+        }));
+        setModified(true);
+    };
+
+    const handleAddCounter = (counter) => {
+        switch (counter) {
+            case "woundToken": {
+                const nextWounds = wounds + 1;
+                setWounds(nextWounds);
+                setPayload((prev) => ({
+                    ...prev,
+                    wounds: nextWounds,
+                }));
+                setModified(true);
+                break;
+            }
+            default: {
+                const nextCounters = [...counters, counter];
+                setCounters(nextCounters);
+                setPayload((prev) => ({
+                    ...prev,
+                    counters: nextCounters.join(","),
+                }));
+                setModified(true);
+                break;
+            }
+        }
+    };
+
+    const handleRemoveCounter = (counter) => () => {
+        switch (counter) {
+            case "woundToken": {
+                const nextWounds = wounds - 1;
+                setWounds(nextWounds);
+                setPayload((prev) => ({
+                    ...prev,
+                    wounds: nextWounds,
+                }));
+                setModified(true);
+                break;
+            }
+            default: {
+                const nextCounters = [...counters, counter];
+                setCounters(nextCounters);
+                setPayload((prev) => ({
+                    ...prev,
+                    counters: nextCounters.join(","),
+                }));
+                setModified(true);
+                break;
+            }
+        }
     };
 
     return (
@@ -337,7 +391,10 @@ function FighterHUD({ data, fighterId, onClose }) {
                                     height: cardImageHeight * 0.9,
                                 }}
                             />
-                            <InspirationButton isInspired={isInspired} />
+                            <InspirationButton
+                                isInspired={isInspired}
+                                onClick={changeInspire}
+                            />
                             <TokensDrawPile
                                 tokens={["Move", "Charge", "Guard"]}
                                 onClick={handleAddToken}
@@ -349,11 +406,13 @@ function FighterHUD({ data, fighterId, onClose }) {
                                     "Hunger1",
                                     ...fighter.counterTypes.split(","),
                                 ]}
-                                onClick={handleAddToken}
+                                onClick={handleAddCounter}
                             />
                             <WoundsCounter
-                                wounds={fighter.wounds}
-                                onWoundsCounterChange={handleUpdateWounds}
+                                wounds={wounds}
+                                onRemoveWoundCounter={handleRemoveCounter(
+                                    "woundToken"
+                                )}
                             />
                             {/* <ButtonBase
                                 style={{

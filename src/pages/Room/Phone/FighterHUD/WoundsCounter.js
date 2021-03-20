@@ -4,13 +4,7 @@ import AddIcon from "@material-ui/icons/Add";
 import RemoveIcon from "@material-ui/icons/Remove";
 import PropTypes from "prop-types";
 
-function WoundsCounter({ wounds, onWoundsCounterChange }) {
-    const [value, setValue] = useState(wounds);
-
-    useEffect(() => {
-        onWoundsCounterChange(value);
-    }, [value]);
-
+function WoundsCounter({ wounds, onRemoveWoundCounter }) {
     const handleChangeValue = (changeBy) => () => {
         setValue((prev) => {
             const nextValue = prev + changeBy;
@@ -28,9 +22,9 @@ function WoundsCounter({ wounds, onWoundsCounterChange }) {
                 flexDirection: "column",
             }}
         >
-            {value > 0 && (
+            {wounds > 0 && (
                 <ButtonBase
-                    onClick={handleChangeValue(-1)}
+                    onClick={onRemoveWoundCounter}
                     style={{
                         position: "absolute",
                         width: "3rem",
@@ -53,7 +47,6 @@ function WoundsCounter({ wounds, onWoundsCounterChange }) {
                 </ButtonBase>
             )}
             <div
-                onClick={handleChangeValue(1)}
                 style={{
                     display: "flex",
                     backgroundImage: "url(/assets/other/woundToken.png)",
@@ -65,7 +58,7 @@ function WoundsCounter({ wounds, onWoundsCounterChange }) {
                     cursor: "pointer",
                     // border: "2px solid white",
                     filter: "drop-shadow(0px 4px 7px rgba(0,0,0,.5))",
-                    zIndex: value,
+                    zIndex: wounds,
                 }}
             >
                 <div
@@ -76,11 +69,11 @@ function WoundsCounter({ wounds, onWoundsCounterChange }) {
                         userSelect: "none",
                     }}
                 >
-                    {value}
+                    {wounds}
                 </div>
             </div>
-            {value > 1 &&
-                new Array(value - 1).fill(true).map((x, i) => (
+            {wounds > 1 &&
+                new Array(wounds - 1).fill(true).map((x, i) => (
                     <div
                         key={i}
                         style={{
@@ -97,7 +90,7 @@ function WoundsCounter({ wounds, onWoundsCounterChange }) {
                             borderRadius: "2rem",
                             left: ".5rem",
                             filter: "drop-shadow(0px 2px 2px rgba(0,0,0,.5))",
-                            zIndex: value - 1 - i,
+                            zIndex: wounds - 1 - i,
                         }}
                     />
                 ))}

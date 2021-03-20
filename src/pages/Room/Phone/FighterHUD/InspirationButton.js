@@ -3,17 +3,22 @@ import Button from "@material-ui/core/Button";
 import styled from "styled-components";
 
 const StyledInspirationButton = styled(Button)`
-    background: ${(props) => (props.isInspired ? "teal" : "goldenrod")};
+    background: ${({ $isInspired }) =>
+        $isInspired ? "linear-gradient(#3b4955, #38362b)" : "#a47f3e"};
     color: white;
+    font-weight: 700;
+    margin: 0.5rem 0;
+
     &:hover {
-        background: ${(props) => (props.isInspired ? "teal" : "goldenrod")};
+        background: ${({ $isInspired }) =>
+            $isInspired ? "linear-gradient(#3b4955, #38362b)" : "#a47f3e"};
     }
 `;
 
-function InspirationButton(props) {
+function InspirationButton({ isInspired, ...rest }) {
     return (
-        <StyledInspirationButton props={props}>
-            {props.isInspired ? "Un-Inspire" : "Inspire"}
+        <StyledInspirationButton {...rest} $isInspired={isInspired}>
+            {isInspired ? "Un-Inspire" : "Inspire"}
         </StyledInspirationButton>
     );
 }
