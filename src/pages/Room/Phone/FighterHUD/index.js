@@ -29,15 +29,38 @@ import {
 import shallow from "zustand/shallow";
 import TokensDrawPile from "./TokensDrawPile";
 import InspirationButton from "./InspirationButton";
+import useUpdateGameLog from "../../hooks/useUpdateGameLog";
 
 const cardImageWidth = 300;
 const cardImageHeight = 420;
+
+// this is a good candidate for a unit test.
+function convertChangesToLogMessage(changes, playerInfo, fighterInfo) {
+    const msgBuilder = [];
+
+    if (changes["wounds"] >= 0) {
+        msgBuilder.push(
+            `- set ${fighterInfo.name} wounds counters to ${changes["wounds"]}`
+        );
+    }
+    // eslint-disable-next-line no-prototype-builtins
+    console.log(Object.prototype.hasOwnProperty(changes, "isInspired"));
+    // eslint-disable-next-line no-prototype-builtins
+    if (Object.prototype.hasOwnProperty(changes, "isInspired")) {
+        `- made ${fighterInfo.name} ${
+            changes.isInspired ? "inspired" : "un-inspired"
+        }.`;
+    }
+
+    return msgBuilder;
+}
 
 // To decide where actually should we hold state
 // Should we use zustand hook to control individual fighter state globally or
 // control it here. Later makes sense if we batch update fighter info.
 function FighterHUD({ data, fighterId, onClose }) {
     const updateRoom = useUpdateRoom();
+    const updateGameLog = useUpdateGameLog();
     const myself = useAuthUser();
     const firebase = useContext(FirebaseContext);
     const fighter = useFightersInfo((info) => info[fighterId]);
@@ -61,109 +84,28 @@ function FighterHUD({ data, fighterId, onClose }) {
 
     // ===== NEW STUFF
     const [modified, setModified] = useState(false);
-    const [payload, setPayload] = useState({});
+    const [changes, setChanges] = useState({});
+    const [logLines, setLogLines] = useState([]);
 
     // ===============
 
     const handleCloseOverlay = () => {
+        let payload = Object.entries(changes).reduce(
+            (p, [key, value]) => ({
+                ...p,
+                [`board.fighters.${fighterId}.${key}`]: value,
+            }),
+            {}
+        );
         updateRoom(payload);
+        updateGameLog(
+            [
+                `${playerInfo.name} has:`,
+                ...convertChangesToLogMessage(changes, playerInfo, fighter),
+                ...logLines,
+            ].join("\n")
+        );
         onClose();
-    };
-
-    const handleOpenAddTokenMenu = (e) => {
-        setAddTokenAnchor(e.currentTarget);
-    };
-
-    const handleOpenAddCounterMenu = (e) => {
-        setAddCounterAnchor(e.currentTarget);
-    };
-
-    const handleCloseAddTokenMenu = () => {
-        setAddTokenAnchor(null);
-    };
-
-    const handleCloseAddCounterMenu = () => {
-        setAddCounterAnchor(null);
-    };
-
-    const handleAddTokenAndCloseMenu = (token) => () => {
-        // setAddTokenAnchor(null);
-        // const updatedTokens = [...tokens, token];
-        // setTokens(updatedTokens);
-        // firebase.updateBoardProperty(
-        //     roomId,
-        //     `board.fighters.${data.id}.tokens`,
-        //     updatedTokens.join()
-        // );
-        // firebase.addGenericMessage2(roomId, {
-        //     author: "Katophrane",
-        //     type: "INFO",
-        //     subtype: "ADD_TOKEN",
-        //     cardId: token,
-        //     value: `${playerInfo.name} gives ${data.name} ${token} token.`,
-        // });
-    };
-
-    const handleAddCounterAndCloseMenu = (counter) => () => {
-        // setAddCounterAnchor(null);
-        // const updatedCounters = [...counters, counter];
-        // setCounters(updatedCounters);
-        // firebase.updateBoardProperty(
-        //     roomId,
-        //     `board.fighters.${data.id}.counters`,
-        //     updatedCounters.join()
-        // );
-        // firebase.addGenericMessage2(roomId, {
-        //     author: "Katophrane",
-        //     type: "INFO",
-        //     subtype: "ADD_COUNTER",
-        //     cardId: counter,
-        //     value: `${playerInfo.name} gives ${data.name} ${counter} counter.`,
-        // });
-    };
-
-    const handleRemoveTokenAt = (index) => () => {
-        // const tokenToRemove = tokens[index];
-        // if (!tokenToRemove) return;
-        // const updatedTokens = [
-        //     ...tokens.slice(0, index),
-        //     ...tokens.slice(index + 1),
-        // ];
-        // setTokens(updatedTokens);
-        // firebase.updateBoardProperty(
-        //     roomId,
-        //     `board.fighters.${data.id}.tokens`,
-        //     updatedTokens.join()
-        // );
-        // firebase.addGenericMessage2(roomId, {
-        //     author: "Katophrane",
-        //     type: "INFO",
-        //     subtype: "REMOVE_TOKEN",
-        //     cardId: tokenToRemove,
-        //     value: `${playerInfo.name} removes ${tokenToRemove} token from ${data.name}.`,
-        // });
-    };
-
-    const handleRemoveCounterAt = (index) => () => {
-        // const counterToRemove = counters[index];
-        // if (!counterToRemove) return;
-        // const updatedCounters = [
-        //     ...counters.slice(0, index),
-        //     ...counters.slice(index + 1),
-        // ];
-        // setCounters(updatedCounters);
-        // firebase.updateBoardProperty(
-        //     roomId,
-        //     `board.fighters.${data.id}.counters`,
-        //     updatedCounters.join()
-        // );
-        // firebase.addGenericMessage2(roomId, {
-        //     author: "Katophrane",
-        //     type: "INFO",
-        //     subtype: "REMOVE_COUNTER",
-        //     cardId: counterToRemove,
-        //     value: `${playerInfo.name} removes ${counterToRemove} counter from ${data.name}.`,
-        // });
     };
 
     const handleBringToFront = (id) => () => {
@@ -211,21 +153,17 @@ function FighterHUD({ data, fighterId, onClose }) {
         // });
     };
 
-    const handleUpdateWounds = (value) => {
-        // firebase.updateBoardProperty(
-        //     roomId,
-        //     `board.fighters.${data.id}.wounds`,
-        //     value
-        // );
-    };
-
     const changeInspire = async () => {
         const nextValue = !isInspired;
         setIsInspired(nextValue);
-        setPayload((prev) => ({
+        setChanges((prev) => ({
             ...prev,
             isInspired: nextValue,
         }));
+        setLogLines((prev) => [
+            ...prev,
+            `- made ${fighter.name} ${nextValue ? "inspired" : "un-inspired"}.`,
+        ]);
         setModified(true);
     };
 
@@ -294,10 +232,36 @@ function FighterHUD({ data, fighterId, onClose }) {
     const handleAddToken = (token) => {
         const nextTokens = [...tokens, token];
         setTokens(nextTokens);
-        setPayload((prev) => ({
+        setChanges((prev) => ({
             ...prev,
             tokens: nextTokens.join(","),
         }));
+        setLogLines((prev) => [
+            ...prev,
+            `- gave ${token} token to ${fighter.name}`,
+        ]);
+        setModified(true);
+    };
+
+    const handleRemoveToken = (index) => () => {
+        // this is a shitty quick solution (abusing JS) since I want  to
+        // push new version to try Starblood faction
+        // the right strategy would have been probably
+        // making WoundCounters to be just Counters, one per type
+        const tokenToRemove = tokens[index];
+        const nextTokens = [
+            ...tokens.slice(0, index),
+            ...tokens.slice(index + 1),
+        ];
+        setTokens(nextTokens);
+        setChanges((prev) => ({
+            ...prev,
+            tokens: nextTokens.join(","),
+        }));
+        setLogLines((prev) => [
+            ...prev,
+            `- removed ${tokenToRemove} token from ${fighter.name}`,
+        ]);
         setModified(true);
     };
 
@@ -306,7 +270,7 @@ function FighterHUD({ data, fighterId, onClose }) {
             case "woundToken": {
                 const nextWounds = wounds + 1;
                 setWounds(nextWounds);
-                setPayload((prev) => ({
+                setChanges((prev) => ({
                     ...prev,
                     wounds: nextWounds,
                 }));
@@ -316,11 +280,15 @@ function FighterHUD({ data, fighterId, onClose }) {
             default: {
                 const nextCounters = [...counters, counter];
                 setCounters(nextCounters);
-                setPayload((prev) => ({
+                setChanges((prev) => ({
                     ...prev,
                     counters: nextCounters.join(","),
                 }));
                 setModified(true);
+                setLogLines((prev) => [
+                    ...prev,
+                    `- gave ${counter} counter to ${fighter.name}`,
+                ]);
                 break;
             }
         }
@@ -331,7 +299,7 @@ function FighterHUD({ data, fighterId, onClose }) {
             case "woundToken": {
                 const nextWounds = wounds - 1;
                 setWounds(nextWounds);
-                setPayload((prev) => ({
+                setChanges((prev) => ({
                     ...prev,
                     wounds: nextWounds,
                 }));
@@ -339,9 +307,21 @@ function FighterHUD({ data, fighterId, onClose }) {
                 break;
             }
             default: {
-                const nextCounters = [...counters, counter];
+                // this is a shitty quick solution (abusing JS) since I want  to
+                // push new version to try Starblood faction
+                // the right strategy would have been probably
+                // making WoundCounters to be just Counters, one per type
+
+                setLogLines((prev) => [
+                    ...prev,
+                    `- removed ${counters[counter]} counter from ${fighter.name}`,
+                ]);
+                const nextCounters = [
+                    ...counters.slice(0, counter),
+                    ...counters.slice(counter + 1),
+                ];
                 setCounters(nextCounters);
-                setPayload((prev) => ({
+                setChanges((prev) => ({
                     ...prev,
                     counters: nextCounters.join(","),
                 }));
@@ -414,39 +394,6 @@ function FighterHUD({ data, fighterId, onClose }) {
                                     "woundToken"
                                 )}
                             />
-                            {/* <ButtonBase
-                                style={{
-                                    position: "absolute",
-                                    top: "50%",
-                                    marginTop: "-3rem",
-                                    left: "-1.5rem",
-                                    marginRight: "1.5rem",
-                                    backgroundColor: "teal",
-                                    color: "white",
-                                    width: "3rem",
-                                    height: "3rem",
-                                    borderRadius: "1.5rem",
-                                    border: "3px solid white",
-                                    boxSizing: "border-box",
-                                }}
-                                
-                            >
-                                {isInspired ? (
-                                    <UninspireIcon
-                                        style={{
-                                            width: "2rem",
-                                            height: "2rem",
-                                        }}
-                                    />
-                                ) : (
-                                    <InspireIcon
-                                        style={{
-                                            width: "2rem",
-                                            height: "2rem",
-                                        }}
-                                    />
-                                )}
-                            </ButtonBase> */}
                             <div
                                 style={{
                                     display: "flex",
@@ -485,9 +432,7 @@ function FighterHUD({ data, fighterId, onClose }) {
                                                     marginLeft: "-.7rem",
                                                     border: "2px solid white",
                                                 }}
-                                                onClick={handleRemoveTokenAt(
-                                                    idx
-                                                )}
+                                                onClick={handleRemoveToken(idx)}
                                             >
                                                 <AddIcon
                                                     style={{
@@ -530,7 +475,7 @@ function FighterHUD({ data, fighterId, onClose }) {
                                                     marginLeft: "-.7rem",
                                                     border: "2px solid white",
                                                 }}
-                                                onClick={handleRemoveCounterAt(
+                                                onClick={handleRemoveCounter(
                                                     idx
                                                 )}
                                             >
@@ -550,9 +495,12 @@ function FighterHUD({ data, fighterId, onClose }) {
                         </div>
                     </Grid>
                 </Grid>
-                <Grid item xs={12} style={{ margin: "0rem 1rem" }}>
+                <Grid
+                    item
+                    xs={12}
+                    style={{ margin: "0rem 1rem", color: "white" }}
+                >
                     <Typography>Upgrades</Typography>
-                    <Divider />
                     <div
                         style={{
                             display: "flex",
@@ -587,19 +535,22 @@ function FighterHUD({ data, fighterId, onClose }) {
                                 width: cardImageWidth * 0.25,
                                 height: cardImageHeight * 0.25,
                                 border: fighter.isOnBoard
-                                    ? "3px dashed black"
+                                    ? "3px dashed white"
                                     : "3px dashed lightgray",
                                 boxSizing: "border-box",
                                 borderRadius: ".5rem",
                                 display: "flex",
+                                background: "rgba(255,255,255,.2)",
                             }}
                             onClick={openUpgradePicker}
                         >
                             <AddIcon
                                 style={{
+                                    width: "2rem",
+                                    height: "2rem",
                                     margin: "auto",
                                     color: fighter.isOnBoard
-                                        ? "black"
+                                        ? "white"
                                         : "lightgray",
                                 }}
                             />

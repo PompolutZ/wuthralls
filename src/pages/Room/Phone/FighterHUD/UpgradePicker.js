@@ -48,9 +48,13 @@ function UpgradePicker({
         onUpgradePickerOpen(false);
     };
 
+    if (!availableUpgrades || availableUpgrades.length === 0) {
+        return null;
+    }
+
     return (
         <ClickAwayListener onClickAway={handleClickAway}>
-            {isOpen && availableUpgrades && availableUpgrades.length > 0 ? (
+            {isOpen ? (
                 <div
                     style={{
                         position: "fixed",
@@ -72,8 +76,6 @@ function UpgradePicker({
                             height: cardImageHeight * 0.8,
                             margin: "auto",
                             borderRadius: "1rem",
-                            // border: '3px dashed black',
-                            // boxSizing: 'border-box',
                             backgroundPosition: "center center",
                             backgroundSize: "cover",
                             backgroundRepeat: "no-repeat",
