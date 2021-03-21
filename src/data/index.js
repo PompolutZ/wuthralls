@@ -47,6 +47,7 @@ const factionIndexes = [
     "myaris-purifiers", // 27
     "dread-pageant", // 28
     "khagras-ravagers", // 29
+    "the-starblood-stalkers", // 29
 ];
 
 const warbandColors = {
@@ -80,6 +81,7 @@ const warbandColors = {
     "myaris-purifiers": "#2894C2", // myari blue
     "dread-pageant": "#261943", // night violet
     "khagras-ravagers": "#DFD7AE", // night violet
+    "the-starblood-stalkers": "#249489", // temple guard blue
 };
 
 const warbands = {
@@ -528,6 +530,38 @@ const warbands = {
             type: "FIGHTER",
             icon: "godsworn-hunt-6",
             name: "Grawl",
+        },
+    ],
+    "the-starblood-stalkers": [
+        {
+            type: "FIGHTER",
+            icon: "the-starblood-stalkers-1",
+            name: "Kixi-Taka",
+        },
+        {
+            type: "FIGHTER",
+            icon: "the-starblood-stalkers-2",
+            name: "Klaq-Trok",
+        },
+        {
+            type: "FIGHTER",
+            icon: "the-starblood-stalkers-3",
+            name: "Otapatl",
+        },
+        {
+            type: "FIGHTER",
+            icon: "the-starblood-stalkers-4",
+            name: "Tok",
+        },
+        {
+            type: "FIGHTER",
+            icon: "the-starblood-stalkers-5",
+            name: "Xepic",
+        },
+        {
+            type: "FIGHTER",
+            icon: "the-starblood-stalkers-6",
+            name: "Huachi",
         },
     ],
 
