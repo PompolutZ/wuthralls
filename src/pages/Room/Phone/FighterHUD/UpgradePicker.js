@@ -11,35 +11,21 @@ const cardImageWidth = 300;
 const cardImageHeight = 420;
 
 function UpgradePicker({
-    playerInfo,
     onUpgradePickerOpen,
     isOpen,
     onUpgradeSelected,
+    hand = "",
 }) {
     const [availableUpgrades, setAvailableUpgrades] = useState(
-        playerInfo &&
-            playerInfo.hand &&
-            playerInfo.hand
-                .split(",")
-                .map((cardId) => ({ ...cardsDb[cardId], id: cardId }))
-                .filter((c) => c.type === "Upgrade")
+        hand
+            .split(",")
+            .map((cardId) => ({ ...cardsDb[cardId], id: cardId }))
+            .filter((c) => c.type === "Upgrade")
     );
     const [currentIndex, setCurrentIndex] = useState(0);
 
     const handleClickAway = () => {
         onUpgradePickerOpen(false);
-    };
-
-    const handleMoverSelectionToRight = () => {
-        if (currentIndex < availableUpgrades.length - 1) {
-            setCurrentIndex((prev) => prev + 1);
-        }
-    };
-
-    const handleMoveSelectionToLeft = () => {
-        if (currentIndex > 0) {
-            setCurrentIndex((prev) => prev - 1);
-        }
     };
 
     const selectUpgrade = (card) => () => {
@@ -79,7 +65,11 @@ function UpgradePicker({
                             backgroundPosition: "center center",
                             backgroundSize: "cover",
                             backgroundRepeat: "no-repeat",
-                            backgroundImage: `url(/assets/cards/${availableUpgrades[currentIndex].id}.png)`,
+                            backgroundImage: `url(/assets/cards/${
+                                availableUpgrades[
+                                    currentIndex % availableUpgrades.length
+                                ].id
+                            }.png)`,
                         }}
                         elevation={10}
                     />
@@ -95,7 +85,7 @@ function UpgradePicker({
                             height: "3rem",
                             borderRadius: "1.5rem",
                         }}
-                        onClick={handleMoverSelectionToRight}
+                        onClick={() => setCurrentIndex((prev) => prev + 1)}
                     >
                         <MoveNextIcon
                             style={{ width: "2rem", height: "2rem" }}
@@ -113,7 +103,13 @@ function UpgradePicker({
                             height: "3rem",
                             borderRadius: "1.5rem",
                         }}
-                        onClick={handleMoveSelectionToLeft}
+                        onClick={() =>
+                            setCurrentIndex((prev) =>
+                                prev === 0
+                                    ? availableUpgrades.length - 1
+                                    : prev - 1
+                            )
+                        }
                     >
                         <MoveNextIcon
                             style={{
@@ -135,7 +131,11 @@ function UpgradePicker({
                             height: "5rem",
                             borderRadius: "2.5rem",
                         }}
-                        onClick={selectUpgrade(availableUpgrades[currentIndex])}
+                        onClick={selectUpgrade(
+                            availableUpgrades[
+                                currentIndex % availableUpgrades.length
+                            ]
+                        )}
                     >
                         <DoneIcon style={{ width: "4rem", height: "4rem" }} />
                     </ButtonBase>

@@ -1,31 +1,21 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useContext } from "react";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import ButtonBase from "@material-ui/core/ButtonBase";
-import Divider from "@material-ui/core/Divider";
 import Paper from "@material-ui/core/Paper";
 import AddIcon from "@material-ui/icons/Add";
-import InspireIcon from "@material-ui/icons/TrendingUp";
-import UninspireIcon from "@material-ui/icons/TrendingDown";
 import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 import { cardsDb } from "../../../../data";
-import { FirebaseContext } from "../../../../firebase";
 import { useAuthUser } from "../../../../components/Session";
 import DrawCardsIcon from "@material-ui/icons/GetApp";
 import DeleteIcon from "@material-ui/icons/Delete";
-import Button from "@material-ui/core/Button";
-import Menu from "@material-ui/core/Menu";
-import MenuItem from "@material-ui/core/MenuItem";
 import PropTypes from "prop-types";
 import WoundsCounter from "./WoundsCounter";
 import UpgradePicker from "./UpgradePicker";
 import useUpdateRoom from "../../hooks/useUpdateRoom";
 import HUDOverlay from "../../../../components/HUDOverlay";
 import { useFightersInfo } from "../../hooks/gameStateHooks";
-import {
-    useMyGameState,
-    useTheirGameState,
-} from "../../hooks/playerStateHooks";
+import { useMyGameState } from "../../hooks/playerStateHooks";
 import shallow from "zustand/shallow";
 import TokensDrawPile from "./TokensDrawPile";
 import InspirationButton from "./InspirationButton";
@@ -43,14 +33,6 @@ function convertChangesToLogMessage(changes, playerInfo, fighterInfo) {
             `- set ${fighterInfo.name} wounds counters to ${changes["wounds"]}`
         );
     }
-    // eslint-disable-next-line no-prototype-builtins
-    console.log(Object.prototype.hasOwnProperty(changes, "isInspired"));
-    // eslint-disable-next-line no-prototype-builtins
-    if (Object.prototype.hasOwnProperty(changes, "isInspired")) {
-        `- made ${fighterInfo.name} ${
-            changes.isInspired ? "inspired" : "un-inspired"
-        }.`;
-    }
 
     return msgBuilder;
 }
@@ -62,7 +44,6 @@ function FighterHUD({ data, fighterId, onClose }) {
     const updateRoom = useUpdateRoom();
     const updateGameLog = useUpdateGameLog();
     const myself = useAuthUser();
-    const firebase = useContext(FirebaseContext);
     const fighter = useFightersInfo((info) => info[fighterId]);
     // const { roomId } = data;
     const [upgrades, setUpgrades] = useState(
@@ -72,8 +53,6 @@ function FighterHUD({ data, fighterId, onClose }) {
     const [selectedCardId, setSelectedCardId] = useState(null);
     const [upgradePickerOpen, setUpgradePickerOpen] = useState(false);
     const [isInspired, setIsInspired] = useState(fighter.isInspired);
-    const [addTokenAnchor, setAddTokenAnchor] = useState(null);
-    const [addCounterAnchor, setAddCounterAnchor] = useState(null);
     const [tokens, setTokens] = useState(
         fighter.tokens ? fighter.tokens.split(",") : []
     );
@@ -83,21 +62,39 @@ function FighterHUD({ data, fighterId, onClose }) {
     const [wounds, setWounds] = useState(fighter.wounds);
 
     // ===== NEW STUFF
+    const [gloryScored, setGloryScored] = useState(playerInfo.gloryScored);
+    const [glorySpent, setGlorySpent] = useState(playerInfo.glorySpent);
+    const [hand, setHand] = useState(playerInfo.hand);
+
     const [modified, setModified] = useState(false);
     const [changes, setChanges] = useState({});
+    const [playerChanges, setPlayerChanges] = useState({});
     const [logLines, setLogLines] = useState([]);
+    const uniqueCounters = fighter.counterTypes
+        ? fighter.counterTypes.split(",")
+        : [];
 
     // ===============
 
     const handleCloseOverlay = () => {
-        let payload = Object.entries(changes).reduce(
+        let fighterPayload = Object.entries(changes).reduce(
             (p, [key, value]) => ({
                 ...p,
                 [`board.fighters.${fighterId}.${key}`]: value,
             }),
             {}
         );
-        updateRoom(payload);
+        let playerPayload = Object.entries(playerChanges).reduce(
+            (p, [key, value]) => ({
+                ...p,
+                [`${myself.uid}.${key}`]: value,
+            }),
+            {}
+        );
+        updateRoom({
+            ...fighterPayload,
+            ...playerPayload,
+        });
         updateGameLog(
             [
                 `${playerInfo.name} has:`,
@@ -122,35 +119,35 @@ function FighterHUD({ data, fighterId, onClose }) {
     };
 
     const handleUpgradeFighter = (card) => {
-        // const fightersUpgrades = [...upgrades, card.id];
-        // setUpgrades(fightersUpgrades);
-        // const updatedPlayerInfo = {
-        //     ...playerInfo,
-        //     hand: playerInfo.hand
-        //         .split(",")
-        //         .filter((cardId) => cardId !== card.id)
-        //         .join(),
-        //     glorySpent: playerInfo.glorySpent + 1,
-        //     gloryScored: playerInfo.gloryScored - 1,
-        // };
-        // setPlayerInfo(updatedPlayerInfo);
-        // firebase.updateBoardProperty(
-        //     roomId,
-        //     `${myself.uid}`,
-        //     updatedPlayerInfo
-        // );
-        // firebase.updateBoardProperty(
-        //     roomId,
-        //     `board.fighters.${data.id}.upgrades`,
-        //     fightersUpgrades.join()
-        // );
-        // firebase.addGenericMessage2(roomId, {
-        //     author: "Katophrane",
-        //     type: "INFO",
-        //     subtype: "APPLIED_UPGRADE_CARD",
-        //     cardId: card.id,
-        //     value: `${playerInfo.name} equips ${data.name} with ${card.name} upgrade.`,
-        // });
+        setModified(true);
+        const fightersUpgrades = [...upgrades, card.id];
+        setUpgrades(fightersUpgrades);
+
+        const nextGlorySpent = glorySpent + 1;
+        const nextGloryScored = gloryScored - 1;
+        const nextHand = hand
+            .split(",")
+            .filter((cardId) => cardId !== card.id)
+            .join();
+        setGloryScored(nextGloryScored);
+        setGlorySpent(nextGlorySpent);
+        setHand(nextHand);
+
+        setPlayerChanges((prev) => ({
+            ...prev,
+            glorySpent: nextGlorySpent,
+            gloryScored: nextGloryScored,
+            hand: nextHand,
+        }));
+
+        setChanges((prev) => ({
+            ...prev,
+            upgrades: fightersUpgrades.join(),
+        }));
+        setLogLines((prev) => [
+            ...prev,
+            `- equipped ${fighter.name} with ${card.name} upgrade.`,
+        ]);
     };
 
     const changeInspire = async () => {
@@ -168,65 +165,60 @@ function FighterHUD({ data, fighterId, onClose }) {
     };
 
     const returnUpgradeToHand = (cardId) => () => {
-        // const updatedPlayerInfo = {
-        //     ...playerInfo,
-        //     glorySpent: playerInfo.glorySpent - 1,
-        //     gloryScored: playerInfo.gloryScored + 1,
-        //     hand: playerInfo.hand
-        //         ? [...playerInfo.hand.split(","), cardId].join()
-        //         : [cardId].join(),
-        // };
-        // const fightersUpgrades = upgrades.filter(
-        //     (upgradeId) => upgradeId !== cardId
-        // );
-        // setUpgrades(fightersUpgrades);
-        // setPlayerInfo(updatedPlayerInfo);
-        // firebase.updateBoardProperty(
-        //     roomId,
-        //     `${myself.uid}`,
-        //     updatedPlayerInfo
-        // );
-        // firebase.updateBoardProperty(
-        //     roomId,
-        //     `board.fighters.${data.id}.upgrades`,
-        //     fightersUpgrades.join()
-        // );
-        // firebase.addGenericMessage2(roomId, {
-        //     author: "Katophrane",
-        //     type: "INFO",
-        //     value: `${playerInfo.name} returns upgrade ${cardsDb[cardId].name} to his hand and gets 1 glory back.`,
-        // });
+        setModified(true);
+        const fightersUpgrades = upgrades.filter(
+            (upgradeId) => upgradeId !== cardId
+        );
+        setUpgrades(fightersUpgrades);
+
+        const nextGlorySpent = glorySpent - 1;
+        const nextGloryScored = gloryScored + 1;
+        const nextHand = hand
+            ? [...hand.split(","), cardId].join()
+            : [cardId].join();
+
+        setGloryScored(nextGloryScored);
+        setGlorySpent(nextGlorySpent);
+        setHand(nextHand);
+        setPlayerChanges((prev) => ({
+            ...prev,
+            glorySpent: nextGlorySpent,
+            gloryScored: nextGloryScored,
+            hand: nextHand,
+        }));
+
+        setChanges((prev) => ({
+            ...prev,
+            upgrades: fightersUpgrades.join(),
+        }));
+        setLogLines((prev) => [
+            ...prev,
+            `- returned upgrade ${cardsDb[cardId].name} to his hand and got 1 glory back.`,
+        ]);
     };
 
     const discardCard = (cardId) => () => {
-        // const updatedPlayerInfo = {
-        //     ...playerInfo,
-        //     dPws: playerInfo.dPws
-        //         ? [...playerInfo.dPws.split(","), cardId].join()
-        //         : [cardId].join(),
-        // };
-        // const fightersUpgrades = upgrades.filter(
-        //     (upgradeId) => upgradeId !== cardId
-        // );
-        // setUpgrades(fightersUpgrades);
-        // setPlayerInfo(updatedPlayerInfo);
-        // firebase.updateBoardProperty(
-        //     roomId,
-        //     `${myself.uid}`,
-        //     updatedPlayerInfo
-        // );
-        // firebase.updateBoardProperty(
-        //     roomId,
-        //     `board.fighters.${data.id}.upgrades`,
-        //     fightersUpgrades.join()
-        // );
-        // firebase.addGenericMessage2(roomId, {
-        //     author: "Katophrane",
-        //     type: "INFO",
-        //     subtype: "DISCARDS_UPGRADE_CARD",
-        //     cardId: cardId,
-        //     value: `${playerInfo.name} discards upgrade card: ${cardsDb[cardId].name}.`,
-        // });
+        setModified(true);
+        const fightersUpgrades = upgrades.filter(
+            (upgradeId) => upgradeId !== cardId
+        );
+        setUpgrades(fightersUpgrades);
+
+        setPlayerChanges((prev) => ({
+            ...prev,
+            dPws: playerInfo.dPws
+                ? [...playerInfo.dPws.split(","), cardId].join()
+                : [cardId].join(),
+        }));
+
+        setChanges((prev) => ({
+            ...prev,
+            upgrades: fightersUpgrades.join(),
+        }));
+        setLogLines((prev) => [
+            ...prev,
+            `${playerInfo.name} discards upgrade card: ${cardsDb[cardId].name}.`,
+        ]);
     };
 
     const handleAddToken = (token) => {
@@ -384,7 +376,7 @@ function FighterHUD({ data, fighterId, onClose }) {
                                 tokens={[
                                     "woundToken",
                                     "Hunger1",
-                                    ...fighter.counterTypes.split(","),
+                                    ...uniqueCounters,
                                 ]}
                                 onClick={handleAddCounter}
                             />
@@ -509,26 +501,25 @@ function FighterHUD({ data, fighterId, onClose }) {
                             margin: "1rem",
                         }}
                     >
-                        {upgrades.length > 0 &&
-                            upgrades.map((u) => (
-                                <Paper
-                                    id={u}
-                                    key={u}
-                                    style={{
-                                        flexShrink: 0,
-                                        width: cardImageWidth * 0.3,
-                                        height: cardImageHeight * 0.3,
-                                        marginRight: ".5rem",
-                                        borderRadius: ".5rem",
-                                        backgroundPosition: "center center",
-                                        backgroundSize: "cover",
-                                        backgroundRepeat: "no-repeat",
-                                        backgroundImage: `url(/assets/cards/${u}.png)`,
-                                    }}
-                                    elevation={2}
-                                    onClick={handleBringToFront(u)}
-                                />
-                            ))}
+                        {upgrades.map((u) => (
+                            <Paper
+                                id={u}
+                                key={u}
+                                style={{
+                                    flexShrink: 0,
+                                    width: cardImageWidth * 0.3,
+                                    height: cardImageHeight * 0.3,
+                                    marginRight: ".5rem",
+                                    borderRadius: ".5rem",
+                                    backgroundPosition: "center center",
+                                    backgroundSize: "cover",
+                                    backgroundRepeat: "no-repeat",
+                                    backgroundImage: `url(/assets/cards/${u}.png)`,
+                                }}
+                                elevation={2}
+                                onClick={handleBringToFront(u)}
+                            />
+                        ))}
                         <div
                             style={{
                                 flexShrink: 0,
@@ -541,6 +532,7 @@ function FighterHUD({ data, fighterId, onClose }) {
                                 borderRadius: ".5rem",
                                 display: "flex",
                                 background: "rgba(255,255,255,.2)",
+                                cursor: "pointer",
                             }}
                             onClick={openUpgradePicker}
                         >
@@ -639,7 +631,7 @@ function FighterHUD({ data, fighterId, onClose }) {
                 {upgradePickerOpen && (
                     <UpgradePicker
                         isOpen={upgradePickerOpen}
-                        playerInfo={playerInfo}
+                        hand={hand}
                         onUpgradePickerOpen={setUpgradePickerOpen}
                         onUpgradeSelected={handleUpgradeFighter}
                     />

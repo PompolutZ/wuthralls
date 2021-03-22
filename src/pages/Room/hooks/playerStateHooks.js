@@ -14,6 +14,8 @@ const initialPlayerState = {
 export const useMyGameState = create((set) => ({
     ...initialPlayerState,
     setActivationsLeft: (value) => set(() => ({ activationsLeft: value })),
+    setGloryScored: (value) => set(() => ({ gloryScored: value })),
+    setGlorySpend: (value) => set(() => ({ glorySpent: value })),
 }));
 
 export const useTheirGameState = create(() => ({
