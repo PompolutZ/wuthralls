@@ -23,6 +23,11 @@ import useUpdateGameLog, {
     createAppliedUpgradePayload,
     createPlayerDiscardsUpgradePayload,
 } from "../../hooks/useUpdateGameLog";
+import {
+    CardPicture,
+    CounterPicture,
+    FighterPicture,
+} from "../../../../components/Pictures";
 
 const cardImageWidth = 300;
 const cardImageHeight = 420;
@@ -362,10 +367,10 @@ function FighterHUD({ data, fighterId, onClose }) {
                                     "drop-shadow(0px 2px 4px rgba(0,0,0,.5))",
                             }}
                         >
-                            <img
-                                src={`/assets/fighters/${fighter.icon}${
+                            <FighterPicture
+                                name={`${fighter.icon}${
                                     isInspired ? "-inspired" : ""
-                                }.png`}
+                                }`}
                                 style={{
                                     width: cardImageWidth * 0.9,
                                     height: cardImageHeight * 0.9,
@@ -415,8 +420,8 @@ function FighterHUD({ data, fighterId, onClose }) {
                                             }}
                                             key={idx}
                                         >
-                                            <img
-                                                src={`/assets/other/${token}.png`}
+                                            <CounterPicture
+                                                name={token}
                                                 style={{
                                                     width: "3rem",
                                                     height: "3rem",
@@ -457,8 +462,8 @@ function FighterHUD({ data, fighterId, onClose }) {
                                             }}
                                             key={idx}
                                         >
-                                            <img
-                                                src={`/assets/other/${counter}.png`}
+                                            <CounterPicture
+                                                name={counter}
                                                 style={{
                                                     width: "3rem",
                                                     height: "3rem",
@@ -510,7 +515,8 @@ function FighterHUD({ data, fighterId, onClose }) {
                         }}
                     >
                         {upgrades.map((u) => (
-                            <Paper
+                            <CardPicture
+                                name={u}
                                 id={u}
                                 key={u}
                                 style={{
@@ -519,12 +525,10 @@ function FighterHUD({ data, fighterId, onClose }) {
                                     height: cardImageHeight * 0.3,
                                     marginRight: ".5rem",
                                     borderRadius: ".5rem",
-                                    backgroundPosition: "center center",
-                                    backgroundSize: "cover",
-                                    backgroundRepeat: "no-repeat",
-                                    backgroundImage: `url(/assets/cards/${u}.png)`,
+                                    cursor: "pointer",
+                                    filter:
+                                        "drop-shadow(0px 2px 4px rgba(0,0,0,.8))",
                                 }}
-                                elevation={2}
                                 onClick={handleBringToFront(u)}
                             />
                         ))}
@@ -571,7 +575,7 @@ function FighterHUD({ data, fighterId, onClose }) {
                                 display: "flex",
                             }}
                         >
-                            <Paper
+                            <div
                                 style={{
                                     position: "relative",
                                     flexShrink: 0,
@@ -579,14 +583,17 @@ function FighterHUD({ data, fighterId, onClose }) {
                                     height: cardImageHeight * 0.8,
                                     margin: "auto",
                                     borderRadius: "1rem",
-                                    backgroundPosition: "center center",
-                                    backgroundSize: "cover",
-                                    backgroundRepeat: "no-repeat",
-                                    backgroundImage: `url(/assets/cards/${selectedCardId}.png)`,
+                                    // backgroundPosition: "center center",
+                                    // backgroundSize: "cover",
+                                    // backgroundRepeat: "no-repeat",
+                                    // backgroundImage: `url(/assets/cards/${selectedCardId}.png)`,
                                 }}
-                                elevation={10}
                                 onClick={handleCloseSelection}
                             >
+                                <CardPicture
+                                    name={selectedCardId}
+                                    style={{ maxWidth: "100%" }}
+                                />
                                 <ButtonBase
                                     style={{
                                         position: "absolute",
@@ -632,7 +639,7 @@ function FighterHUD({ data, fighterId, onClose }) {
                                         }}
                                     />
                                 </ButtonBase>
-                            </Paper>
+                            </div>
                         </div>
                     </ClickAwayListener>
                 )}
