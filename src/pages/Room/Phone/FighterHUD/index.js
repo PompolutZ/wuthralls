@@ -19,7 +19,10 @@ import { useMyGameState } from "../../hooks/playerStateHooks";
 import shallow from "zustand/shallow";
 import TokensDrawPile from "./TokensDrawPile";
 import InspirationButton from "./InspirationButton";
-import useUpdateGameLog from "../../hooks/useUpdateGameLog";
+import useUpdateGameLog, {
+    createAppliedUpgradePayload,
+    createPlayerDiscardsUpgradePayload,
+} from "../../hooks/useUpdateGameLog";
 
 const cardImageWidth = 300;
 const cardImageHeight = 420;
@@ -95,13 +98,14 @@ function FighterHUD({ data, fighterId, onClose }) {
             ...fighterPayload,
             ...playerPayload,
         });
-        updateGameLog(
-            [
-                `${playerInfo.name} has:`,
-                ...convertChangesToLogMessage(changes, playerInfo, fighter),
-                ...logLines,
-            ].join("\n")
-        );
+        const log = [
+            ...convertChangesToLogMessage(changes, playerInfo, fighter),
+            ...logLines,
+        ];
+
+        if (log.length) {
+            updateGameLog([`${playerInfo.name} has:`, ...log].join("\n"));
+        }
         onClose();
     };
 
@@ -116,6 +120,20 @@ function FighterHUD({ data, fighterId, onClose }) {
     const openUpgradePicker = () => {
         if (!fighter.isOnBoard) return;
         setUpgradePickerOpen(true);
+    };
+
+    const changeInspire = async () => {
+        const nextValue = !isInspired;
+        setIsInspired(nextValue);
+        setChanges((prev) => ({
+            ...prev,
+            isInspired: nextValue,
+        }));
+        setLogLines((prev) => [
+            ...prev,
+            `- made ${fighter.name} ${nextValue ? "inspired" : "un-inspired"}.`,
+        ]);
+        setModified(true);
     };
 
     const handleUpgradeFighter = (card) => {
@@ -144,24 +162,12 @@ function FighterHUD({ data, fighterId, onClose }) {
             ...prev,
             upgrades: fightersUpgrades.join(),
         }));
-        setLogLines((prev) => [
-            ...prev,
-            `- equipped ${fighter.name} with ${card.name} upgrade.`,
-        ]);
-    };
-
-    const changeInspire = async () => {
-        const nextValue = !isInspired;
-        setIsInspired(nextValue);
-        setChanges((prev) => ({
-            ...prev,
-            isInspired: nextValue,
-        }));
-        setLogLines((prev) => [
-            ...prev,
-            `- made ${fighter.name} ${nextValue ? "inspired" : "un-inspired"}.`,
-        ]);
-        setModified(true);
+        updateGameLog(
+            createAppliedUpgradePayload(
+                card.id,
+                `${playerInfo.name} equips ${fighter.name} with ${card.name} upgrade and has ${gloryScored}/${glorySpent} glory.`
+            )
+        );
     };
 
     const returnUpgradeToHand = (cardId) => () => {
@@ -191,10 +197,10 @@ function FighterHUD({ data, fighterId, onClose }) {
             ...prev,
             upgrades: fightersUpgrades.join(),
         }));
-        setLogLines((prev) => [
-            ...prev,
-            `- returned upgrade ${cardsDb[cardId].name} to his hand and got 1 glory back.`,
-        ]);
+
+        updateGameLog(
+            `${playerInfo.name} returned upgrade *${cardsDb[cardId].name}* to his hand and got 1 glory back.`
+        );
     };
 
     const discardCard = (cardId) => () => {
@@ -215,10 +221,12 @@ function FighterHUD({ data, fighterId, onClose }) {
             ...prev,
             upgrades: fightersUpgrades.join(),
         }));
-        setLogLines((prev) => [
-            ...prev,
-            `${playerInfo.name} discards upgrade card: ${cardsDb[cardId].name}.`,
-        ]);
+        updateGameLog(
+            createPlayerDiscardsUpgradePayload(
+                cardId,
+                `${playerInfo.name} discards upgrade card: ${cardsDb[cardId].name}.`
+            )
+        );
     };
 
     const handleAddToken = (token) => {
