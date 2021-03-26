@@ -7,6 +7,7 @@ import CardMessageItem from "./CardMessage";
 import ChatMessageItem from "./ChatMessage";
 import DiceRollMessage from "./DiceRollMessage";
 import { useAuthUser } from "../../../../components/Session";
+import useIntersectionObserver from "@react-hook/intersection-observer";
 
 const useStyles = makeStyles(() => ({
     item: {
@@ -26,6 +27,8 @@ function Messenger({ state }) {
     const [visibleMessages, setVisibleMessages] = useState(messages || []);
     const [sliceSize, setSliceSize] = useState(10);
     const lastScrollHeight = React.useRef(1);
+    const [ref, setRef] = React.useState();
+    const { isIntersecting } = useIntersectionObserver(ref);
 
     const msgcontainerRef = useRef();
 
@@ -40,6 +43,7 @@ function Messenger({ state }) {
             scrollTop,
             offsetHeight,
         } = msgcontainerRef.current;
+
         if (
             scrollTop === 0 ||
             scrollHeight - scrollTop - offsetHeight < offsetHeight
@@ -51,18 +55,19 @@ function Messenger({ state }) {
         }
     }, [visibleMessages]);
 
+    useEffect(() => {
+        if (isIntersecting) {
+            setSliceSize((prev) =>
+                prev + 10 < visibleMessages.length
+                    ? prev + 10
+                    : visibleMessages.length
+            );
+        }
+    }, [isIntersecting, visibleMessages]);
+
     useLayoutEffect(() => {
         msgcontainerRef.current.scrollTop = lastScrollHeight.current;
     }, [sliceSize]);
-
-    const handleLoadMore = () => {
-        // lastScrollHeight.current = scrollHeight;
-        setSliceSize((prev) =>
-            prev + 10 < visibleMessages.length
-                ? prev + 10
-                : visibleMessages.length
-        );
-    };
 
     return (
         <div id="msgroot" style={{ flex: 1, position: "relative" }}>
@@ -77,7 +82,6 @@ function Messenger({ state }) {
                     overflow: "auto",
                     marginBottom: "3rem",
                 }}
-                // onScroll={handleScroll}
             >
                 <div
                     id="msgtotalheight"
@@ -85,19 +89,14 @@ function Messenger({ state }) {
                 >
                     {sliceSize < visibleMessages.length && (
                         <div
+                            ref={setRef}
                             style={{
                                 display: "flex",
                                 justifyContent: "center",
                                 margin: "1rem auto",
                             }}
                         >
-                            <Button
-                                color="primary"
-                                variant="contained"
-                                onClick={handleLoadMore}
-                            >
-                                Load More...
-                            </Button>
+                            Loading more...
                         </div>
                     )}
                     {visibleMessages.slice(-sliceSize).map((m, i, arr) => {

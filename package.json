@@ -6,6 +6,7 @@
     "@material-ui/core": "^4.6.0",
     "@material-ui/icons": "^4.5.1",
     "@material-ui/lab": "^4.0.0-alpha.39",
+    "@react-hook/intersection-observer": "^3.1.1",
     "@react-hook/throttle": "^1.0.9",
     "firebase": "^8.2.7",
     "honeycomb-grid": "^3.1.0",

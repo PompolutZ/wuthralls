@@ -85,11 +85,6 @@ const CardMessageItem = React.memo(
                         <VisibilityIcon />
                     </Button>
                 </div>
-                {/* <img
-                    src={`/assets/cards/${cardId}.png`}
-                    style={{ width: "5rem", borderRadius: ".3rem" }}
-                    onClick={handleSwitchHighglight}
-                /> */}
                 {highlight && (
                     <div
                         style={{
