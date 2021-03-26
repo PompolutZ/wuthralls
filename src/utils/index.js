@@ -25,3 +25,12 @@ export function getDieRollResult() {
 export const sortByIdAsc = ({ id: prevId }, { id: nextId }) => {
     return prevId.localeCompare(nextId);
 };
+
+export function hexToRgb(hex, alpha = 1) {
+    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    let red = parseInt(result[1], 16);
+    let green = parseInt(result[2], 16);
+    let blue = parseInt(result[3], 16);
+
+    return result ? `rgba(${red},${green},${blue},${alpha})` : "";
+}

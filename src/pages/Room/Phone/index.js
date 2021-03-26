@@ -3,12 +3,12 @@ import { useLocation } from "react-router-dom";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { useTheme } from "@material-ui/core/styles";
 import { FirebaseContext } from "../../../firebase";
-import Messenger from "./Messager";
 import ActionsPalette from "./ActionsPalette";
 import Board from "./Board";
 import { useAuthUser } from "../../../components/Session";
 import { boards as boardsData } from "../../../data/index";
 import CardsHUD from "./CardsHUD/CardsHUD";
+import Messenger from "./Messenger";
 
 export default function PhoneRoom({ data }) {
     const myself = useAuthUser();
