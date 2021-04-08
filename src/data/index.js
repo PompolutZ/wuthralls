@@ -48,6 +48,7 @@ const factionIndexes = [
     "dread-pageant", // 28
     "khagras-ravagers", // 29
     "the-starblood-stalkers", // 29
+    "the-crimson-court", // 31
 ];
 
 const warbandColors = {
@@ -82,6 +83,7 @@ const warbandColors = {
     "dread-pageant": "#261943", // night violet
     "khagras-ravagers": "#DFD7AE", // night violet
     "the-starblood-stalkers": "#249489", // temple guard blue
+    "the-crimson-court": "#c00000", // free speech red
 };
 
 const warbands = {
@@ -532,38 +534,6 @@ const warbands = {
             name: "Grawl",
         },
     ],
-    "the-starblood-stalkers": [
-        {
-            type: "FIGHTER",
-            icon: "the-starblood-stalkers-1",
-            name: "Kixi-Taka",
-        },
-        {
-            type: "FIGHTER",
-            icon: "the-starblood-stalkers-2",
-            name: "Klaq-Trok",
-        },
-        {
-            type: "FIGHTER",
-            icon: "the-starblood-stalkers-3",
-            name: "Otapatl",
-        },
-        {
-            type: "FIGHTER",
-            icon: "the-starblood-stalkers-4",
-            name: "Tok",
-        },
-        {
-            type: "FIGHTER",
-            icon: "the-starblood-stalkers-5",
-            name: "Xepic",
-        },
-        {
-            type: "FIGHTER",
-            icon: "the-starblood-stalkers-6",
-            name: "Huachi",
-        },
-    ],
 
     "hrothgorns-mantrappers": [
         {
@@ -913,6 +883,62 @@ const warbands = {
             type: "FIGHTER",
             icon: "khagras-ravagers-4",
             name: "Zarshia",
+        },
+    ],
+
+    "the-starblood-stalkers": [
+        {
+            type: "FIGHTER",
+            icon: "the-starblood-stalkers-1",
+            name: "Kixi-Taka",
+        },
+        {
+            type: "FIGHTER",
+            icon: "the-starblood-stalkers-2",
+            name: "Klaq-Trok",
+        },
+        {
+            type: "FIGHTER",
+            icon: "the-starblood-stalkers-3",
+            name: "Otapatl",
+        },
+        {
+            type: "FIGHTER",
+            icon: "the-starblood-stalkers-4",
+            name: "Tok",
+        },
+        {
+            type: "FIGHTER",
+            icon: "the-starblood-stalkers-5",
+            name: "Xepic",
+        },
+        {
+            type: "FIGHTER",
+            icon: "the-starblood-stalkers-6",
+            name: "Huachi",
+        },
+    ],
+
+    "the-crimson-court": [
+        {
+            type: "FIGHTER",
+            icon: "the-crimson-court-1",
+            name: "Duvalle",
+        },
+        {
+            type: "FIGHTER",
+            icon: "the-crimson-court-2",
+            name: "Gorath",
+        },
+        {
+            type: "FIGHTER",
+            icon: "the-crimson-court-3",
+            name: "Vellas",
+        },
+        {
+            type: "FIGHTER",
+            icon: "the-crimson-court-4",
+            name: "Ennias",
         },
     ],
 };
