@@ -924,21 +924,25 @@ const warbands = {
             type: "FIGHTER",
             icon: "the-crimson-court-1",
             name: "Duvalle",
+            counters: "Hunger1",
         },
         {
             type: "FIGHTER",
             icon: "the-crimson-court-2",
             name: "Gorath",
+            counters: "Hunger1",
         },
         {
             type: "FIGHTER",
             icon: "the-crimson-court-3",
             name: "Vellas",
+            counters: "Hunger1",
         },
         {
             type: "FIGHTER",
             icon: "the-crimson-court-4",
             name: "Ennias",
+            counters: "Hunger1",
         },
     ],
 };
