@@ -1,14 +1,13 @@
 import React, { useContext, useState } from "react";
 import Divider from "@material-ui/core/Divider";
-import AddIcon from "@material-ui/icons/Add";
 import { FirebaseContext } from "../../../../firebase";
+import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
 import ButtonBase from "@material-ui/core/ButtonBase";
 import ButtonGroup from "@material-ui/core/ButtonGroup";
 import Button from "@material-ui/core/Button";
 import DrawCardsIcon from "@material-ui/icons/GetApp";
-import SaveIcon from "@material-ui/icons/Save";
 import { useAuthUser } from "../../../../components/Session";
 import { Typography } from "@material-ui/core";
 import { cardsDb } from "../../../../data/index";
@@ -16,6 +15,7 @@ import PropTypes from "prop-types";
 
 import CardHighlight from "./CardHighlight";
 import { shuffle } from "../../../../utils";
+import CloseHUDButton from "./CloseHUDButton";
 
 const stringToCards = (source) => {
     if (!source) return null;
@@ -141,34 +141,34 @@ const CardsHUD = ({
         }
     };
 
-    const handleClose = () => {
-        onClose(false);
-    };
-
-    const handleSaveAndClose = () => {
+    const handleClose = (persist) => {
         onClose(false);
 
-        firebase.updateRoom(roomId, {
-            [`${myself.uid}.hand`]: hand ? hand.map((x) => x.id).join() : "",
-            [`${myself.uid}.oDeck`]: objectiveDrawPile
-                ? objectiveDrawPile.map((x) => x.id).join()
-                : "",
-            [`${myself.uid}.pDeck`]: powersDrawPile
-                ? powersDrawPile.map((x) => x.id).join()
-                : "",
-            [`${myself.uid}.sObjs`]: scoredObjectives
-                ? scoredObjectives.map((x) => x.id).join()
-                : "",
-            [`${myself.uid}.dObjs`]: discardedObjectives
-                ? discardedObjectives.map((x) => x.id).join()
-                : "",
-            [`${myself.uid}.dPws`]: discardedPowers
-                ? discardedPowers.map((x) => x.id).join()
-                : "",
-            [`${myself.uid}.gloryScored`]: gloryScored,
-            [`${myself.uid}.glorySpent`]: glorySpent,
-        });
-        setModified(false);
+        if (persist) {
+            firebase.updateRoom(roomId, {
+                [`${myself.uid}.hand`]: hand
+                    ? hand.map((x) => x.id).join()
+                    : "",
+                [`${myself.uid}.oDeck`]: objectiveDrawPile
+                    ? objectiveDrawPile.map((x) => x.id).join()
+                    : "",
+                [`${myself.uid}.pDeck`]: powersDrawPile
+                    ? powersDrawPile.map((x) => x.id).join()
+                    : "",
+                [`${myself.uid}.sObjs`]: scoredObjectives
+                    ? scoredObjectives.map((x) => x.id).join()
+                    : "",
+                [`${myself.uid}.dObjs`]: discardedObjectives
+                    ? discardedObjectives.map((x) => x.id).join()
+                    : "",
+                [`${myself.uid}.dPws`]: discardedPowers
+                    ? discardedPowers.map((x) => x.id).join()
+                    : "",
+                [`${myself.uid}.gloryScored`]: gloryScored,
+                [`${myself.uid}.glorySpent`]: glorySpent,
+            });
+            setModified(false);
+        }
     };
 
     const playCard = (card) => () => {
@@ -391,62 +391,8 @@ const CardsHUD = ({
                 backgroundColor: "rgba(255,255,255,.8)",
             }}
         >
-            <div style={{ margin: "1rem" }}>
-                {modified && (
-                    <ButtonBase
-                        style={{
-                            position: "fixed",
-                            bottom: "0%",
-                            right: "0%",
-                            marginRight: "2rem",
-                            marginBottom: "2rem",
-                            backgroundColor: "teal",
-                            color: "white",
-                            width: "3rem",
-                            height: "3rem",
-                            boxShadow: "3px 3px 3px 0px black",
-                            boxSizing: "border-box",
-                            border: "2px solid white",
-                            borderRadius: "1.5rem",
-                        }}
-                        onClick={handleSaveAndClose}
-                    >
-                        <SaveIcon
-                            style={{
-                                width: "2rem",
-                                height: "2rem",
-                            }}
-                        />
-                    </ButtonBase>
-                )}
-                {!modified && (
-                    <ButtonBase
-                        style={{
-                            position: "fixed",
-                            bottom: "0%",
-                            right: "0%",
-                            marginRight: "2rem",
-                            marginBottom: "2rem",
-                            backgroundColor: "red",
-                            color: "white",
-                            width: "3rem",
-                            height: "3rem",
-                            borderRadius: "1.5rem",
-                            boxShadow: "3px 3px 3px 0px black",
-                            boxSizing: "border-box",
-                            border: "2px solid white",
-                        }}
-                        onClick={handleClose}
-                    >
-                        <AddIcon
-                            style={{
-                                width: "2rem",
-                                height: "2rem",
-                                transform: "rotate(45deg)",
-                            }}
-                        />
-                    </ButtonBase>
-                )}
+            <Container maxWidth="md" style={{ paddingBottom: "3rem" }}>
+                <CloseHUDButton modified={modified} onClick={handleClose} />
 
                 <Grid container style={{ marginTop: "2.5rem" }}>
                     <Grid item xs={12}>
@@ -977,6 +923,7 @@ const CardsHUD = ({
                         </Grid>
                     </Grid>
                 )}
+
                 {selectedGroup === ENEMY_CARDS_GROUP && (
                     <Grid container>
                         <Grid item xs={12}>
@@ -1287,7 +1234,7 @@ const CardsHUD = ({
                         applyFighterUpgrade={applyUpgrade}
                     />
                 )}
-            </div>
+            </Container>
         </div>
     );
 };

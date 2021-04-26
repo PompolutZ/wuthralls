@@ -12,7 +12,6 @@ import Messenger from "./Messenger";
 
 export default function PhoneRoom({ data }) {
     const myself = useAuthUser();
-    const firebase = useContext(FirebaseContext);
     const { state } = useLocation();
     const theme = useTheme();
     const isMd = useMediaQuery(theme.breakpoints.up("md"));
