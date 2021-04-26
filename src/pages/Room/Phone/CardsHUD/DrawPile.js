@@ -1,6 +1,6 @@
 import React from "react";
 import Paper from "@material-ui/core/Paper";
-import ButtonBase from "@material-ui/core/ButtonBase";
+import Button from "@material-ui/core/Button";
 import DrawCardsIcon from "@material-ui/icons/GetApp";
 import { Typography } from "@material-ui/core";
 import { cardDefaultHeight, cardDefaultWidth } from "../../../../constants/mix";
@@ -45,8 +45,8 @@ function Background({ variant, children }) {
                 position: "relative",
                 backgroundImage: `url(${imageUrl})`,
                 backgroundSize: "cover",
-                width: cardDefaultWidth * 0.4,
-                height: cardDefaultHeight * 0.4,
+                width: cardDefaultWidth * 0.3,
+                height: cardDefaultHeight * 0.3,
                 margin: "auto",
             }}
         >
@@ -57,30 +57,36 @@ function Background({ variant, children }) {
 
 function DrawPile({ variant, onDraw, count }) {
     return (
-        <Background variant={variant}>
-            <ButtonBase
+        <div
+            style={{
+                display: "flex",
+                margin: "auto",
+                alignItems: "center",
+                flexDirection: "column",
+            }}
+        >
+            <Background variant={variant}>
+                <Counter value={count} />
+            </Background>
+            <Button
+                variant="contained"
+                color="primary"
                 style={{
-                    position: "absolute",
-                    bottom: "0%",
-                    left: "50%",
-                    marginLeft: "-1.5rem",
-                    backgroundColor: "teal",
+                    marginTop: "1rem",
                     color: "white",
-                    width: "3rem",
-                    height: "3rem",
-                    borderRadius: "1.5rem",
                 }}
                 onClick={onDraw}
+                disabled={count <= 0}
             >
                 <DrawCardsIcon
                     style={{
-                        width: "2rem",
-                        height: "2rem",
+                        width: "1.5rem",
+                        height: "1.5rem",
                     }}
                 />
-            </ButtonBase>
-            <Counter value={count} />
-        </Background>
+                Draw
+            </Button>
+        </div>
     );
 }
 
