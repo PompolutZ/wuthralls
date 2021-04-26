@@ -16,6 +16,8 @@ import PropTypes from "prop-types";
 import CardHighlight from "./CardHighlight";
 import { shuffle } from "../../../../utils";
 import CloseHUDButton from "./CloseHUDButton";
+import { cardDefaultHeight, cardDefaultWidth } from "../../../../constants/mix";
+import DrawPile from "./DrawPile";
 
 const stringToCards = (source) => {
     if (!source) return null;
@@ -24,9 +26,6 @@ const stringToCards = (source) => {
         .split(",")
         .map((cardId) => ({ ...cardsDb[cardId], id: cardId }));
 };
-
-const cardDefaultWidth = 300;
-const cardDefaultHeight = 420;
 
 const OBJECTIVES_HAND = "OBJECTIVES_HAND";
 const POWERS_HAND = "POWERS_HAND";
@@ -416,187 +415,26 @@ const CardsHUD = ({
                         <Grid item xs={12}>
                             <Grid container>
                                 <Grid item xs={6} style={{ display: "flex" }}>
-                                    <Paper
-                                        elevation={3}
-                                        style={{
-                                            position: "relative",
-                                            backgroundImage:
-                                                "url(/assets/cards/objectives_back.png)",
-                                            backgroundSize: "cover",
-                                            width: cardDefaultWidth * 0.4,
-                                            height: cardDefaultHeight * 0.4,
-                                            margin: "auto",
-                                        }}
-                                    >
-                                        <Paper
-                                            elevation={3}
-                                            style={{
-                                                position: "absolute",
-                                                zIndex: -1,
-                                                top: ".2rem",
-                                                left: ".2rem",
-                                                backgroundImage:
-                                                    "url(/assets/cards/objectives_back.png)",
-                                                backgroundSize: "cover",
-                                                width: cardDefaultWidth * 0.4,
-                                                height: cardDefaultHeight * 0.4,
-                                                margin: "auto",
-                                            }}
-                                        />
-                                        <Paper
-                                            elevation={5}
-                                            style={{
-                                                position: "absolute",
-                                                zIndex: -2,
-                                                top: ".4rem",
-                                                left: ".4rem",
-                                                backgroundImage:
-                                                    "url(/assets/cards/objectives_back.png)",
-                                                backgroundSize: "cover",
-                                                width: cardDefaultWidth * 0.4,
-                                                height: cardDefaultHeight * 0.4,
-                                                margin: "auto",
-                                            }}
-                                        />
-                                        <ButtonBase
-                                            style={{
-                                                position: "absolute",
-                                                bottom: "0%",
-                                                left: "50%",
-                                                marginLeft: "-1.5rem",
-                                                backgroundColor: "teal",
-                                                color: "white",
-                                                width: "3rem",
-                                                height: "3rem",
-                                                borderRadius: "1.5rem",
-                                            }}
-                                            onClick={drawObjectiveCard}
-                                        >
-                                            <DrawCardsIcon
-                                                style={{
-                                                    width: "2rem",
-                                                    height: "2rem",
-                                                }}
-                                            />
-                                        </ButtonBase>
-                                        <Paper
-                                            elevation={3}
-                                            style={{
-                                                position: "absolute",
-                                                zIndex: 1,
-                                                top: "0%",
-                                                left: "0%",
-                                                backgroundColor: "goldenrod",
-                                                width: "3rem",
-                                                height: "3rem",
-                                                display: "flex",
-                                                borderRadius: "1.5rem",
-                                                color: "white",
-                                            }}
-                                        >
-                                            <Typography
-                                                style={{
-                                                    margin: "auto",
-                                                    fontSize: "1.5rem",
-                                                }}
-                                            >
-                                                {objectiveDrawPile &&
-                                                    objectiveDrawPile.length}
-                                            </Typography>
-                                        </Paper>
-                                    </Paper>
+                                    <DrawPile
+                                        variant="objective"
+                                        onDraw={drawObjectiveCard}
+                                        count={
+                                            objectiveDrawPile
+                                                ? objectiveDrawPile.length
+                                                : 0
+                                        }
+                                    />
                                 </Grid>
                                 <Grid item xs={6} style={{ display: "flex" }}>
-                                    <Paper
-                                        elevation={3}
-                                        style={{
-                                            position: "relative",
-                                            backgroundImage:
-                                                "url(/assets/cards/powers_back.png)",
-                                            backgroundSize: "cover",
-                                            width: cardDefaultWidth * 0.4,
-                                            height: cardDefaultHeight * 0.4,
-                                            margin: "auto",
-                                        }}
-                                    >
-                                        <Paper
-                                            elevation={3}
-                                            style={{
-                                                position: "absolute",
-                                                zIndex: -1,
-                                                top: ".2rem",
-                                                left: ".2rem",
-                                                backgroundImage:
-                                                    "url(/assets/cards/powers_back.png)",
-                                                backgroundSize: "cover",
-                                                width: cardDefaultWidth * 0.4,
-                                                height: cardDefaultHeight * 0.4,
-                                                margin: "auto",
-                                            }}
-                                        />
-                                        <Paper
-                                            elevation={5}
-                                            style={{
-                                                position: "absolute",
-                                                zIndex: -2,
-                                                top: ".4rem",
-                                                left: ".4rem",
-                                                backgroundImage:
-                                                    "url(/assets/cards/powers_back.png)",
-                                                backgroundSize: "cover",
-                                                width: cardDefaultWidth * 0.4,
-                                                height: cardDefaultHeight * 0.4,
-                                                margin: "auto",
-                                            }}
-                                        />
-                                        <ButtonBase
-                                            style={{
-                                                position: "absolute",
-                                                bottom: "0%",
-                                                left: "50%",
-                                                marginLeft: "-1.5rem",
-                                                backgroundColor: "teal",
-                                                color: "white",
-                                                width: "3rem",
-                                                height: "3rem",
-                                                borderRadius: "1.5rem",
-                                            }}
-                                            onClick={drawPowerCard}
-                                        >
-                                            <DrawCardsIcon
-                                                style={{
-                                                    width: "2rem",
-                                                    height: "2rem",
-                                                }}
-                                            />
-                                        </ButtonBase>
-
-                                        <Paper
-                                            elevation={3}
-                                            style={{
-                                                position: "absolute",
-                                                zIndex: 1,
-                                                top: "0%",
-                                                left: "0%",
-                                                backgroundColor: "goldenrod",
-                                                width: "3rem",
-                                                height: "3rem",
-                                                display: "flex",
-                                                borderRadius: "1.5rem",
-                                                color: "white",
-                                            }}
-                                        >
-                                            <Typography
-                                                style={{
-                                                    margin: "auto",
-                                                    fontSize: "1.5rem",
-                                                }}
-                                            >
-                                                {powersDrawPile &&
-                                                    powersDrawPile.length}
-                                            </Typography>
-                                        </Paper>
-                                    </Paper>
+                                    <DrawPile
+                                        variant="power"
+                                        onDraw={drawPowerCard}
+                                        count={
+                                            powersDrawPile
+                                                ? powersDrawPile.length
+                                                : 0
+                                        }
+                                    />
                                 </Grid>
                             </Grid>
                         </Grid>
