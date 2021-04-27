@@ -16,6 +16,7 @@ export const useMyGameState = create((set) => ({
     setActivationsLeft: (value) => set(() => ({ activationsLeft: value })),
     setGloryScored: (value) => set(() => ({ gloryScored: value })),
     setGlorySpend: (value) => set(() => ({ glorySpent: value })),
+    setDeck: (key, value) => set(() => ({ [key]: value })),
 }));
 
 export const useTheirGameState = create(() => ({

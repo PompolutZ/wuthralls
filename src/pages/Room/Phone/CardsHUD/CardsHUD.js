@@ -4,10 +4,8 @@ import { FirebaseContext } from "../../../../firebase";
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
-import ButtonBase from "@material-ui/core/ButtonBase";
 import ButtonGroup from "@material-ui/core/ButtonGroup";
 import Button from "@material-ui/core/Button";
-import DrawCardsIcon from "@material-ui/icons/GetApp";
 import { useAuthUser } from "../../../../components/Session";
 import { Typography } from "@material-ui/core";
 import { cardsDb } from "../../../../data/index";
@@ -18,9 +16,16 @@ import { shuffle } from "../../../../utils";
 import CloseHUDButton from "./CloseHUDButton";
 import { cardDefaultHeight, cardDefaultWidth } from "../../../../constants/mix";
 import DrawPile from "./DrawPile";
+import { useMyGameState } from "../../hooks/playerStateHooks";
+import useUpdateGameLog, {
+    createAppliedUpgradePayload,
+    createPlayerPlayedPowerCardPayload,
+    createPlayerScoredObjectiveCardPayload,
+} from "../../hooks/useUpdateGameLog";
+import useUpdateRoom from "../../hooks/useUpdateRoom";
 
 const stringToCards = (source) => {
-    if (!source) return null;
+    if (!source) return [];
 
     return source
         .split(",")
@@ -40,46 +45,43 @@ const CardsHUD = ({
     roomId,
     myData,
     myFighters,
-    objectivesPile,
-    powerCardsPile,
-    serverHand,
     enemyHand,
-    scoredObjectivesPile,
-    objectivesDiscardPile,
-    powersDiscardPile,
     enemyScoredObjectivesPile,
     enemyObjectivesDiscardPile,
     enemyPowersDiscardPile,
     onClose,
 }) => {
+    const updateGameLog = useUpdateGameLog();
+    const updateRoom = useUpdateRoom();
+    const updateMyDeck = useMyGameState((state) => state.setDeck);
+    const setGloryScored = useMyGameState((state) => state.setGloryScored);
+    const setGlorySpent = useMyGameState((state) => state.setGlorySpend);
+    const gloryScored = useMyGameState((state) => state.gloryScored);
+    const glorySpent = useMyGameState((state) => state.glorySpent);
+    const objectiveDrawPile = useMyGameState((state) =>
+        stringToCards(state.oDeck)
+    );
+    const powersDrawPile = useMyGameState((state) =>
+        stringToCards(state.pDeck)
+    );
+    const scoredObjectives = useMyGameState((state) =>
+        stringToCards(state.sObjs)
+    );
+    const discardedObjectives = useMyGameState((state) =>
+        stringToCards(state.dObjs)
+    );
+    const discardedPowers = useMyGameState((state) =>
+        stringToCards(state.dPws)
+    );
+    const hand = useMyGameState((state) => stringToCards(state.hand));
+
     const myself = useAuthUser();
-    const [objectiveDrawPile, setObjectiveDrawPile] = useState(
-        stringToCards(objectivesPile)
-    );
-    const [powersDrawPile, setPowersDrawPile] = useState(
-        stringToCards(powerCardsPile)
-    );
-    const [scoredObjectives, setScoredObjectives] = useState(
-        stringToCards(scoredObjectivesPile)
-    );
-    const [discardedObjectives, setDiscardedObjectives] = useState(
-        stringToCards(objectivesDiscardPile)
-    );
-    const [discardedPowers, setDiscardedPowers] = useState(
-        stringToCards(powersDiscardPile)
-    );
-    const [hand, setHand] = useState(stringToCards(serverHand));
     const firebase = useContext(FirebaseContext);
     const [highlightCard, setHighlightCard] = useState(null);
     const [highlightFromSource, setHighlightFromSource] = useState(null);
     const [selectedGroup, setSelectedGroup] = useState(MY_CARDS_GROUP);
     const [modified, setModified] = useState(false);
-    const [gloryScored, setGloryScored] = useState(
-        myData ? myData.gloryScored : 0
-    );
-    const [glorySpent, setGlorySpent] = useState(
-        myData ? myData.glorySpent : 0
-    );
+    const [pendingUpgrades, setPendingUpgrades] = useState({});
 
     const opponentHand = stringToCards(enemyHand);
     const opponentScoreObjectivesPile = stringToCards(
@@ -95,37 +97,24 @@ const CardsHUD = ({
     };
 
     const drawObjectiveCard = async () => {
-        const objectives = objectiveDrawPile.slice(0, 1);
-        if (!hand) {
-            setHand(objectives);
-        } else {
-            setHand((prev) => [...prev, ...objectives]);
-        }
-        setObjectiveDrawPile((prev) => prev.slice(1));
+        const [objective, ...rest] = objectiveDrawPile;
+        updateMyDeck(
+            "hand",
+            [...hand.map(({ id }) => id), objective.id].join()
+        );
+        updateMyDeck("oDeck", rest.map(({ id }) => id).join());
         setModified(true);
 
-        firebase.addGenericMessage2(roomId, {
-            author: "Katophrane",
-            type: "INFO",
-            value: `**${myself.username}** has drawn objective card.`,
-        });
+        updateGameLog(`**${myself.username}** has drawn objective card.`);
     };
 
     const drawPowerCard = () => {
-        const powers = powersDrawPile.slice(0, 1);
-        if (!hand) {
-            setHand(powers);
-        } else {
-            setHand((prev) => [...prev, ...powers]);
-        }
-        setPowersDrawPile((prev) => prev.slice(1));
+        const [power, ...rest] = powersDrawPile;
+        updateMyDeck("hand", [...hand.map(({ id }) => id), power.id].join());
+        updateMyDeck("pDeck", rest.map(({ id }) => id).join());
         setModified(true);
 
-        firebase.addGenericMessage2(roomId, {
-            author: "Katophrane",
-            type: "INFO",
-            value: `**${myself.username}** has drawn power card.`,
-        });
+        updateGameLog(`**${myself.username}** has drawn power card.`);
     };
 
     const handleHighlightCard = (card, source) => () => {
@@ -144,7 +133,7 @@ const CardsHUD = ({
         onClose(false);
 
         if (persist) {
-            firebase.updateRoom(roomId, {
+            updateRoom({
                 [`${myself.uid}.hand`]: hand
                     ? hand.map((x) => x.id).join()
                     : "",
@@ -165,44 +154,48 @@ const CardsHUD = ({
                     : "",
                 [`${myself.uid}.gloryScored`]: gloryScored,
                 [`${myself.uid}.glorySpent`]: glorySpent,
+                ...pendingUpgrades,
             });
             setModified(false);
         }
     };
 
     const playCard = (card) => () => {
-        setHand((prev) => prev.filter((c) => c.id !== card.id));
+        updateMyDeck(
+            "hand",
+            hand
+                .reduce(
+                    (acc, c) => (c.id !== card.id ? [...acc, c.id] : acc),
+                    []
+                )
+                .join()
+        );
 
         if (card.type === "Objective") {
-            if (!scoredObjectives) {
-                setScoredObjectives([card]);
-            } else {
-                setScoredObjectives((prev) => [...prev, card]);
-            }
+            updateMyDeck(
+                "sObjs",
+                [...scoredObjectives.map(({ id }) => id), card.id].join()
+            );
 
             setGloryScored(Number(gloryScored) + Number(card.glory));
-
-            firebase.addGenericMessage2(roomId, {
-                author: "Katophrane",
-                type: "INFO",
-                subtype: "SCORED_OBJECTIVE_CARD",
-                cardId: card.id,
-                value: `**${myself.username}** scored objective: **${card.name}**(${card.glory}).`,
-            });
+            updateGameLog(
+                createPlayerScoredObjectiveCardPayload(
+                    card.id,
+                    `**${myself.username}** scored objective: **${card.name}**(${card.glory}).`
+                )
+            );
         } else {
-            if (!discardedPowers) {
-                setDiscardedPowers([card]);
-            } else {
-                setDiscardedPowers((prev) => [...prev, card]);
-            }
+            updateMyDeck(
+                "dPws",
+                [...discardedPowers.map(({ id }) => id), card.id].join()
+            );
 
-            firebase.addGenericMessage2(roomId, {
-                author: "Katophrane",
-                type: "INFO",
-                subtype: "PLAYED_POWER_CARD",
-                cardId: card.id,
-                value: `**${myself.username}** played: **${card.name}**.`,
-            });
+            updateGameLog(
+                createPlayerPlayedPowerCardPayload(
+                    card.id,
+                    `**${myself.username}** played: **${card.name}**.`
+                )
+            );
         }
 
         setHighlightCard(null);
@@ -210,31 +203,47 @@ const CardsHUD = ({
     };
 
     const applyUpgrade = (upgrade, fighter) => {
-        const nextGloryScored = Number(gloryScored) - 1;
-        const nextGlorySpent = Number(glorySpent) + 1;
+        const nextGloryScored = gloryScored - 1;
+        const nextGlorySpent = glorySpent + 1;
 
-        setHand((prev) => prev.filter((c) => c.id !== upgrade.id));
+        updateMyDeck(
+            "hand",
+            hand
+                .reduce(
+                    (acc, c) => (c.id !== upgrade.id ? [...acc, c.id] : acc),
+                    []
+                )
+                .join()
+        );
         setGloryScored(nextGloryScored);
         setGlorySpent(nextGlorySpent);
 
-        const payload = {
-            [`board.fighters.${fighter.id}.upgrades`]: fighter.upgrades
-                ? `${fighter.upgrades},${upgrade.id}`
-                : `${upgrade.id}`,
-        };
-
+        const pendingKey = `board.fighters.${fighter.id}.upgrades`;
+        setPendingUpgrades((prev) => {
+            if (prev[pendingKey]) {
+                return {
+                    ...prev,
+                    [pendingKey]: `${prev[pendingKey]},${upgrade.id}`,
+                };
+            } else {
+                return {
+                    ...prev,
+                    [pendingKey]: fighter.upgrades
+                        ? `${fighter.upgrades},${upgrade.id}`
+                        : `${upgrade.id}`,
+                };
+            }
+        });
         setHighlightCard(null);
         setModified(true);
 
-        firebase.updateRoom(roomId, payload);
-        firebase.addGenericMessage2(roomId, {
-            author: "Katophrane",
-            type: "INFO",
-            subtype: "APPLIED_UPGRADE_CARD",
-            cardId: upgrade.id,
-            value: `**${myData.name}** equips **${fighter.name}** with **${upgrade.name}** upgrade.
-            **${myData.name}** has updated his scored/spent glory to ${nextGloryScored}/${nextGlorySpent}.`,
-        });
+        updateGameLog(
+            createAppliedUpgradePayload(
+                upgrade.id,
+                `**${myData.name}** equips **${fighter.name}** with **${upgrade.name}** upgrade.
+        **${myData.name}** has updated his scored/spent glory to ${nextGloryScored}/${nextGlorySpent}.`
+            )
+        );
     };
 
     const returnToHand = (card, source) => () => {

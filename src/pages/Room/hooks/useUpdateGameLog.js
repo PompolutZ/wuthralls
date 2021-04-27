@@ -2,23 +2,44 @@ import { useContext } from "react";
 import { FirebaseContext } from "../../../firebase";
 import { useRoomInfo } from "./gameStateHooks";
 
+const KatophraneInfo = {
+    author: "Katophrane",
+    type: "INFO",
+};
+
 export function createAppliedUpgradePayload(cardId, message) {
     return {
-        author: "Katophrane",
-        type: "INFO",
+        ...KatophraneInfo,
         subtype: "APPLIED_UPGRADE_CARD",
-        cardId: cardId,
         value: message,
+        cardId,
     };
 }
 
 export function createPlayerDiscardsUpgradePayload(cardId, message) {
     return {
-        author: "Katophrane",
-        type: "INFO",
+        ...KatophraneInfo,
         subtype: "DISCARDS_UPGRADE_CARD",
-        cardId: cardId,
         value: message,
+        cardId,
+    };
+}
+
+export function createPlayerScoredObjectiveCardPayload(cardId, message) {
+    return {
+        ...KatophraneInfo,
+        subtype: "SCORED_OBJECTIVE_CARD",
+        value: message,
+        cardId,
+    };
+}
+
+export function createPlayerPlayedPowerCardPayload(cardId, message) {
+    return {
+        ...KatophraneInfo,
+        subtype: "PLAYED_POWER_CARD",
+        value: message,
+        cardId,
     };
 }
 
