@@ -23,23 +23,16 @@ import useUpdateGameLog, {
     createPlayerScoredObjectiveCardPayload,
 } from "../../hooks/useUpdateGameLog";
 import useUpdateRoom from "../../hooks/useUpdateRoom";
-
-const stringToCards = (source) => {
-    if (!source) return [];
-
-    return source
-        .split(",")
-        .map((cardId) => ({ ...cardsDb[cardId], id: cardId }));
-};
-
-const OBJECTIVES_HAND = "OBJECTIVES_HAND";
-const POWERS_HAND = "POWERS_HAND";
-const OBJECTIVES_SCORED = "OBJECTIVES_SCORED";
-const OBJECTIVES_DISCARDED = "OBJECTIVES_DISCARDED";
-const POWERS_DISCARDED = "POWERS_DISCARDED";
-
-const MY_CARDS_GROUP = "MY_CARDS_GROUP";
-const ENEMY_CARDS_GROUP = "ENEMY_CARDS_GROUP";
+import {
+    ENEMY_CARDS_GROUP,
+    MY_CARDS_GROUP,
+    OBJECTIVES_DISCARDED,
+    OBJECTIVES_HAND,
+    OBJECTIVES_SCORED,
+    POWERS_DISCARDED,
+    POWERS_HAND,
+} from "./constants";
+import { moveCard, stringToCards } from "./utils";
 
 const CardsHUD = ({
     roomId,
@@ -160,6 +153,12 @@ const CardsHUD = ({
         }
     };
 
+    const resetHighlight = () => {
+        setHighlightCard(null);
+        setHighlightFromSource(null);
+        setModified(true);
+    };
+
     const playCard = (card) => () => {
         updateMyDeck(
             "hand",
@@ -198,8 +197,7 @@ const CardsHUD = ({
             );
         }
 
-        setHighlightCard(null);
-        setModified(true);
+        resetHighlight();
     };
 
     const applyUpgrade = (upgrade, fighter) => {
@@ -234,8 +232,8 @@ const CardsHUD = ({
                 };
             }
         });
-        setHighlightCard(null);
-        setModified(true);
+
+        resetHighlight();
 
         updateGameLog(
             createAppliedUpgradePayload(
@@ -247,15 +245,16 @@ const CardsHUD = ({
     };
 
     const returnToHand = (card, source) => () => {
-        if (!hand) {
-            setHand([card]);
-        } else {
-            setHand((prev) => [...prev, card]);
-        }
+        updateMyDeck("hand", [...hand.map(({ id }) => id), card.id].join());
 
         if (source === OBJECTIVES_SCORED) {
-            setScoredObjectives((prev) =>
-                prev ? prev.filter((c) => c.id !== card.id) : []
+            updateMyDeck(
+                "sObjs",
+                [
+                    ...scoredObjectives
+                        .filter(({ id }) => id !== card.id)
+                        .map((card) => card.id),
+                ].join()
             );
 
             firebase.addGenericMessage2(roomId, {
@@ -266,8 +265,13 @@ const CardsHUD = ({
         }
 
         if (source === OBJECTIVES_DISCARDED) {
-            setDiscardedObjectives((prev) =>
-                prev ? prev.filter((c) => c.id !== card.id) : []
+            updateMyDeck(
+                "dObjs",
+                [
+                    ...discardedObjectives
+                        .filter(({ id }) => id !== card.id)
+                        .map((card) => card.id),
+                ].join()
             );
 
             firebase.addGenericMessage2(roomId, {
@@ -278,8 +282,13 @@ const CardsHUD = ({
         }
 
         if (source === POWERS_DISCARDED) {
-            setDiscardedPowers((prev) =>
-                prev ? prev.filter((c) => c.id !== card.id) : []
+            updateMyDeck(
+                "dPws",
+                [
+                    ...discardedPowers
+                        .filter(({ id }) => id !== card.id)
+                        .map((card) => card.id),
+                ].join()
             );
 
             firebase.addGenericMessage2(roomId, {
@@ -289,60 +298,61 @@ const CardsHUD = ({
             });
         }
 
-        setHighlightCard(null);
-        setHighlightFromSource(null);
-        setModified(true);
+        resetHighlight();
     };
 
     const returnToPile = (card, source) => () => {
         if (source === OBJECTIVES_HAND) {
-            setHand((prev) =>
-                prev ? prev.filter((c) => c.id !== card.id) : []
+            const [nextHand, nextODeck] = moveCard(
+                card.id,
+                hand,
+                objectiveDrawPile
             );
-            setObjectiveDrawPile((prev) =>
-                prev ? shuffle([...prev, card]) : [card]
-            );
+            updateMyDeck("hand", nextHand.join());
+            updateMyDeck("oDeck", shuffle(nextODeck).join());
         }
 
         if (source === POWERS_HAND) {
-            setHand((prev) =>
-                prev ? prev.filter((c) => c.id !== card.id) : []
+            const [nextHand, nextPDeck] = moveCard(
+                card.id,
+                hand,
+                powersDrawPile
             );
-            setPowersDrawPile((prev) =>
-                prev ? shuffle([...prev, card]) : [card]
-            );
+            updateMyDeck("hand", nextHand.join());
+            updateMyDeck("pDeck", shuffle(nextPDeck).join());
         }
 
         if (source === OBJECTIVES_SCORED) {
-            setScoredObjectives((prev) =>
-                prev ? prev.filter((c) => c.id !== card.id) : []
+            const [nextScoredObjectives, nextODeck] = moveCard(
+                card.id,
+                scoredObjectives,
+                objectiveDrawPile
             );
-            setObjectiveDrawPile((prev) =>
-                prev ? shuffle([...prev, card]) : [card]
-            );
+            updateMyDeck("sObjs", nextScoredObjectives.join());
+            updateMyDeck("oDeck", shuffle(nextODeck).join());
         }
 
         if (source === OBJECTIVES_DISCARDED) {
-            setDiscardedObjectives((prev) =>
-                prev ? prev.filter((c) => c.id !== card.id) : []
+            const [nextDiscardedObjectives, nextODeck] = moveCard(
+                card.id,
+                discardedObjectives,
+                objectiveDrawPile
             );
-            setObjectiveDrawPile((prev) =>
-                prev ? shuffle([...prev, card]) : [card]
-            );
+            updateMyDeck("dObjs", nextDiscardedObjectives.join());
+            updateMyDeck("oDeck", shuffle(nextODeck).join());
         }
 
         if (source === POWERS_DISCARDED) {
-            setDiscardedPowers((prev) =>
-                prev ? prev.filter((c) => c.id !== card.id) : []
+            const [nextDiscardedPowers, nextPDeck] = moveCard(
+                card.id,
+                discardedPowers,
+                powersDrawPile
             );
-            setPowersDrawPile((prev) =>
-                prev ? shuffle([...prev, card]) : [card]
-            );
+            updateMyDeck("dPws", nextDiscardedPowers.join());
+            updateMyDeck("pDeck", shuffle(nextPDeck).join());
         }
 
-        setHighlightCard(null);
-        setHighlightFromSource(null);
-        setModified(true);
+        resetHighlight();
     };
 
     const discardCard = (card) => () => {
