@@ -43,6 +43,24 @@ export function createPlayerPlayedPowerCardPayload(cardId, message) {
     };
 }
 
+export function createPlayerDiscardedObjectiveCardPayload(cardId, message) {
+    return {
+        ...KatophraneInfo,
+        subtype: "DISCARDED_OBJECTIVE_CARD",
+        value: message,
+        cardId,
+    };
+}
+
+export function createPlayerDiscPowerCardPayload(cardId, message) {
+    return {
+        ...KatophraneInfo,
+        subtype: "DISCARDED_POWER_CARD",
+        value: message,
+        cardId,
+    };
+}
+
 // this function is relying on another game specific hook, useRoomInfo
 // passing roomId as a parameter might be more flexible though, but
 // for now I have decided to save some keystrokes.

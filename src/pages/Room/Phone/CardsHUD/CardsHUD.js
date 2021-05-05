@@ -8,7 +8,6 @@ import ButtonGroup from "@material-ui/core/ButtonGroup";
 import Button from "@material-ui/core/Button";
 import { useAuthUser } from "../../../../components/Session";
 import { Typography } from "@material-ui/core";
-import { cardsDb } from "../../../../data/index";
 import PropTypes from "prop-types";
 
 import CardHighlight from "./CardHighlight";
@@ -21,6 +20,8 @@ import useUpdateGameLog, {
     createAppliedUpgradePayload,
     createPlayerPlayedPowerCardPayload,
     createPlayerScoredObjectiveCardPayload,
+    createPlayerDiscardedPowerCardPayload,
+    createPlayerDiscardedObjectiveCardPayload,
 } from "../../hooks/useUpdateGameLog";
 import useUpdateRoom from "../../hooks/useUpdateRoom";
 import {
@@ -33,9 +34,9 @@ import {
     POWERS_HAND,
 } from "./constants";
 import { moveCard, stringToCards } from "./utils";
+import CardsRow from "./CardsRow";
 
 const CardsHUD = ({
-    roomId,
     myData,
     myFighters,
     enemyHand,
@@ -69,7 +70,6 @@ const CardsHUD = ({
     const hand = useMyGameState((state) => stringToCards(state.hand));
 
     const myself = useAuthUser();
-    const firebase = useContext(FirebaseContext);
     const [highlightCard, setHighlightCard] = useState(null);
     const [highlightFromSource, setHighlightFromSource] = useState(null);
     const [selectedGroup, setSelectedGroup] = useState(MY_CARDS_GROUP);
@@ -110,7 +110,7 @@ const CardsHUD = ({
         updateGameLog(`**${myself.username}** has drawn power card.`);
     };
 
-    const handleHighlightCard = (card, source) => () => {
+    const curryHighlightCard = (source) => (card) => () => {
         setHighlightCard(card);
         setHighlightFromSource(source);
     };
@@ -257,11 +257,9 @@ const CardsHUD = ({
                 ].join()
             );
 
-            firebase.addGenericMessage2(roomId, {
-                author: "Katophrane",
-                type: "INFO",
-                value: `**${myself.username}** has returned scored objective card back to hand.`,
-            });
+            updateGameLog(
+                `**${myself.username}** has returned scored objective card back to hand.`
+            );
         }
 
         if (source === OBJECTIVES_DISCARDED) {
@@ -274,11 +272,9 @@ const CardsHUD = ({
                 ].join()
             );
 
-            firebase.addGenericMessage2(roomId, {
-                author: "Katophrane",
-                type: "INFO",
-                value: `**${myself.username}** has returned discarded objective card back to hand.`,
-            });
+            updateGameLog(
+                `**${myself.username}** has returned discarded objective card back to hand.`
+            );
         }
 
         if (source === POWERS_DISCARDED) {
@@ -291,11 +287,9 @@ const CardsHUD = ({
                 ].join()
             );
 
-            firebase.addGenericMessage2(roomId, {
-                author: "Katophrane",
-                type: "INFO",
-                value: `**${myself.username}** has returned discarded power card back to hand.`,
-            });
+            updateGameLog(
+                `**${myself.username}** has returned discarded power card back to hand.`
+            );
         }
 
         resetHighlight();
@@ -364,14 +358,12 @@ const CardsHUD = ({
             );
             updateMyDeck("hand", nextSource.join());
             updateMyDeck("dObjs", nextDestination.join());
-
-            firebase.addGenericMessage2(roomId, {
-                author: "Katophrane",
-                type: "INFO",
-                subtype: "DISCARDED_OBJECTIVE_CARD",
-                cardId: card.id,
-                value: `**${myself.username}** discarded objective card: **${card.name}**.`,
-            });
+            updateGameLog(
+                createPlayerDiscardedObjectiveCardPayload(
+                    card.id,
+                    `**${myself.username}** discarded objective card: **${card.name}**.`
+                )
+            );
         } else {
             const [nextSource, nextDestination] = moveCard(
                 card.id,
@@ -381,13 +373,12 @@ const CardsHUD = ({
             updateMyDeck("hand", nextSource.join());
             updateMyDeck("dPws", nextDestination.join());
 
-            firebase.addGenericMessage2(roomId, {
-                author: "Katophrane",
-                type: "INFO",
-                subtype: "DISCARDED_POWER_CARD",
-                cardId: card.id,
-                value: `**${myself.username}** discarded power card: **${card.name}**.`,
-            });
+            updateGameLog(
+                createPlayerDiscardedPowerCardPayload(
+                    card.id,
+                    `**${myself.username}** discarded power card: **${card.name}**.`
+                )
+            );
         }
 
         resetHighlight();
@@ -458,327 +449,39 @@ const CardsHUD = ({
                                 </Grid>
                             </Grid>
                         </Grid>
-                        <Grid item xs={12}>
-                            <Typography style={{ marginTop: "1rem" }}>
-                                Objectives{" "}
-                                {`(${
-                                    hand && hand.length > 0
-                                        ? hand.filter(
-                                              (c) => c.type === "Objective"
-                                          ).length
-                                        : "empty"
-                                })`}
-                            </Typography>
-                            <Divider />
-                            <Grid container>
-                                <div
-                                    style={{
-                                        display: "flex",
-                                        width: "100%",
-                                        overflowX: "scroll",
-                                    }}
-                                >
-                                    {hand &&
-                                        hand.length > 0 &&
-                                        hand
-                                            .filter(
-                                                (c) => c.type === "Objective"
-                                            )
-                                            .map((card, idx, arr) => (
-                                                <Paper
-                                                    key={card.id}
-                                                    style={{
-                                                        flexShrink: 0,
-                                                        width:
-                                                            cardDefaultWidth *
-                                                            0.4,
-                                                        height:
-                                                            cardDefaultHeight *
-                                                            0.4,
-                                                        margin: `1rem ${
-                                                            idx ===
-                                                            arr.length - 1
-                                                                ? "1rem"
-                                                                : ".3rem"
-                                                        } 0 ${
-                                                            idx === 0
-                                                                ? "1rem"
-                                                                : "0"
-                                                        }`,
-                                                        borderRadius: "1rem",
-                                                        backgroundPosition:
-                                                            "center center",
-                                                        backgroundSize: "cover",
-                                                        backgroundRepeat:
-                                                            "no-repeat",
-                                                        backgroundImage: `url(/assets/cards/${card.id}.png)`,
-                                                    }}
-                                                    elevation={10}
-                                                    onClick={handleHighlightCard(
-                                                        card,
-                                                        OBJECTIVES_HAND
-                                                    )}
-                                                />
-                                            ))}
-                                </div>
-                            </Grid>
-                        </Grid>
-                        <Grid item xs={12}>
-                            <Typography style={{ marginTop: "1rem" }}>
-                                Power cards{" "}
-                                {`(${
-                                    hand && hand.length > 0
-                                        ? hand.filter(
-                                              (c) => c.type !== "Objective"
-                                          ).length
-                                        : "empty"
-                                })`}
-                            </Typography>
-                            <Divider />
-                            <Grid container>
-                                <div
-                                    style={{
-                                        display: "flex",
-                                        width: "100%",
-                                        overflowX: "scroll",
-                                    }}
-                                >
-                                    {hand &&
-                                        hand.length > 0 &&
-                                        hand
-                                            .filter(
-                                                (c) => c.type !== "Objective"
-                                            )
-                                            .map((card, idx, arr) => (
-                                                <Paper
-                                                    key={card.id}
-                                                    style={{
-                                                        flexShrink: 0,
-                                                        width:
-                                                            cardDefaultWidth *
-                                                            0.4,
-                                                        height:
-                                                            cardDefaultHeight *
-                                                            0.4,
-                                                        margin: `1rem ${
-                                                            idx ===
-                                                            arr.length - 1
-                                                                ? "1rem"
-                                                                : ".3rem"
-                                                        } 0 ${
-                                                            idx === 0
-                                                                ? "1rem"
-                                                                : "0"
-                                                        }`,
-                                                        borderRadius: "1rem",
-                                                        // border: '3px dashed black',
-                                                        // boxSizing: 'border-box',
-                                                        backgroundPosition:
-                                                            "center center",
-                                                        backgroundSize: "cover",
-                                                        backgroundRepeat:
-                                                            "no-repeat",
-                                                        backgroundImage: `url(/assets/cards/${card.id}.png)`,
-                                                    }}
-                                                    elevation={10}
-                                                    onClick={handleHighlightCard(
-                                                        card,
-                                                        POWERS_HAND
-                                                    )}
-                                                />
-                                            ))}
-                                </div>
-                            </Grid>
-                        </Grid>
-                        <Grid item xs={12}>
-                            <Typography style={{ marginTop: "1rem" }}>
-                                Scored objectives{" "}
-                                {`(${
-                                    scoredObjectives
-                                        ? scoredObjectives.length
-                                        : "empty"
-                                })`}
-                            </Typography>
-                            <Divider />
-                            <Grid container>
-                                <div
-                                    style={{
-                                        display: "flex",
-                                        width: "100%",
-                                        overflowX: "scroll",
-                                    }}
-                                >
-                                    {scoredObjectives &&
-                                        scoredObjectives.length > 0 &&
-                                        scoredObjectives
-                                            // .filter(c => c.type !== "Objective")
-                                            .map((card, idx, arr) => (
-                                                <Paper
-                                                    key={card.id}
-                                                    style={{
-                                                        flexShrink: 0,
-                                                        width:
-                                                            cardDefaultWidth *
-                                                            0.4,
-                                                        height:
-                                                            cardDefaultHeight *
-                                                            0.4,
-                                                        margin: `1rem ${
-                                                            idx ===
-                                                            arr.length - 1
-                                                                ? "1rem"
-                                                                : ".3rem"
-                                                        } 0 ${
-                                                            idx === 0
-                                                                ? "1rem"
-                                                                : "0"
-                                                        }`,
-                                                        borderRadius: "1rem",
-                                                        // border: '3px dashed black',
-                                                        // boxSizing: 'border-box',
-                                                        backgroundPosition:
-                                                            "center center",
-                                                        backgroundSize: "cover",
-                                                        backgroundRepeat:
-                                                            "no-repeat",
-                                                        backgroundImage: `url(/assets/cards/${card.id}.png)`,
-                                                    }}
-                                                    elevation={10}
-                                                    onClick={handleHighlightCard(
-                                                        card,
-                                                        OBJECTIVES_SCORED
-                                                    )}
-                                                />
-                                            ))}
-                                </div>
-                            </Grid>
-                        </Grid>
-                        <Grid item xs={12}>
-                            <Typography style={{ marginTop: "1rem" }}>
-                                Discarded objectives{" "}
-                                {`(${
-                                    discardedObjectives
-                                        ? discardedObjectives.length
-                                        : "empty"
-                                })`}
-                            </Typography>
-                            <Divider />
-                            <Grid container>
-                                <div
-                                    style={{
-                                        display: "flex",
-                                        width: "100%",
-                                        overflowX: "scroll",
-                                    }}
-                                >
-                                    {discardedObjectives &&
-                                        discardedObjectives.length > 0 &&
-                                        discardedObjectives
-                                            // .filter(c => c.type !== "Objective")
-                                            .map((card, idx, arr) => (
-                                                <Paper
-                                                    key={card.id}
-                                                    style={{
-                                                        flexShrink: 0,
-                                                        width:
-                                                            cardDefaultWidth *
-                                                            0.4,
-                                                        height:
-                                                            cardDefaultHeight *
-                                                            0.4,
-                                                        margin: `1rem ${
-                                                            idx ===
-                                                            arr.length - 1
-                                                                ? "1rem"
-                                                                : ".3rem"
-                                                        } 0 ${
-                                                            idx === 0
-                                                                ? "1rem"
-                                                                : "0"
-                                                        }`,
-                                                        borderRadius: "1rem",
-                                                        // border: '3px dashed black',
-                                                        // boxSizing: 'border-box',
-                                                        backgroundPosition:
-                                                            "center center",
-                                                        backgroundSize: "cover",
-                                                        backgroundRepeat:
-                                                            "no-repeat",
-                                                        backgroundImage: `url(/assets/cards/${card.id}.png)`,
-                                                    }}
-                                                    elevation={10}
-                                                    onClick={handleHighlightCard(
-                                                        card,
-                                                        OBJECTIVES_DISCARDED
-                                                    )}
-                                                />
-                                            ))}
-                                </div>
-                            </Grid>
-                        </Grid>
-                        <Grid item xs={12}>
-                            <Typography style={{ marginTop: "1rem" }}>
-                                Discarded powers{" "}
-                                {`(${
-                                    discardedPowers
-                                        ? discardedPowers.length
-                                        : "empty"
-                                })`}
-                            </Typography>
-                            <Divider />
-                            <Grid container>
-                                <div
-                                    style={{
-                                        display: "flex",
-                                        width: "100%",
-                                        overflowX: "scroll",
-                                    }}
-                                >
-                                    {discardedPowers &&
-                                        discardedPowers.length > 0 &&
-                                        discardedPowers
-                                            // .filter(c => c.type !== "Objective")
-                                            .map((card, idx, arr) => (
-                                                <Paper
-                                                    key={card.id}
-                                                    style={{
-                                                        flexShrink: 0,
-                                                        width:
-                                                            cardDefaultWidth *
-                                                            0.4,
-                                                        height:
-                                                            cardDefaultHeight *
-                                                            0.4,
-                                                        margin: `1rem ${
-                                                            idx ===
-                                                            arr.length - 1
-                                                                ? "1rem"
-                                                                : ".3rem"
-                                                        } 0 ${
-                                                            idx === 0
-                                                                ? "1rem"
-                                                                : "0"
-                                                        }`,
-                                                        borderRadius: "1rem",
-                                                        // border: '3px dashed black',
-                                                        // boxSizing: 'border-box',
-                                                        backgroundPosition:
-                                                            "center center",
-                                                        backgroundSize: "cover",
-                                                        backgroundRepeat:
-                                                            "no-repeat",
-                                                        backgroundImage: `url(/assets/cards/${card.id}.png)`,
-                                                    }}
-                                                    elevation={10}
-                                                    onClick={handleHighlightCard(
-                                                        card,
-                                                        POWERS_DISCARDED
-                                                    )}
-                                                />
-                                            ))}
-                                </div>
-                            </Grid>
-                        </Grid>
+                        <CardsRow
+                            title="Objectives"
+                            cards={hand.filter((c) => c.type === "Objective")}
+                            onHighlightCard={curryHighlightCard(
+                                OBJECTIVES_HAND
+                            )}
+                        />
+                        <CardsRow
+                            title="Power cards"
+                            cards={hand.filter((c) => c.type !== "Objective")}
+                            onHighlightCard={curryHighlightCard(POWERS_HAND)}
+                        />
+                        <CardsRow
+                            title="Scored objectives"
+                            cards={scoredObjectives}
+                            onHighlightCard={curryHighlightCard(
+                                OBJECTIVES_SCORED
+                            )}
+                        />
+                        <CardsRow
+                            title="Discarded objectives"
+                            cards={discardedObjectives}
+                            onHighlightCard={curryHighlightCard(
+                                OBJECTIVES_DISCARDED
+                            )}
+                        />
+                        <CardsRow
+                            title="Discarded powers"
+                            cards={discardedPowers}
+                            onHighlightCard={curryHighlightCard(
+                                POWERS_DISCARDED
+                            )}
+                        />
                     </Grid>
                 )}
 
@@ -883,197 +586,27 @@ const CardsHUD = ({
                                 </Grid>
                             </Grid>
                         </Grid>
-                        <Grid item xs={12}>
-                            <Typography style={{ marginTop: "1rem" }}>
-                                Scored objectives{" "}
-                                {`(${
-                                    opponentScoreObjectivesPile
-                                        ? opponentScoreObjectivesPile.length
-                                        : "empty"
-                                })`}
-                            </Typography>
-                            <Divider />
-                            <Grid container>
-                                <div
-                                    style={{
-                                        display: "flex",
-                                        width: "100%",
-                                        overflowX: "scroll",
-                                    }}
-                                >
-                                    {opponentScoreObjectivesPile &&
-                                        opponentScoreObjectivesPile.length >
-                                            0 &&
-                                        opponentScoreObjectivesPile
-                                            // .filter(c => c.type !== "Objective")
-                                            .map((card, idx, arr) => (
-                                                <Paper
-                                                    key={card.id}
-                                                    style={{
-                                                        flexShrink: 0,
-                                                        width:
-                                                            cardDefaultWidth *
-                                                            0.4,
-                                                        height:
-                                                            cardDefaultHeight *
-                                                            0.4,
-                                                        margin: `1rem ${
-                                                            idx ===
-                                                            arr.length - 1
-                                                                ? "1rem"
-                                                                : ".3rem"
-                                                        } 0 ${
-                                                            idx === 0
-                                                                ? "1rem"
-                                                                : "0"
-                                                        }`,
-                                                        borderRadius: "1rem",
-                                                        // border: '3px dashed black',
-                                                        // boxSizing: 'border-box',
-                                                        backgroundPosition:
-                                                            "center center",
-                                                        backgroundSize: "cover",
-                                                        backgroundRepeat:
-                                                            "no-repeat",
-                                                        backgroundImage: `url(/assets/cards/${card.id}.png)`,
-                                                    }}
-                                                    elevation={10}
-                                                    onClick={handleHighlightCard(
-                                                        card,
-                                                        OBJECTIVES_SCORED
-                                                    )}
-                                                />
-                                            ))}
-                                </div>
-                            </Grid>
-                        </Grid>
-                        <Grid item xs={12}>
-                            <Typography style={{ marginTop: "1rem" }}>
-                                Discarded objectives{" "}
-                                {`(${
-                                    opponentObjectivesDiscardPile
-                                        ? opponentObjectivesDiscardPile.length
-                                        : "empty"
-                                })`}
-                            </Typography>
-                            <Divider />
-                            <Grid container>
-                                <div
-                                    style={{
-                                        display: "flex",
-                                        width: "100%",
-                                        overflowX: "scroll",
-                                    }}
-                                >
-                                    {opponentObjectivesDiscardPile &&
-                                        opponentObjectivesDiscardPile.length >
-                                            0 &&
-                                        opponentObjectivesDiscardPile
-                                            // .filter(c => c.type !== "Objective")
-                                            .map((card, idx, arr) => (
-                                                <Paper
-                                                    key={card.id}
-                                                    style={{
-                                                        flexShrink: 0,
-                                                        width:
-                                                            cardDefaultWidth *
-                                                            0.4,
-                                                        height:
-                                                            cardDefaultHeight *
-                                                            0.4,
-                                                        margin: `1rem ${
-                                                            idx ===
-                                                            arr.length - 1
-                                                                ? "1rem"
-                                                                : ".3rem"
-                                                        } 0 ${
-                                                            idx === 0
-                                                                ? "1rem"
-                                                                : "0"
-                                                        }`,
-                                                        borderRadius: "1rem",
-                                                        // border: '3px dashed black',
-                                                        // boxSizing: 'border-box',
-                                                        backgroundPosition:
-                                                            "center center",
-                                                        backgroundSize: "cover",
-                                                        backgroundRepeat:
-                                                            "no-repeat",
-                                                        backgroundImage: `url(/assets/cards/${card.id}.png)`,
-                                                    }}
-                                                    elevation={10}
-                                                    onClick={handleHighlightCard(
-                                                        card,
-                                                        OBJECTIVES_DISCARDED
-                                                    )}
-                                                />
-                                            ))}
-                                </div>
-                            </Grid>
-                        </Grid>
-                        <Grid item xs={12}>
-                            <Typography style={{ marginTop: "1rem" }}>
-                                Discarded powers{" "}
-                                {`(${
-                                    opponentPowersDiscardPile
-                                        ? opponentPowersDiscardPile.length
-                                        : "empty"
-                                })`}
-                            </Typography>
-                            <Divider />
-                            <Grid container>
-                                <div
-                                    style={{
-                                        display: "flex",
-                                        width: "100%",
-                                        overflowX: "scroll",
-                                    }}
-                                >
-                                    {opponentPowersDiscardPile &&
-                                        opponentPowersDiscardPile.length > 0 &&
-                                        opponentPowersDiscardPile
-                                            // .filter(c => c.type !== "Objective")
-                                            .map((card, idx, arr) => (
-                                                <Paper
-                                                    key={card.id}
-                                                    style={{
-                                                        flexShrink: 0,
-                                                        width:
-                                                            cardDefaultWidth *
-                                                            0.4,
-                                                        height:
-                                                            cardDefaultHeight *
-                                                            0.4,
-                                                        margin: `1rem ${
-                                                            idx ===
-                                                            arr.length - 1
-                                                                ? "1rem"
-                                                                : ".3rem"
-                                                        } 0 ${
-                                                            idx === 0
-                                                                ? "1rem"
-                                                                : "0"
-                                                        }`,
-                                                        borderRadius: "1rem",
-                                                        // border: '3px dashed black',
-                                                        // boxSizing: 'border-box',
-                                                        backgroundPosition:
-                                                            "center center",
-                                                        backgroundSize: "cover",
-                                                        backgroundRepeat:
-                                                            "no-repeat",
-                                                        backgroundImage: `url(/assets/cards/${card.id}.png)`,
-                                                    }}
-                                                    elevation={10}
-                                                    onClick={handleHighlightCard(
-                                                        card,
-                                                        POWERS_DISCARDED
-                                                    )}
-                                                />
-                                            ))}
-                                </div>
-                            </Grid>
-                        </Grid>
+                        <CardsRow
+                            title="Scored objectives"
+                            cards={opponentScoreObjectivesPile}
+                            onHighlightCard={curryHighlightCard(
+                                OBJECTIVES_SCORED
+                            )}
+                        />
+                        <CardsRow
+                            title="Discarded objectives"
+                            cards={opponentObjectivesDiscardPile}
+                            onHighlightCard={curryHighlightCard(
+                                OBJECTIVES_DISCARDED
+                            )}
+                        />
+                        <CardsRow
+                            title="Discarded powers"
+                            cards={opponentPowersDiscardPile}
+                            onHighlightCard={curryHighlightCard(
+                                POWERS_DISCARDED
+                            )}
+                        />
                     </Grid>
                 )}
 
