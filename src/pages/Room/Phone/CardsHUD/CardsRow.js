@@ -8,7 +8,14 @@ import { cardDefaultHeight, cardDefaultWidth } from "../../../../constants/mix";
 function CardsRow({ title, cards = [], onHighlightCard }) {
     return (
         <Grid item xs={12}>
-            <Typography style={{ marginTop: "1rem" }}>
+            <Typography
+                style={{
+                    marginTop: "1rem",
+                    color: "white",
+                    fontWeight: 700,
+                    textTransform: "uppercase",
+                }}
+            >
                 {title} {`(${cards.length})`}
             </Typography>
             <Divider />

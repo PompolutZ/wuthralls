@@ -398,7 +398,7 @@ const CardsHUD = ({
                 left: "0",
                 zIndex: 100001,
                 overflowY: "scroll",
-                backgroundColor: "rgba(255,255,255,.8)",
+                backgroundColor: "rgba(0,0,0,.3)",
             }}
         >
             <Container maxWidth="md" style={{ paddingBottom: "3rem" }}>
@@ -409,12 +409,38 @@ const CardsHUD = ({
                         <ButtonGroup
                             fullWidth
                             aria-label="full width outlined button group"
-                            style={{ marginBottom: ".5rem" }}
+                            style={{ marginBottom: ".5rem", color: "white" }}
                         >
-                            <Button onClick={selectGroup(MY_CARDS_GROUP)}>
+                            <Button
+                                onClick={selectGroup(MY_CARDS_GROUP)}
+                                variant={
+                                    selectedGroup !== MY_CARDS_GROUP
+                                        ? "contained"
+                                        : ""
+                                }
+                                color={
+                                    selectedGroup !== MY_CARDS_GROUP
+                                        ? "primary"
+                                        : ""
+                                }
+                                style={{ color: "white", borderColor: "white" }}
+                            >
                                 My Cards
                             </Button>
-                            <Button onClick={selectGroup(ENEMY_CARDS_GROUP)}>
+                            <Button
+                                onClick={selectGroup(ENEMY_CARDS_GROUP)}
+                                variant={
+                                    selectedGroup !== ENEMY_CARDS_GROUP
+                                        ? "contained"
+                                        : ""
+                                }
+                                color={
+                                    selectedGroup !== ENEMY_CARDS_GROUP
+                                        ? "primary"
+                                        : ""
+                                }
+                                style={{ color: "white", borderColor: "white" }}
+                            >
                                 Opponent&apos;s Cards
                             </Button>
                         </ButtonGroup>
@@ -488,14 +514,15 @@ const CardsHUD = ({
                 {selectedGroup === ENEMY_CARDS_GROUP && (
                     <Grid container>
                         <Grid item xs={12}>
-                            <Typography style={{ marginTop: "1rem" }}>
-                                Opponents Hand{" "}
-                                {`(${
+                            <Typography
+                                style={{ marginTop: "1rem", color: "white" }}
+                            >
+                                {`Opponent's Hand (${
                                     opponentHand ? opponentHand.length : "empty"
                                 })`}
                             </Typography>
                             <Divider />
-                            <Grid container>
+                            <Grid container style={{ marginTop: "1rem" }}>
                                 <Grid item xs={6}>
                                     <Paper
                                         elevation={3}

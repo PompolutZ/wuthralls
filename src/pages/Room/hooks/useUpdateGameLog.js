@@ -52,7 +52,7 @@ export function createPlayerDiscardedObjectiveCardPayload(cardId, message) {
     };
 }
 
-export function createPlayerDiscPowerCardPayload(cardId, message) {
+export function createPlayerDiscardedPowerCardPayload(cardId, message) {
     return {
         ...KatophraneInfo,
         subtype: "DISCARDED_POWER_CARD",
