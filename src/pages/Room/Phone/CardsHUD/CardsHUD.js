@@ -356,14 +356,14 @@ const CardsHUD = ({
     };
 
     const discardCard = (card) => () => {
-        setHand((prev) => prev.filter((c) => c.id !== card.id));
-
         if (card.type === "Objective") {
-            if (!discardedObjectives) {
-                setDiscardedObjectives([card]);
-            } else {
-                setDiscardedObjectives((prev) => [...prev, card]);
-            }
+            const [nextSource, nextDestination] = moveCard(
+                card.id,
+                hand,
+                discardedObjectives
+            );
+            updateMyDeck("hand", nextSource.join());
+            updateMyDeck("dObjs", nextDestination.join());
 
             firebase.addGenericMessage2(roomId, {
                 author: "Katophrane",
@@ -373,11 +373,13 @@ const CardsHUD = ({
                 value: `**${myself.username}** discarded objective card: **${card.name}**.`,
             });
         } else {
-            if (!discardedPowers) {
-                setDiscardedPowers([card]);
-            } else {
-                setDiscardedPowers((prev) => [...prev, card]);
-            }
+            const [nextSource, nextDestination] = moveCard(
+                card.id,
+                hand,
+                discardedPowers
+            );
+            updateMyDeck("hand", nextSource.join());
+            updateMyDeck("dPws", nextDestination.join());
 
             firebase.addGenericMessage2(roomId, {
                 author: "Katophrane",
@@ -388,8 +390,7 @@ const CardsHUD = ({
             });
         }
 
-        setHighlightCard(null);
-        setModified(true);
+        resetHighlight();
     };
 
     const handleStopHighlighting = () => {
