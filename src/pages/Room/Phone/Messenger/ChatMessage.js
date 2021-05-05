@@ -15,6 +15,11 @@ const useStyles = makeStyles(() => ({
     root: {
         flexGrow: 1,
     },
+
+    header: {
+        display: "flex",
+        alignItems: "center",
+    },
 }));
 
 const ChatMessageItem = React.memo(
@@ -38,18 +43,22 @@ const ChatMessageItem = React.memo(
                     backgroundColor: "#36393F",
                 }}
             >
-                <div>
+                <div className={classes.header}>
                     <Typography
                         variant="body2"
                         style={{
-                            color: isMineMessage ? "magenta" : "ghostwhite",
-                            fontWeight: "bold",
-                            fontSize: ".6rem",
+                            color: isMineMessage ? "white" : "#cccccc",
+                            fontWeight: 700,
+                            fontSize: ".8rem",
                         }}
                     >{`${author}`}</Typography>
                     <Typography
                         variant="body2"
-                        style={{ color: "#727479", fontSize: ".6rem" }}
+                        style={{
+                            color: "#727479",
+                            fontSize: ".8rem",
+                            marginLeft: ".5rem",
+                        }}
                     >{`${
                         created &&
                         created.toLocaleString("en-US", {
@@ -59,12 +68,7 @@ const ChatMessageItem = React.memo(
                 </div>
                 <div
                     style={{
-                        color:
-                            author === "Katophrane"
-                                ? "#ACD0D4"
-                                : isMineMessage
-                                ? "#FFEFD5"
-                                : "#FA8072",
+                        color: "#cccdce",
                     }}
                 >
                     <Markdown source={value} />
