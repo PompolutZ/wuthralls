@@ -76,7 +76,8 @@ const CardHighlight = ({
                 display: "flex",
                 zIndex: 10000,
                 perspective: "5rem",
-                backgroundColor: "rgba(255,255,255,.5)",
+                backgroundColor: "rgba(0,0,0,.5)",
+                backdropFilter: "blur(3px)",
             }}
         >
             <Menu

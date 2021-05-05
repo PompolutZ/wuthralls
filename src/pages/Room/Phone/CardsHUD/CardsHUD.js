@@ -14,7 +14,10 @@ import { shuffle } from "../../../../utils";
 import CloseHUDButton from "./CloseHUDButton";
 import { cardDefaultHeight, cardDefaultWidth } from "../../../../constants/mix";
 import DrawPile from "./DrawPile";
-import { useMyGameState } from "../../hooks/playerStateHooks";
+import {
+    useMyGameState,
+    useTheirGameState,
+} from "../../hooks/playerStateHooks";
 import useUpdateGameLog, {
     createAppliedUpgradePayload,
     createPlayerPlayedPowerCardPayload,
@@ -75,14 +78,18 @@ const CardsHUD = ({
     const [modified, setModified] = useState(false);
     const [pendingUpgrades, setPendingUpgrades] = useState({});
 
-    const opponentHand = stringToCards(enemyHand);
-    const opponentScoreObjectivesPile = stringToCards(
-        enemyScoredObjectivesPile
+    const opponentHand = useTheirGameState((state) =>
+        stringToCards(state.hand)
     );
-    const opponentObjectivesDiscardPile = stringToCards(
-        enemyObjectivesDiscardPile
+    const opponentScoreObjectivesPile = useTheirGameState((state) =>
+        stringToCards(state.sObjs)
     );
-    const opponentPowersDiscardPile = stringToCards(enemyPowersDiscardPile);
+    const opponentObjectivesDiscardPile = useTheirGameState((state) =>
+        stringToCards(state.dObjs)
+    );
+    const opponentPowersDiscardPile = useTheirGameState((state) =>
+        stringToCards(state.dPws)
+    );
 
     const selectGroup = (groupName) => () => {
         setSelectedGroup(groupName);
