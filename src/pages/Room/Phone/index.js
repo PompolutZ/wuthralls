@@ -7,7 +7,8 @@ import Board from "./Board";
 import { useAuthUser } from "../../../components/Session";
 import { boards as boardsData } from "../../../data/index";
 import CardsHUD from "./CardsHUD/CardsHUD";
-import Messenger from "./Messenger";
+import MessagesList from "./Messenger";
+import Telegram from "./components/Messanger";
 
 export default function PhoneRoom({ data }) {
     const myself = useAuthUser();
@@ -162,30 +163,26 @@ export default function PhoneRoom({ data }) {
                 }}
             >
                 {isMd && (
-                    <div style={{ flex: 1, display: "flex" }}>
-                        <Messenger roomId={state.id} state={data} />
-                        <Board
-                            roomId={state.id}
-                            state={data}
-                            selectedElement={selectedElement}
-                            scaleFactor={boardScaleFactor}
-                            boardMeta={boardMeta}
-                            onScaleFactorChange={setBoardScaleFactor}
-                        />
-                    </div>
-                )}
-                {!isMd && (
                     <div
                         style={{
                             flex: 1,
-                            display: "flex",
-                            backgroundColor: "dimgray",
+                            display: "grid",
+                            gridTemplateColumns: "33% 1fr",
+                            columnGap: ".5rem",
                         }}
                     >
-                        {tabIndex === 0 && (
-                            <Messenger roomId={state.id} state={data} />
-                        )}
-                        {tabIndex === 1 && (
+                        <div
+                            style={{ display: "flex", flexDirection: "column" }}
+                        >
+                            <MessagesList roomId={state.id} state={data} />
+                            <div style={{ flex: "0 0 auto", display: "flex" }}>
+                                <Telegram />
+                            </div>
+                        </div>
+
+                        <div
+                            style={{ display: "flex", flexDirection: "column" }}
+                        >
                             <Board
                                 roomId={state.id}
                                 state={data}
@@ -194,20 +191,56 @@ export default function PhoneRoom({ data }) {
                                 boardMeta={boardMeta}
                                 onScaleFactorChange={setBoardScaleFactor}
                             />
-                        )}
+                            <div style={{ flex: "0 0 25%", display: "flex" }}>
+                                <ActionsPalette
+                                    onActionTypeChange={handleActionTypeChange}
+                                    data={data}
+                                    onSelectedElementChange={setSelectedElement}
+                                    onOpenDeckHUD={changeOpenDeckHUD}
+                                    visibleScreenType={tabIndex}
+                                    onSetScreenTabIndex={setTabIndex}
+                                    activePaletteType={activePaletteType}
+                                />
+                            </div>
+                        </div>
                     </div>
                 )}
-                <div style={{ flex: "0 0 25%", display: "flex" }}>
-                    <ActionsPalette
-                        onActionTypeChange={handleActionTypeChange}
-                        data={data}
-                        onSelectedElementChange={setSelectedElement}
-                        onOpenDeckHUD={changeOpenDeckHUD}
-                        visibleScreenType={tabIndex}
-                        onSetScreenTabIndex={setTabIndex}
-                        activePaletteType={activePaletteType}
-                    />
-                </div>
+                {!isMd && (
+                    <>
+                        <div
+                            style={{
+                                flex: 1,
+                                display: "flex",
+                                backgroundColor: "dimgray",
+                            }}
+                        >
+                            {tabIndex === 0 && (
+                                <MessagesList roomId={state.id} state={data} />
+                            )}
+                            {tabIndex === 1 && (
+                                <Board
+                                    roomId={state.id}
+                                    state={data}
+                                    selectedElement={selectedElement}
+                                    scaleFactor={boardScaleFactor}
+                                    boardMeta={boardMeta}
+                                    onScaleFactorChange={setBoardScaleFactor}
+                                />
+                            )}
+                        </div>
+                        <div style={{ flex: "0 0 25%", display: "flex" }}>
+                            <ActionsPalette
+                                onActionTypeChange={handleActionTypeChange}
+                                data={data}
+                                onSelectedElementChange={setSelectedElement}
+                                onOpenDeckHUD={changeOpenDeckHUD}
+                                visibleScreenType={tabIndex}
+                                onSetScreenTabIndex={setTabIndex}
+                                activePaletteType={activePaletteType}
+                            />
+                        </div>
+                    </>
+                )}
             </div>
 
             {isHUDOpen && (

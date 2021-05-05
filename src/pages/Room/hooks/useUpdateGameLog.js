@@ -1,4 +1,5 @@
 import { useContext } from "react";
+import { useAuthUser } from "../../../components/Session";
 import { FirebaseContext } from "../../../firebase";
 import { useRoomInfo } from "./gameStateHooks";
 
@@ -58,6 +59,19 @@ export function createPlayerDiscardedPowerCardPayload(cardId, message) {
         subtype: "DISCARDED_POWER_CARD",
         value: message,
         cardId,
+    };
+}
+
+export function useAddCurrentPlayerMessage() {
+    const roomId = useRoomInfo((room) => room.roomId);
+    const firebase = useContext(FirebaseContext);
+    const { uid } = useAuthUser();
+
+    return function sendLogEntry(message) {
+        firebase.addMessage2(roomId, {
+            uid,
+            value: message,
+        });
     };
 }
 

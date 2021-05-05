@@ -21,7 +21,7 @@ const useStyles = makeStyles(() => ({
     },
 }));
 
-function Messenger({ state }) {
+function MessagesList({ state }) {
     const messages = useMessages();
     const myself = useAuthUser();
     const [visibleMessages, setVisibleMessages] = useState(messages || []);
@@ -80,7 +80,6 @@ function Messenger({ state }) {
                     bottom: 0,
                     left: 0,
                     overflow: "auto",
-                    marginBottom: "3rem",
                 }}
             >
                 <div
@@ -173,8 +172,8 @@ function Messenger({ state }) {
     );
 }
 
-Messenger.propTypes = {
+MessagesList.propTypes = {
     state: PropTypes.object,
 };
 
-export default Messenger;
+export default MessagesList;
