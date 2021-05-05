@@ -1,8 +1,7 @@
-import React, { useEffect, useContext, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { useLocation } from "react-router-dom";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { useTheme } from "@material-ui/core/styles";
-import { FirebaseContext } from "../../../firebase";
 import ActionsPalette from "./ActionsPalette";
 import Board from "./Board";
 import { useAuthUser } from "../../../components/Session";
@@ -17,45 +16,17 @@ export default function PhoneRoom({ data }) {
     const isMd = useMediaQuery(theme.breakpoints.up("md"));
     const [tabIndex, setTabIndex] = useState(0);
     const [selectedElement, setSelectedElement] = useState(null);
-    // const [data, setData] = useState(state);
     const [activePaletteType, setActivePaletteType] = useState(null);
     const [, setActionsPanelOffsetHeight] = useState(4 * 16);
     const [isHUDOpen, setIsHUDOpen] = useState(false);
 
-    const [hand, setHand] = useState(data[myself.uid] && data[myself.uid].hand);
-    const [objectiveDrawPile, setObjectiveDrawPile] = useState(
-        data[myself.uid] && data[myself.uid].oDeck
-    );
-    const [powersDrawPile, setPowersDrawPile] = useState(
-        data[myself.uid] && data[myself.uid].pDeck
-    );
-    const [scoredObjectivesPile, setScoredObjectivesPile] = useState(
-        data[myself.uid] && data[myself.uid].sObjs
-    );
-    const [objectivesDiscardPile, setObjectivesDiscardPile] = useState(
-        data[myself.uid] && data[myself.uid].dObjs
-    );
-    const [powersDiscardPile, setPowersDiscardPile] = useState(
-        data[myself.uid] && data[myself.uid].dPws
-    );
-
-    const [opponent] = useState(
-        data[data.players.find((p) => p !== myself.uid)]
-    );
-
-    const [enemyHand, setEnemyHand] = useState(opponent && opponent.hand);
-    const [enemyScoredObjectivesPile, setEnemyScoredObjectivesPile] = useState(
-        opponent && opponent.sObjs
-    );
-    const [
-        enemyObjectivesDiscardPile,
-        setEnemyObjectivesDiscardPile,
-    ] = useState(opponent && opponent.dObjs);
-    const [enemyPowersDiscardPile, setEnemyPowersDiscardPile] = useState(
-        opponent && opponent.dPws
-    );
-
     const [boardScaleFactor, setBoardScaleFactor] = useState(0.5);
+
+    // This is bad piece of code, since in reality we do not need to read boards meta, which
+    // describes boards placement and appearance of special hexes on them. This is information
+    // needed during setup and once per room load. But since we read everything in one package
+    // we have what we have :)
+
     const boardMeta = useMemo(() => {
         const { stage, orientation, offset, top, bottom } = data.status;
         const meta = {
@@ -144,43 +115,6 @@ export default function PhoneRoom({ data }) {
             window.removeEventListener("keydown", handleHotkeyDown);
         };
     }, []);
-
-    useEffect(() => {
-        if (data[myself.uid].hand !== hand) {
-            setHand(data[myself.uid] && data[myself.uid].hand);
-        }
-
-        // my drawing piles
-        if (data[myself.uid].oDeck !== objectiveDrawPile) {
-            setObjectiveDrawPile(data[myself.uid] && data[myself.uid].oDeck);
-        }
-
-        if (data[myself.uid].pDeck !== powersDrawPile) {
-            setPowersDrawPile(data[myself.uid] && data[myself.uid].pDeck);
-        }
-
-        // my stuff
-        if (data[myself.uid].sObjs !== scoredObjectivesPile) {
-            setScoredObjectivesPile(data[myself.uid] && data[myself.uid].sObjs);
-        }
-
-        if (data[myself.uid].dObjs !== objectivesDiscardPile) {
-            setObjectivesDiscardPile(
-                data[myself.uid] && data[myself.uid].dObjs
-            );
-        }
-
-        if (data[myself.uid].dPws !== powersDiscardPile) {
-            setPowersDiscardPile(data[myself.uid] && data[myself.uid].dPws);
-        }
-
-        // enemy stuff
-        const opponent = data[data.players.find((p) => p !== myself.uid)];
-        setEnemyHand(opponent && opponent.hand);
-        setEnemyScoredObjectivesPile(opponent && opponent.sObjs);
-        setEnemyObjectivesDiscardPile(opponent && opponent.dObjs);
-        setEnemyPowersDiscardPile(opponent && opponent.dPws);
-    }, [data]);
 
     const handleHotkeyDown = (event) => {
         if (event && event.target.type === "textarea") return;
@@ -278,21 +212,9 @@ export default function PhoneRoom({ data }) {
 
             {isHUDOpen && (
                 <CardsHUD
-                    roomId={data.id}
-                    myData={data[myself.uid]}
                     myFighters={Object.entries(
                         data.board.fighters
                     ).filter(([fighterId]) => fighterId.startsWith(myself.uid))}
-                    objectivesPile={objectiveDrawPile}
-                    powerCardsPile={powersDrawPile}
-                    serverHand={hand}
-                    enemyHand={enemyHand}
-                    scoredObjectivesPile={scoredObjectivesPile}
-                    objectivesDiscardPile={objectivesDiscardPile}
-                    powersDiscardPile={powersDiscardPile}
-                    enemyScoredObjectivesPile={enemyScoredObjectivesPile}
-                    enemyObjectivesDiscardPile={enemyObjectivesDiscardPile}
-                    enemyPowersDiscardPile={enemyPowersDiscardPile}
                     onClose={setIsHUDOpen}
                 />
             )}

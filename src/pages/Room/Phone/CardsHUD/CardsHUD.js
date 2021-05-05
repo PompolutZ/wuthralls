@@ -38,15 +38,7 @@ import {
 import { moveCard, stringToCards } from "./utils";
 import CardsRow from "./CardsRow";
 
-const CardsHUD = ({
-    myData,
-    myFighters,
-    enemyHand,
-    enemyScoredObjectivesPile,
-    enemyObjectivesDiscardPile,
-    enemyPowersDiscardPile,
-    onClose,
-}) => {
+const CardsHUD = ({ myFighters, onClose }) => {
     const updateGameLog = useUpdateGameLog();
     const updateRoom = useUpdateRoom();
     const updateMyDeck = useMyGameState((state) => state.setDeck);
@@ -70,8 +62,9 @@ const CardsHUD = ({
         stringToCards(state.dPws)
     );
     const hand = useMyGameState((state) => stringToCards(state.hand));
+    const username = useMyGameState((state) => state.name);
+    const userId = useMyGameState((state) => state.id);
 
-    const myself = useAuthUser();
     const [highlightCard, setHighlightCard] = useState(null);
     const [highlightFromSource, setHighlightFromSource] = useState(null);
     const [selectedGroup, setSelectedGroup] = useState(MY_CARDS_GROUP);
@@ -104,7 +97,7 @@ const CardsHUD = ({
         updateMyDeck("oDeck", rest.map(({ id }) => id).join());
         setModified(true);
 
-        updateGameLog(`**${myself.username}** has drawn objective card.`);
+        updateGameLog(`**${username}** has drawn objective card.`);
     };
 
     const drawPowerCard = () => {
@@ -113,7 +106,7 @@ const CardsHUD = ({
         updateMyDeck("pDeck", rest.map(({ id }) => id).join());
         setModified(true);
 
-        updateGameLog(`**${myself.username}** has drawn power card.`);
+        updateGameLog(`**${username}** has drawn power card.`);
     };
 
     const curryHighlightCard = (source) => (card) => () => {
@@ -133,26 +126,24 @@ const CardsHUD = ({
 
         if (persist) {
             updateRoom({
-                [`${myself.uid}.hand`]: hand
-                    ? hand.map((x) => x.id).join()
-                    : "",
-                [`${myself.uid}.oDeck`]: objectiveDrawPile
+                [`${userId}.hand`]: hand ? hand.map((x) => x.id).join() : "",
+                [`${userId}.oDeck`]: objectiveDrawPile
                     ? objectiveDrawPile.map((x) => x.id).join()
                     : "",
-                [`${myself.uid}.pDeck`]: powersDrawPile
+                [`${userId}.pDeck`]: powersDrawPile
                     ? powersDrawPile.map((x) => x.id).join()
                     : "",
-                [`${myself.uid}.sObjs`]: scoredObjectives
+                [`${userId}.sObjs`]: scoredObjectives
                     ? scoredObjectives.map((x) => x.id).join()
                     : "",
-                [`${myself.uid}.dObjs`]: discardedObjectives
+                [`${userId}.dObjs`]: discardedObjectives
                     ? discardedObjectives.map((x) => x.id).join()
                     : "",
-                [`${myself.uid}.dPws`]: discardedPowers
+                [`${userId}.dPws`]: discardedPowers
                     ? discardedPowers.map((x) => x.id).join()
                     : "",
-                [`${myself.uid}.gloryScored`]: gloryScored,
-                [`${myself.uid}.glorySpent`]: glorySpent,
+                [`${userId}.gloryScored`]: gloryScored,
+                [`${userId}.glorySpent`]: glorySpent,
                 ...pendingUpgrades,
             });
             setModified(false);
@@ -186,7 +177,7 @@ const CardsHUD = ({
             updateGameLog(
                 createPlayerScoredObjectiveCardPayload(
                     card.id,
-                    `**${myself.username}** scored objective: **${card.name}**(${card.glory}).`
+                    `**${username}** scored objective: **${card.name}**(${card.glory}).`
                 )
             );
         } else {
@@ -198,7 +189,7 @@ const CardsHUD = ({
             updateGameLog(
                 createPlayerPlayedPowerCardPayload(
                     card.id,
-                    `**${myself.username}** played: **${card.name}**.`
+                    `**${username}** played: **${card.name}**.`
                 )
             );
         }
@@ -244,8 +235,8 @@ const CardsHUD = ({
         updateGameLog(
             createAppliedUpgradePayload(
                 upgrade.id,
-                `**${myData.name}** equips **${fighter.name}** with **${upgrade.name}** upgrade.
-        **${myData.name}** has updated his scored/spent glory to ${nextGloryScored}/${nextGlorySpent}.`
+                `**${username}** equips **${fighter.name}** with **${upgrade.name}** upgrade.
+        **${username}** has updated his scored/spent glory to ${nextGloryScored}/${nextGlorySpent}.`
             )
         );
     };
@@ -264,7 +255,7 @@ const CardsHUD = ({
             );
 
             updateGameLog(
-                `**${myself.username}** has returned scored objective card back to hand.`
+                `**${username}** has returned scored objective card back to hand.`
             );
         }
 
@@ -279,7 +270,7 @@ const CardsHUD = ({
             );
 
             updateGameLog(
-                `**${myself.username}** has returned discarded objective card back to hand.`
+                `**${username}** has returned discarded objective card back to hand.`
             );
         }
 
@@ -294,7 +285,7 @@ const CardsHUD = ({
             );
 
             updateGameLog(
-                `**${myself.username}** has returned discarded power card back to hand.`
+                `**${username}** has returned discarded power card back to hand.`
             );
         }
 
@@ -367,7 +358,7 @@ const CardsHUD = ({
             updateGameLog(
                 createPlayerDiscardedObjectiveCardPayload(
                     card.id,
-                    `**${myself.username}** discarded objective card: **${card.name}**.`
+                    `**${username}** discarded objective card: **${card.name}**.`
                 )
             );
         } else {
@@ -382,7 +373,7 @@ const CardsHUD = ({
             updateGameLog(
                 createPlayerDiscardedPowerCardPayload(
                     card.id,
-                    `**${myself.username}** discarded power card: **${card.name}**.`
+                    `**${username}** discarded power card: **${card.name}**.`
                 )
             );
         }
@@ -664,19 +655,8 @@ const CardsHUD = ({
 };
 
 CardsHUD.propTypes = {
-    roomId: PropTypes.string,
     myData: PropTypes.object,
     myFighters: PropTypes.array,
-    objectivesPile: PropTypes.string,
-    powerCardsPile: PropTypes.string,
-    serverHand: PropTypes.string,
-    enemyHand: PropTypes.string,
-    scoredObjectivesPile: PropTypes.string,
-    objectivesDiscardPile: PropTypes.string,
-    powersDiscardPile: PropTypes.string,
-    enemyScoredObjectivesPile: PropTypes.string,
-    enemyObjectivesDiscardPile: PropTypes.string,
-    enemyPowersDiscardPile: PropTypes.string,
     onClose: PropTypes.func,
 };
 
