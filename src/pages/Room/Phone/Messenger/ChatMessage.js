@@ -20,6 +20,12 @@ const useStyles = makeStyles(() => ({
         display: "flex",
         alignItems: "center",
     },
+
+    markdown: {
+        "& p": {
+            margin: 0,
+        },
+    },
 }));
 
 const ChatMessageItem = React.memo(
@@ -71,7 +77,7 @@ const ChatMessageItem = React.memo(
                         color: "#cccdce",
                     }}
                 >
-                    <Markdown source={value} />
+                    <Markdown className={classes.markdown} source={value} />
                 </div>
             </Grid>
         );

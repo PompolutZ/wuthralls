@@ -8,7 +8,7 @@ import { useAuthUser } from "../../../components/Session";
 import { boards as boardsData } from "../../../data/index";
 import CardsHUD from "./CardsHUD/CardsHUD";
 import MessagesList from "./Messenger";
-import Telegram from "./components/Messanger";
+import Messenger from "./components/Messenger";
 
 export default function PhoneRoom({ data }) {
     const myself = useAuthUser();
@@ -176,7 +176,7 @@ export default function PhoneRoom({ data }) {
                         >
                             <MessagesList roomId={state.id} state={data} />
                             <div style={{ flex: "0 0 auto", display: "flex" }}>
-                                <Telegram />
+                                <Messenger />
                             </div>
                         </div>
 
