@@ -1,9 +1,6 @@
 import seedrandom from "seedrandom";
 
-const rng = seedrandom(
-    "7v1IePLKA7oRefKddVznOklLczjSIDdaMeE0SUx7WPKAi8GUbAgDGfvgjswt",
-    { entropy: true }
-);
+const rng = new seedrandom();
 
 export const shuffle = (a) => {
     var j, x, i;
