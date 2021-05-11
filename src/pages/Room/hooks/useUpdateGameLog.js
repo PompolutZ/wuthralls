@@ -75,6 +75,20 @@ export function useAddCurrentPlayerMessage() {
     };
 }
 
+export function useDiceRoll() {
+    const roomId = useRoomInfo((room) => room.roomId);
+    const firebase = useContext(FirebaseContext);
+    const { uid } = useAuthUser();
+
+    return function sendRollResult(rollType, values) {
+        firebase.addDiceRoll2(roomId, {
+            uid,
+            type: rollType,
+            value: values.join(),
+        });
+    };
+}
+
 // this function is relying on another game specific hook, useRoomInfo
 // passing roomId as a parameter might be more flexible though, but
 // for now I have decided to save some keystrokes.

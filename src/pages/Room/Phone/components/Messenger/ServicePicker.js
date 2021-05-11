@@ -46,29 +46,44 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function ServicePicker() {
+function ServicePicker({ onPickService }) {
     const classes = useStyles();
     return (
         <div className={classes.root}>
-            <Button className={classes.btn}>
+            <Button
+                className={classes.btn}
+                onClick={() => onPickService("Telegram")}
+            >
                 <TelegramIcon />
             </Button>
-            <Button className={classes.btn}>
+            <Button
+                className={classes.btn}
+                onClick={() => onPickService("AttackDiceTray")}
+            >
                 <div className={classes.rect}>
                     <AttackSmash className={classes.dieSideIcon} />
                 </div>
             </Button>
-            <Button className={classes.btn}>
+            <Button
+                className={classes.btn}
+                onClick={() => onPickService("DefenceDiceTray")}
+            >
                 <div className={classes.rect}>
                     <DefenceBlock className={classes.dieSideIcon} />
                 </div>
             </Button>
-            <Button className={classes.btn}>
+            <Button
+                className={classes.btn}
+                onClick={() => onPickService("MagicDiceTray")}
+            >
                 <div className={classes.rect}>
                     <MagicChannel className={classes.dieSideIcon} />
                 </div>
             </Button>
-            <Button className={classes.initiativeButton}>
+            <Button
+                className={classes.initiativeButton}
+                onClick={() => onPickService("InitiativeDiceTray")}
+            >
                 <div className={classes.rect}>
                     <AttackSmash className={classes.dieSideIcon} />
                 </div>

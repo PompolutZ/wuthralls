@@ -46,16 +46,19 @@ const useStylesInput = makeStyles((theme) => ({
 
 const services = {
     Telegram: <Telegram />,
-    DiceRoller: <DiceRoller />,
+    AttackDiceTray: <DiceRoller type="ATTACK" />,
+    DefenceDiceTray: <DiceRoller type="DEFENCE" />,
+    MagicDiceTray: <DiceRoller type="MAGIC" />,
+    InitiativeDiceTray: <DiceRoller type="INITIATIVE" />,
 };
 
 function Messenger() {
     const classes = useStyles();
-    const [activeService, setActiveService] = useState("DiceRoller");
+    const [activeService, setActiveService] = useState("AttackDiceTray");
 
     return (
         <div className={classes.root}>
-            <ServicePicker />
+            <ServicePicker onPickService={setActiveService} />
             {services[activeService]}
         </div>
     );

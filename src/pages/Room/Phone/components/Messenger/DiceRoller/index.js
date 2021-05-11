@@ -15,6 +15,8 @@ import MagicDie from "../../../../../../components/MagicDie";
 import { useAuthUser } from "../../../../../../components/Session";
 import { FirebaseContext } from "../../../../../../firebase";
 import { warbandColors } from "../../../../../../data";
+import { getDieRollResult } from "../../../../../../utils";
+import { useDiceRoll } from "../../../../hooks/useUpdateGameLog";
 
 const useStyles = makeStyles(() => ({
     root: {
@@ -43,7 +45,7 @@ const useStyles = makeStyles(() => ({
         flex: 1,
         justifyContent: "center",
         background: "#363a3e",
-        padding: ".5rem",
+        padding: "1rem .5rem",
     },
 
     sendButton: {
@@ -51,47 +53,89 @@ const useStyles = makeStyles(() => ({
     },
 }));
 
-function AttackDiceRoller({ values = [] }) {
+function AttackDiceRoller({ values = [], onChangeDiceAmount }) {
+    const maxAmountOfDiceToRoll = 7;
     const classes = useStyles();
     const myFaction = useMyGameState((state) => state.faction);
 
     return (
         <div className={classes.diceContainer}>
-            {values.map((value, i) => (
-                <div
-                    key={i}
-                    style={{
-                        background: "#fcfcfc",
-                        borderRadius: ".5rem",
-                        margin: "0 .25rem",
-                        opacity: 0.2,
-                        cursor: "pointer",
-                    }}
-                >
-                    <AttackDie
-                        accentColorHex={warbandColors[myFaction]}
-                        size={36}
-                        side={value}
-                        useBlackOutline={
-                            myFaction === "zarbags-gitz" ||
-                            myFaction === "khagras-ravagers"
+            {values
+                .sort((x, y) => y - x)
+                .map((value, i) => (
+                    <div
+                        key={i}
+                        style={{
+                            background: "#fcfcfc",
+                            borderRadius: ".5rem",
+                            margin: "0 .25rem",
+                            opacity: 1,
+                            cursor: "pointer",
+                        }}
+                        onClick={() => onChangeDiceAmount(i + 1)}
+                    >
+                        <AttackDie
+                            accentColorHex={warbandColors[myFaction]}
+                            size={36}
+                            side={value}
+                            useBlackOutline={
+                                myFaction === "zarbags-gitz" ||
+                                myFaction === "khagras-ravagers"
+                            }
+                        />
+                    </div>
+                ))}
+            {new Array(maxAmountOfDiceToRoll - values.length)
+                .fill(1)
+                .map((value, i) => (
+                    <div
+                        key={i * 31}
+                        style={{
+                            background: "#fcfcfc",
+                            borderRadius: ".5rem",
+                            margin: "0 .25rem",
+                            opacity: 0.2,
+                            cursor: "pointer",
+                        }}
+                        onClick={() =>
+                            onChangeDiceAmount(values.length + i + 1)
                         }
-                    />
-                </div>
-            ))}
+                    >
+                        <AttackDie
+                            accentColorHex={warbandColors[myFaction]}
+                            size={36}
+                            side={value}
+                            useBlackOutline={
+                                myFaction === "zarbags-gitz" ||
+                                myFaction === "khagras-ravagers"
+                            }
+                        />
+                    </div>
+                ))}
         </div>
     );
 }
 
-export function DiceRoller() {
+export function DiceRoller({ type }) {
     const classes = useStyles();
     const [values, setValues] = useState(new Array(2).fill(1));
+    const sendRollResult = useDiceRoll();
 
-    const handleSendRollResult = () => {};
+    const handleSendRollResult = () => {
+        const rollResult = values.map(getDieRollResult);
+        setValues(rollResult);
+
+        sendRollResult(type, rollResult);
+    };
 
     return (
         <div className={classes.root}>
-            <AttackDiceRoller values={values} />
+            <AttackDiceRoller
+                values={values}
+                onChangeDiceAmount={(count) =>
+                    setValues(new Array(count).fill(1))
+                }
+            />
             <Button
                 className={classes.sendButton}
                 onClick={handleSendRollResult}
