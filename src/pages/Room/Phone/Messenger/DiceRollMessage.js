@@ -63,75 +63,80 @@ const DiceRollMessage = React.memo(
                     })
                 }`}</Typography>
                 <div style={{ display: "flex", margin: "1rem" }}>
-                    {value.split(",").map((x, i) => (
-                        <div
-                            key={i}
-                            style={{
-                                width: 36,
-                                height: 36,
-                                marginRight: ".2rem",
-                                backgroundColor: "white",
-                                borderRadius: 36 * 0.2,
-                                filter: "drop-shadow(2.5px 2.5px 5px black)",
-                            }}
-                        >
-                            {type === "ATTACK" && (
-                                <AttackDie
-                                    accentColorHex={
-                                        warbandColors[authorFaction]
-                                    }
-                                    size={36}
-                                    side={Number(x)}
-                                    useBlackOutline={
-                                        authorFaction === "zarbags-gitz" ||
-                                        authorFaction === "khagras-ravagers"
-                                    }
-                                />
-                            )}
-                            {type === "DEFENCE" && (
-                                <DefenceDie
-                                    accentColorHex={
-                                        warbandColors[authorFaction]
-                                    }
-                                    size={36}
-                                    side={Number(x)}
-                                    useBlackOutline={
-                                        authorFaction === "zarbags-gitz" ||
-                                        authorFaction === "khagras-ravagers"
-                                    }
-                                />
-                            )}
-                            {type === "MAGIC" && (
-                                <MagicDie size={36} side={Number(x)} />
-                            )}
-                            {type === "INITIATIVE" && i % 2 === 0 && (
-                                <DefenceDie
-                                    accentColorHex={
-                                        warbandColors[authorFaction]
-                                    }
-                                    size={36}
-                                    side={Number(x)}
-                                    useBlackOutline={
-                                        authorFaction === "zarbags-gitz" ||
-                                        authorFaction === "khagras-ravagers"
-                                    }
-                                />
-                            )}
-                            {type === "INITIATIVE" && i % 2 !== 0 && (
-                                <AttackDie
-                                    accentColorHex={
-                                        warbandColors[authorFaction]
-                                    }
-                                    size={36}
-                                    side={Number(x)}
-                                    useBlackOutline={
-                                        authorFaction === "zarbags-gitz" ||
-                                        authorFaction === "khagras-ravagers"
-                                    }
-                                />
-                            )}
-                        </div>
-                    ))}
+                    {value
+                        .split(",")
+                        .map((x) => Number(x))
+                        .sort((x, y) => y - x)
+                        .map((x, i) => (
+                            <div
+                                key={i}
+                                style={{
+                                    width: 36,
+                                    height: 36,
+                                    marginRight: ".2rem",
+                                    backgroundColor: "white",
+                                    borderRadius: 36 * 0.2,
+                                    filter:
+                                        "drop-shadow(2.5px 2.5px 5px black)",
+                                }}
+                            >
+                                {type === "ATTACK" && (
+                                    <AttackDie
+                                        accentColorHex={
+                                            warbandColors[authorFaction]
+                                        }
+                                        size={36}
+                                        side={Number(x)}
+                                        useBlackOutline={
+                                            authorFaction === "zarbags-gitz" ||
+                                            authorFaction === "khagras-ravagers"
+                                        }
+                                    />
+                                )}
+                                {type === "DEFENCE" && (
+                                    <DefenceDie
+                                        accentColorHex={
+                                            warbandColors[authorFaction]
+                                        }
+                                        size={36}
+                                        side={Number(x)}
+                                        useBlackOutline={
+                                            authorFaction === "zarbags-gitz" ||
+                                            authorFaction === "khagras-ravagers"
+                                        }
+                                    />
+                                )}
+                                {type === "MAGIC" && (
+                                    <MagicDie size={36} side={Number(x)} />
+                                )}
+                                {type === "INITIATIVE" && i % 2 === 0 && (
+                                    <DefenceDie
+                                        accentColorHex={
+                                            warbandColors[authorFaction]
+                                        }
+                                        size={36}
+                                        side={Number(x)}
+                                        useBlackOutline={
+                                            authorFaction === "zarbags-gitz" ||
+                                            authorFaction === "khagras-ravagers"
+                                        }
+                                    />
+                                )}
+                                {type === "INITIATIVE" && i % 2 !== 0 && (
+                                    <AttackDie
+                                        accentColorHex={
+                                            warbandColors[authorFaction]
+                                        }
+                                        size={36}
+                                        side={Number(x)}
+                                        useBlackOutline={
+                                            authorFaction === "zarbags-gitz" ||
+                                            authorFaction === "khagras-ravagers"
+                                        }
+                                    />
+                                )}
+                            </div>
+                        ))}
                 </div>
             </Grid>
         );
