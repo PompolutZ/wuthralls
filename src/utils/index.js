@@ -1,6 +1,6 @@
 import seedrandom from "seedrandom";
 
-const rng = new seedrandom();
+const rng = Math.random;
 
 export const shuffle = (a) => {
     var j, x, i;
