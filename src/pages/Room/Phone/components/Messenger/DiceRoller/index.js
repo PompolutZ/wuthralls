@@ -53,14 +53,14 @@ const useStyles = makeStyles(() => ({
     },
 }));
 
-function AttackDiceRoller({ values = [], onChangeDiceAmount }) {
+function DiceTray({ diceOnTheTray = [], onChangeDiceAmount }) {
     const maxAmountOfDiceToRoll = 7;
     const classes = useStyles();
     const myFaction = useMyGameState((state) => state.faction);
 
     return (
         <div className={classes.diceContainer}>
-            {values
+            {diceOnTheTray
                 .sort((x, y) => y - x)
                 .map((value, i) => (
                     <div
@@ -85,7 +85,7 @@ function AttackDiceRoller({ values = [], onChangeDiceAmount }) {
                         />
                     </div>
                 ))}
-            {new Array(maxAmountOfDiceToRoll - values.length)
+            {new Array(maxAmountOfDiceToRoll - diceOnTheTray.length)
                 .fill(1)
                 .map((value, i) => (
                     <div
@@ -98,7 +98,7 @@ function AttackDiceRoller({ values = [], onChangeDiceAmount }) {
                             cursor: "pointer",
                         }}
                         onClick={() =>
-                            onChangeDiceAmount(values.length + i + 1)
+                            onChangeDiceAmount(diceOnTheTray.length + i + 1)
                         }
                     >
                         <AttackDie
@@ -130,8 +130,8 @@ export function DiceRoller({ type }) {
 
     return (
         <div className={classes.root}>
-            <AttackDiceRoller
-                values={values}
+            <DiceTray
+                diceOnTheTray={values}
                 onChangeDiceAmount={(count) =>
                     setValues(new Array(count).fill(1))
                 }
