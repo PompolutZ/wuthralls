@@ -1,16 +1,9 @@
-import React, { useState, useContext } from "react";
-import TextField from "@material-ui/core/TextField";
-import Button from "@material-ui/core/Button";
-import SendIcon from "@material-ui/icons/Send";
-import PropTypes from "prop-types";
-import { useAddCurrentPlayerMessage } from "../../../hooks/useUpdateGameLog";
-import { makeStyles, fade } from "@material-ui/core/styles";
-import { useTheirGameState } from "../../../hooks/playerStateHooks";
-import ServicePicker from "./ServicePicker";
-import Telegram from "./Telegram";
-import { DiceRoller } from "./DiceRoller";
+import React, { useState } from "react";
+import { makeStyles } from "@material-ui/core/styles";
+import ServicePicker from "./components/ServicePicker";
+import { Services } from "./components/Services";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
     root: {
         flexGrow: 1,
         display: "flex",
@@ -22,35 +15,10 @@ const useStyles = makeStyles((theme) => ({
         flex: 1,
     },
 
-    sendButton: (props) => ({
+    sendButton: () => ({
         color: "rgba(255,255,255, .9)",
     }),
 }));
-
-const useStylesInput = makeStyles((theme) => ({
-    root: {
-        overflow: "hidden",
-        borderRadius: ".5rem",
-        backgroundColor: "#363a3e",
-        color: "#b8bbbe",
-        padding: ".5rem .75rem",
-        "&:hover": {
-            backgroundColor: "#363a3e",
-        },
-        "&$focused": {
-            backgroundColor: "#363a3e",
-            boxShadow: `${fade(theme.palette.primary.main, 0.25)} 0 0 0 2px`,
-        },
-    },
-}));
-
-const services = {
-    Telegram: <Telegram />,
-    AttackDiceTray: <DiceRoller type="ATTACK" />,
-    DefenceDiceTray: <DiceRoller type="DEFENCE" />,
-    MagicDiceTray: <DiceRoller type="MAGIC" />,
-    InitiativeDiceTray: <DiceRoller type="INITIATIVE" />,
-};
 
 function Messenger() {
     const classes = useStyles();
@@ -59,7 +27,8 @@ function Messenger() {
     return (
         <div className={classes.root}>
             <ServicePicker onPickService={setActiveService} />
-            {services[activeService]}
+
+            {Services[activeService]}
         </div>
     );
 }

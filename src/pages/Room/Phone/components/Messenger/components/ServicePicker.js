@@ -6,7 +6,7 @@ import {
     AttackSmash,
     DefenceBlock,
     MagicChannel,
-} from "../../../../../components/CommonSVGs";
+} from "../../../../../../components/CommonSVGs";
 
 const useStyles = makeStyles((theme) => ({
     root: {

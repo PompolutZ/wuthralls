@@ -1,13 +1,13 @@
-import React, { useState, useContext } from "react";
+import React, { useState } from "react";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import SendIcon from "@material-ui/icons/Send";
 import PropTypes from "prop-types";
-import { useAddCurrentPlayerMessage } from "../../../hooks/useUpdateGameLog";
+import { useAddCurrentPlayerMessage } from "../../../../hooks/useUpdateGameLog";
 import { makeStyles, fade } from "@material-ui/core/styles";
-import { useTheirGameState } from "../../../hooks/playerStateHooks";
+import { useTheirGameState } from "../../../../hooks/playerStateHooks";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
     root: {
         flexGrow: 1,
         display: "flex",
@@ -19,7 +19,7 @@ const useStyles = makeStyles((theme) => ({
         flex: 1,
     },
 
-    sendButton: (props) => ({
+    sendButton: () => ({
         color: "rgba(255,255,255, .9)",
     }),
 }));
