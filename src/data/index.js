@@ -49,6 +49,7 @@ const factionIndexes = [
     "khagras-ravagers", // 29
     "the-starblood-stalkers", // 29
     "the-crimson-court", // 31
+    "hedkrakkas-madmob",
 ];
 
 const warbandColors = {
@@ -84,6 +85,7 @@ const warbandColors = {
     "khagras-ravagers": "#DFD7AE", // night violet
     "the-starblood-stalkers": "#249489", // temple guard blue
     "the-crimson-court": "#c00000", // free speech red
+    "hedkrakkas-madmob": "#006400",
 };
 
 const warbands = {
@@ -943,6 +945,29 @@ const warbands = {
             icon: "the-crimson-court-4",
             name: "Ennias",
             counters: "Hunger1",
+        },
+    ],
+
+    "hedkrakkas-madmob": [
+        {
+            type: "FIGHTER",
+            icon: "hedkrakkas-madmob-1",
+            name: "Hedkrakka",
+        },
+        {
+            type: "FIGHTER",
+            icon: "hedkrakkas-madmob-2",
+            name: "Wollop",
+        },
+        {
+            type: "FIGHTER",
+            icon: "hedkrakkas-madmob-3",
+            name: "Toofdagga",
+        },
+        {
+            type: "FIGHTER",
+            icon: "hedkrakkas-madmob-4",
+            name: "Dakko",
         },
     ],
 };
