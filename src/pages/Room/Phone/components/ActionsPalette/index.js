@@ -17,6 +17,7 @@ import LethalHexesPile from "./LethalHexesPile";
 import RollDiceAction from "./RollDiceAction";
 import ScatterToken from "./ScatterToken";
 import GameStatusHUD from "../../GameStatusHUD";
+import Telegram from "../Messenger/components/Telegram";
 
 const actions = [
     {
@@ -303,9 +304,7 @@ function ActionsPalette({
                         </MenuItem>
                     ))}
             </Menu>
-            {selectedAction === "SEND_MESSAGE" && (
-                <SendMessageAction roomId={data.id} />
-            )}
+            {selectedAction === "SEND_MESSAGE" && <Telegram />}
             {selectedAction === "ROLL_DICE" && (
                 <RollDiceAction
                     roomId={data.id}

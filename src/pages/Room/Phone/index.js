@@ -212,6 +212,7 @@ export default function PhoneRoom({ data }) {
                                 flex: 1,
                                 display: "flex",
                                 backgroundColor: "dimgray",
+                                marginBottom: "2.5rem",
                             }}
                         >
                             {tabIndex === 0 && (
@@ -228,7 +229,7 @@ export default function PhoneRoom({ data }) {
                                 />
                             )}
                         </div>
-                        <div style={{ flex: "0 0 25%", display: "flex" }}>
+                        <div style={{ flex: "0 0 20%", display: "flex" }}>
                             <ActionsPalette
                                 onActionTypeChange={handleActionTypeChange}
                                 data={data}
