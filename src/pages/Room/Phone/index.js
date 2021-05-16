@@ -2,7 +2,7 @@ import React, { useEffect, useState, useMemo } from "react";
 import { useLocation } from "react-router-dom";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { useTheme } from "@material-ui/core/styles";
-import ActionsPalette from "./ActionsPalette";
+import ActionsPalette from "./components/ActionsPalette";
 import Board from "./Board";
 import { useAuthUser } from "../../../components/Session";
 import { boards as boardsData } from "../../../data/index";

@@ -1,6 +1,6 @@
 import React, { useState, useContext, useEffect } from "react";
-import { useAuthUser } from "../../../components/Session";
-import { FirebaseContext } from "../../../firebase";
+import { useAuthUser } from "../../../../../components/Session";
+import { FirebaseContext } from "../../../../../firebase";
 import Button from "@material-ui/core/Button";
 import ButtonBase from "@material-ui/core/ButtonBase";
 import ButtonGroup from "@material-ui/core/ButtonGroup";
@@ -8,13 +8,13 @@ import AddIcon from "@material-ui/icons/Add";
 import RemoveIcon from "@material-ui/icons/Remove";
 import Grid from "@material-ui/core/Grid";
 import SendIcon from "@material-ui/icons/Send";
-import AttackDie from "../../../components/AttackDie";
-import DefenceDie from "../../../components/DefenceDie";
-import MagicDie from "../../../components/MagicDie";
-import { warbandColors } from "../../../data";
+import AttackDie from "../../../../../components/AttackDie";
+import DefenceDie from "../../../../../components/DefenceDie";
+import MagicDie from "../../../../../components/MagicDie";
+import { warbandColors } from "../../../../../data";
 import { makeStyles } from "@material-ui/core/styles";
 import PropTypes from "prop-types";
-import { getDieRollResult } from "../../../utils";
+import { getDieRollResult } from "../../../../../utils";
 
 const useStyles = makeStyles(() => ({
     root: {

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useContext, useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 import ButtonBase from "@material-ui/core/ButtonBase";
@@ -9,17 +9,14 @@ import MessengerScreenIcon from "@material-ui/icons/QuestionAnswer";
 import BoardScreenIcon from "@material-ui/icons/ViewStream";
 import GameOverviewIcon from "@material-ui/icons/EmojiEvents";
 import SendMessageAction from "./SendMessageAction";
-import RollDiceAction from "./RollDiceAction";
-import LethalHexesPile from "./LethalHexesPile";
-import ObjectiveHexesPile from "./ObjectiveHexesPile";
 import Warband from "./Warband";
-import { useAuthUser } from "../../../components/Session";
-import HUDOverlay from "../../../components/HUDOverlay";
-import FighterHUD from "./FighterHUD";
-import GameStatusHUD from "./GameStatusHUD";
-import ScatterToken from "./ScatterToken";
-import { FirebaseContext } from "../../../firebase";
 import PropTypes from "prop-types";
+import { useAuthUser } from "../../../../../components/Session";
+import ObjectiveHexesPile from "./ObjectiveHexesPile";
+import LethalHexesPile from "./LethalHexesPile";
+import RollDiceAction from "./RollDiceAction";
+import ScatterToken from "./ScatterToken";
+import GameStatusHUD from "../../GameStatusHUD";
 
 const actions = [
     {
@@ -68,7 +65,7 @@ function ActionsPalette({
     onSetScreenTabIndex,
 }) {
     const myself = useAuthUser();
-    const firebase = useContext(FirebaseContext);
+    // const firebase = useContext(FirebaseContext);
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [selectedAction, setSelectedAction] = useState(actions[0].type);
     const actionsRootRef = useRef(null);
@@ -96,13 +93,13 @@ function ActionsPalette({
         onActionTypeChange(actionsRootRef.current.offsetHeight);
     };
 
-    const handleMessageMenuItemClick = (action) => async () => {
-        setAnchorEl(null);
-        await firebase.addMessage2(data.id, {
-            uid: myself.uid,
-            value: action.say`${myself.username} will **pass on power**.`,
-        });
-    };
+    // const handleMessageMenuItemClick = (action) => async () => {
+    //     setAnchorEl(null);
+    //     await firebase.addMessage2(data.id, {
+    //         uid: myself.uid,
+    //         value: action.say`${myself.username} will **pass on power**.`,
+    //     });
+    // };
 
     const handleClose = () => {
         setAnchorEl(null);
@@ -281,7 +278,7 @@ function ActionsPalette({
                 open={Boolean(anchorEl)}
                 onClose={handleClose}
             >
-                {actions
+                {/* {actions
                     .filter(
                         (action) =>
                             action.subtype && action.subtype === "MESSAGE"
@@ -293,7 +290,7 @@ function ActionsPalette({
                         >
                             {action.value}
                         </MenuItem>
-                    ))}
+                    ))} */}
                 <Divider />
                 {actions
                     .filter((action) => !action.subtype)
@@ -354,22 +351,9 @@ function ActionsPalette({
                     orientation={data.status && data.status.orientation}
                 />
             )}
-            {/* {showMainHUD && (
-                <HUDOverlay
-                    onCloseOverlayClick={handleCloseOverlay}
-                    modified={mainHUDWasModified}
-                >
-                    {showMainHUD === "FIGHTER_INFO" && (
-                        <FighterHUD data={mainHUDPayload} />
-                    )}
-                </HUDOverlay>
-            )} */}
             {showMainHUD === "GAME_STATUS_INFO" && (
                 <GameStatusHUD data={data} onClose={handleCloseOverlay} />
             )}
-            {/* {showMainHUD === "FIGHTER_INFO" && (
-                <FighterHUD data={data} onClose={handleCloseOverlay} />
-            )} */}
         </div>
     );
 }

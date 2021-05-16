@@ -1,14 +1,14 @@
 import React, { useState, useContext } from "react";
-import { useAuthUser } from "../../../components/Session";
+import { useAuthUser } from "../../../../../components/Session";
 import ButtonBase from "@material-ui/core/ButtonBase";
 import Typography from "@material-ui/core/Typography";
 import DeleteIcon from "@material-ui/icons/Delete";
 import EditIcon from "@material-ui/icons/Edit";
-import { FirebaseContext } from "../../../firebase";
+import { FirebaseContext } from "../../../../../firebase";
 import { makeStyles } from "@material-ui/core/styles";
 import PropTypes from "prop-types";
-import { sortByIdAsc } from "../../../utils";
-import FighterHUD from "./FighterHUD";
+import { sortByIdAsc } from "../../../../../utils";
+import FighterHUD from "../../FighterHUD";
 
 const useStyles = makeStyles(() => ({
     root: {

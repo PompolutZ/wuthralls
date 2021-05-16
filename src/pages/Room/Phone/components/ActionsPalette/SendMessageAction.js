@@ -1,6 +1,6 @@
 import React, { useState, useContext } from "react";
-import { useAuthUser } from "../../../components/Session";
-import { FirebaseContext } from "../../../firebase";
+import { useAuthUser } from "../../../../../components/Session";
+import { FirebaseContext } from "../../../../../firebase";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import SendIcon from "@material-ui/icons/Send";

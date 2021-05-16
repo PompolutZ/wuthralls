@@ -2,8 +2,8 @@ import React, { useState, useContext } from "react";
 import ButtonBase from "@material-ui/core/ButtonBase";
 import Typography from "@material-ui/core/Typography";
 import DeleteIcon from "@material-ui/icons/Delete";
-import { FirebaseContext } from "../../../firebase";
-import { useAuthUser } from "../../../components/Session";
+import { FirebaseContext } from "../../../../../firebase";
+import { useAuthUser } from "../../../../../components/Session";
 import { makeStyles } from "@material-ui/core/styles";
 import PropTypes from "prop-types";
 

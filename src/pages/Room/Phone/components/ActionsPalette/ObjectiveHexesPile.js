@@ -7,12 +7,12 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import AddIcon from "@material-ui/icons/Add";
 import FlipIcon from "@material-ui/icons/Loop";
 import MoreIcon from "@material-ui/icons/MoreHoriz";
-import { FirebaseContext } from "../../../firebase";
-import { useAuthUser } from "../../../components/Session";
+import { FirebaseContext } from "../../../../../firebase";
+import { useAuthUser } from "../../../../../components/Session";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import PropTypes from "prop-types";
-import { sortByIdAsc } from "../../../utils";
+import { sortByIdAsc } from "../../../../../utils";
 
 const useStyles = makeStyles(() => ({
     root: {
