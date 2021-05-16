@@ -50,6 +50,8 @@ const factionIndexes = [
     "the-starblood-stalkers", // 29
     "the-crimson-court", // 31
     "hedkrakkas-madmob",
+
+    "drepurs-wraithcreepers",
 ];
 
 const warbandColors = {
@@ -86,6 +88,8 @@ const warbandColors = {
     "the-starblood-stalkers": "#249489", // temple guard blue
     "the-crimson-court": "#c00000", // free speech red
     "hedkrakkas-madmob": "#006400",
+
+    "drepurs-wraithcreepers": "#20B2AA",
 };
 
 const warbands = {
@@ -968,6 +972,29 @@ const warbands = {
             type: "FIGHTER",
             icon: "hedkrakkas-madmob-4",
             name: "Dakko",
+        },
+    ],
+
+    "drepurs-wraithcreepers": [
+        {
+            type: "FIGHTER",
+            icon: "drepurs-wraithcreepers-1",
+            name: "Drepur",
+        },
+        {
+            type: "FIGHTER",
+            icon: "drepurs-wraithcreepers-2",
+            name: "Grodrig",
+        },
+        {
+            type: "FIGHTER",
+            icon: "drepurs-wraithcreepers-3",
+            name: "Haqfel",
+        },
+        {
+            type: "FIGHTER",
+            icon: "drepurs-wraithcreepers-4",
+            name: "Patrician",
         },
     ],
 };
