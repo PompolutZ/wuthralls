@@ -8,6 +8,7 @@ import { getDieRollResult } from "../../../../../../../utils";
 import DefenceDie from "../../../../../../../components/DefenceDie";
 import AttackDie from "../../../../../../../components/AttackDie";
 import { warbandColors } from "../../../../../../../data";
+import { INITIATIVE } from "../../constants";
 
 const useStyles = makeStyles(() => ({
     root: {
@@ -59,7 +60,7 @@ function InitiativeRoller() {
         const rollResult = values.map(getDieRollResult);
         setValues(rollResult);
 
-        sendRollResult("INITIATIVE", rollResult);
+        sendRollResult(INITIATIVE, rollResult);
     };
 
     return (

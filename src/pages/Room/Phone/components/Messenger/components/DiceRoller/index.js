@@ -7,6 +7,7 @@ import { getDieRollResult } from "../../../../../../../utils";
 import { useDiceRoll } from "../../../../../hooks/useUpdateGameLog";
 import DiceTray from "./DiceTray";
 import { DiceVariants } from "./DiceVariants";
+import { ATTACK, DEFENCE, MAGIC } from "../../constants";
 
 const useStyles = makeStyles(() => ({
     root: {
@@ -57,7 +58,7 @@ export function DiceRoller({ type, initialAmount = 0 }) {
 }
 
 DiceRoller.propTypes = {
-    type: PropTypes.oneOf(["ATTACK", "DEFENCE", "MAGIC"]),
+    type: PropTypes.oneOf([ATTACK, DEFENCE, MAGIC]),
     initialAmount: PropTypes.number,
 };
 

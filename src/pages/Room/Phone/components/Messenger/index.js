@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import ServicePicker from "./components/ServicePicker";
 import { Services } from "./components/Services";
+import { TELEGRAM } from "./constants";
 
 const useStyles = makeStyles(() => ({
     root: {
@@ -22,7 +23,7 @@ const useStyles = makeStyles(() => ({
 
 function Messenger() {
     const classes = useStyles();
-    const [activeService, setActiveService] = useState("AttackDiceTray");
+    const [activeService, setActiveService] = useState(TELEGRAM);
 
     return (
         <div className={classes.root}>

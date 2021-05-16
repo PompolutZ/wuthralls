@@ -1,0 +1,9 @@
+export const TELEGRAM = "TELEGRAM";
+export const ATTACK_DICE_TRAY = "ATTACK_DICE_TRAY";
+export const DEFENCE_DICE_TRAY = "DEFENCE_DICE_TRAY";
+export const MAGIC_DICE_TRAY = "MAGIC_DICE_TRAY";
+export const INITIATIVE_DICE_TRAY = "INITIATIVE_DICE_TRAY";
+export const ATTACK = "ATTACK";
+export const DEFENCE = "DEFENCE";
+export const MAGIC = "MAGIC";
+export const INITIATIVE = "INITIATIVE";

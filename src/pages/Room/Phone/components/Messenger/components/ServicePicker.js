@@ -7,8 +7,15 @@ import {
     DefenceBlock,
     MagicChannel,
 } from "../../../../../../components/CommonSVGs";
+import {
+    ATTACK_DICE_TRAY,
+    DEFENCE_DICE_TRAY,
+    INITIATIVE_DICE_TRAY,
+    MAGIC_DICE_TRAY,
+    TELEGRAM,
+} from "../constants";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
     root: {
         display: "grid",
         gridTemplateColumns: "10% 10% 10% 10% 10%",
@@ -52,13 +59,13 @@ function ServicePicker({ onPickService }) {
         <div className={classes.root}>
             <Button
                 className={classes.btn}
-                onClick={() => onPickService("Telegram")}
+                onClick={() => onPickService(TELEGRAM)}
             >
                 <TelegramIcon />
             </Button>
             <Button
                 className={classes.btn}
-                onClick={() => onPickService("AttackDiceTray")}
+                onClick={() => onPickService(ATTACK_DICE_TRAY)}
             >
                 <div className={classes.rect}>
                     <AttackSmash className={classes.dieSideIcon} />
@@ -66,7 +73,7 @@ function ServicePicker({ onPickService }) {
             </Button>
             <Button
                 className={classes.btn}
-                onClick={() => onPickService("DefenceDiceTray")}
+                onClick={() => onPickService(DEFENCE_DICE_TRAY)}
             >
                 <div className={classes.rect}>
                     <DefenceBlock className={classes.dieSideIcon} />
@@ -74,7 +81,7 @@ function ServicePicker({ onPickService }) {
             </Button>
             <Button
                 className={classes.btn}
-                onClick={() => onPickService("MagicDiceTray")}
+                onClick={() => onPickService(MAGIC_DICE_TRAY)}
             >
                 <div className={classes.rect}>
                     <MagicChannel className={classes.dieSideIcon} />
@@ -82,7 +89,7 @@ function ServicePicker({ onPickService }) {
             </Button>
             <Button
                 className={classes.initiativeButton}
-                onClick={() => onPickService("InitiativeDiceTray")}
+                onClick={() => onPickService(INITIATIVE_DICE_TRAY)}
             >
                 <div className={classes.rect}>
                     <AttackSmash className={classes.dieSideIcon} />
