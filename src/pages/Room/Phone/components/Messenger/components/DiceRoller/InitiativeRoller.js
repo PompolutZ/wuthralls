@@ -24,6 +24,14 @@ const useStyles = makeStyles(() => ({
         color: "rgba(255,255,255, .9)",
     },
 
+    diceContainer: {
+        display: "flex",
+        flex: 1,
+        justifyContent: "center",
+        background: "#363a3e",
+        padding: "1rem .5rem",
+    },
+
     dieWrapper: {
         background: "#fcfcfc",
         borderRadius: ".5rem",
@@ -56,34 +64,21 @@ function InitiativeRoller() {
 
     return (
         <div className={classes.root}>
-            <div className={classes.itemsContainer}>
-                <div
-                    style={{
-                        display: "flex",
-                        flex: 1,
-                        alignItems: "center",
-                        alignSelf: "center",
-                    }}
-                >
-                    {values.length > 0 &&
-                        values.map((x, i) => (
-                            <div className={classes.dieWrapper} key={i}>
-                                {i % 2 === 0 && (
-                                    <DefenceDie {...getDieProps(x)} />
-                                )}
-                                {i % 2 !== 0 && (
-                                    <AttackDie {...getDieProps(x)} />
-                                )}
-                            </div>
-                        ))}
-                </div>
-                <Button
-                    className={classes.sendButton}
-                    onClick={handleSendTextMessage}
-                >
-                    <SendIcon />
-                </Button>
+            <div className={classes.diceContainer}>
+                {values.length > 0 &&
+                    values.map((x, i) => (
+                        <div className={classes.dieWrapper} key={i}>
+                            {i % 2 === 0 && <DefenceDie {...getDieProps(x)} />}
+                            {i % 2 !== 0 && <AttackDie {...getDieProps(x)} />}
+                        </div>
+                    ))}
             </div>
+            <Button
+                className={classes.sendButton}
+                onClick={handleSendTextMessage}
+            >
+                <SendIcon />
+            </Button>
         </div>
     );
 }
