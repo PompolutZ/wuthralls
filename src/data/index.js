@@ -50,6 +50,7 @@ const factionIndexes = [
     "the-starblood-stalkers", // 29
     "the-crimson-court", // 31
     "hedkrakkas-madmob",
+    "kainans-reapers",
 
     "drepurs-wraithcreepers",
     "storm-of-celestus",
@@ -89,6 +90,7 @@ const warbandColors = {
     "the-starblood-stalkers": "#249489", // temple guard blue
     "the-crimson-court": "#c00000", // free speech red
     "hedkrakkas-madmob": "#006400",
+    "kainans-reapers": "#000080",
 
     "drepurs-wraithcreepers": "#20B2AA",
     "storm-of-celestus": "#00008B",
@@ -974,6 +976,41 @@ const warbands = {
             type: "FIGHTER",
             icon: "hedkrakkas-madmob-4",
             name: "Dakko",
+        },
+    ],
+
+    "kainans-reapers": [
+        {
+            type: "FIGHTER",
+            icon: "kainans-reapers-1",
+            name: "Kainan",
+            counterTypes: "Tithe",
+        },
+        {
+            type: "FIGHTER",
+            icon: "kainans-reapers-2",
+            name: "Khenta",
+            counterTypes: "Tithe",
+        },
+        {
+            type: "FIGHTER",
+            icon: "kainans-reapers-3",
+            name: "Hakor",
+        },
+        {
+            type: "FIGHTER",
+            icon: "kainans-reapers-4",
+            name: "Karu",
+        },
+        {
+            type: "FIGHTER",
+            icon: "kainans-reapers-5",
+            name: "Nohem",
+        },
+        {
+            type: "FIGHTER",
+            icon: "kainans-reapers-6",
+            name: "Senha",
         },
     ],
 
